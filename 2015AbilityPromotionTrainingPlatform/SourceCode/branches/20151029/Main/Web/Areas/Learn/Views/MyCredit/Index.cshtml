@@ -1,0 +1,114 @@
+﻿@model IEnumerable<Dianda.AP.Model.Traning_Field>
+@using Dianda.AP.Model;
+@using System.Data;
+
+@{
+    ViewBag.Title = "我的学分";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+    ViewBag.MenuId = "d_learner_credit";
+}
+
+<div class="col-xs-9">
+            <div class="d-page-title">我的学时</div>
+            <hr>
+            <div class="blk_ln_credit" id="blk_ln_credit"><div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>课程类型</th>
+				<th>结业标准</th>
+				<th>已获学时</th>
+				<th>在学课程学时</th>
+			</tr>
+		</thead>
+		<tbody>
+            @foreach (var item in Model)
+            {
+                Training_Credits baseCredit = ((List<Training_Credits>)ViewBag.BaseCredit).FirstOrDefault(t => t.TraningField.Equals(item.Id));
+                Member_TrainingRedit received = ((List<Member_TrainingRedit>)ViewBag.ReceivedCredit).FirstOrDefault(t => t.TrainingField.Equals(item.Id));
+                DataRow[] exemption = ((DataTable)ViewBag.ExemptionCredit).Select("TrainingField=" + item.Id);
+                DataRow[] training = ((DataTable)ViewBag.TrainingCredit).Select("TraingField=" + item.Id);
+                DataRow[] practice = ((DataTable)ViewBag.PracticeCredit).Select("TraingField=" + item.Id);
+                double received_and_exemption = 0;
+                if (received != null)
+                {
+                    received_and_exemption += received.Credits;
+                }
+                if (exemption.Count() > 0)
+                {
+                    received_and_exemption += Convert.ToDouble(exemption[0]["Credits"]);
+                }
+                <tr>
+                    <td>@item.Title</td>
+                    
+                    @if (baseCredit != null)
+                    {
+                        <td>@baseCredit.MinValue</td>
+                    }
+                    else
+                    {
+                        <td>0</td>
+                    }
+
+                    <td><span class="n text-danger">@received_and_exemption</span></td>
+
+
+                    @if (item.Id == 3)
+                    {
+                        if (practice.Count() > 0)
+                        {
+                            <td>@practice[0]["Credit"]</td>
+                        }
+                        else
+                        {
+                            <td>0</td>
+                        }
+                    }
+                    else
+                    {
+                        if (training.Count() > 0)
+                        {
+                            <td>@training[0]["Credit"]</td>
+                        }
+                        else
+                        {
+                            <td>0</td>
+                        }
+                    }
+                </tr>
+            }
+            @{
+                double sumBase = 0, sumReceived = 0, sumInLearn = 0;
+                foreach (Training_Credits t in ViewBag.baseCredit)
+                {
+                    sumBase += t.MinValue;
+                }
+                foreach(Member_TrainingRedit t in ViewBag.ReceivedCredit)
+                {
+                    sumReceived += t.Credits;
+                }
+                foreach (DataRow row in ViewBag.ExemptionCredit.Rows)
+                {
+                    sumReceived += Convert.ToDouble(row["Credits"]);
+                }
+                foreach (DataRow row in ViewBag.TrainingCredit.Rows)
+                {
+                    sumInLearn += Convert.ToDouble(row["Credit"]);
+                }
+                foreach (DataRow row in ViewBag.PracticeCredit.Rows)
+                {
+                    sumInLearn += Convert.ToDouble(row["Credit"]);
+                }
+            }
+            <tr>
+				<td>总计</td>
+				<td>@sumBase</td>
+				<td><span class="n text-danger">@sumReceived</span></td>
+				<td>@sumInLearn</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</div>
+          </div>

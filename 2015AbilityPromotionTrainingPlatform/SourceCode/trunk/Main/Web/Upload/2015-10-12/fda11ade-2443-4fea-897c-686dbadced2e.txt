@@ -1,0 +1,4 @@
+记录时间：2015-09-08 17:10:59,471 线程ID:[6] 日志级别：DEBUG 出错类：YuJian.CommonDLL.Log4NetHelper property:[(null)] - 错误描述：parmas:signature|timestamp|nonce|echostr|
+记录时间：2015-09-08 17:11:29,351 线程ID:[9] 日志级别：DEBUG 出错类：YuJian.CommonDLL.Log4NetHelper property:[(null)] - 错误描述：parmas:signature|timestamp|nonce|echostr|
+记录时间：2015-09-08 17:12:21,082 线程ID:[5] 日志级别：DEBUG 出错类：YuJian.CommonDLL.Log4NetHelper property:[(null)] - 错误描述：parmas:signature|timestamp|nonce|echostr|
+by 周公

@@ -1,0 +1,240 @@
+<div class="course-i">
+	<span class="thumb"><img src="/jnpx/dist/resource/course/1-200x125.png"></span>
+	<span class="source">上海开放大学</span>
+	<span class="title">云服务在课堂教育中的应用</span>
+	<div class="desc text-justify">
+		本系列课程由“系统平台与计算环境（第一部分）”和“算法与C语言编程基础（第二部分）”两门课程构成。每门课程独立开设，既自成一体，又相互衔接，构成体系。本课程，即第一部分的内容，将涉及计算模型与信息表示、软硬件系统组成及工作原理、网络技术及应用、OFFICE基本操作等多个知识模块。本课程的学习目标是了解计算机软硬件系统组成、信息表示方法、网络技术等计算机学科的基础知识和基本操作技能；在未来我们将提供系列课程第二部分的学习目标，即学会编写简单的C语言控制台程序以及排序、查找等基本算法。
+	</div>
+</div>
+
+<div class="course-d clearfix">
+	<div class="pull-left h">工具条</div>
+	<div class="pull-left b">
+		<a href="course-unit-add.html"><span class="glyphicon glyphicon-plus"></span> 添加学习单元</a>
+		<a href="course-activity-add.html"><span class="glyphicon glyphicon-plus"></span> 添加学习活动</a>
+		<a href="course-setup-ratio.html"><span class="glyphicon glyphicon-wrench"></span> 设定考核比例</a>
+		<a href="/jnpx/dist/learner/learn-course.html" target="_blank"><span class="glyphicon glyphicon-globe"></span> 预览课程</a>
+	</div>
+	<div class="pull-right text-right c">
+		<a href="javascript:;"><span class="glyphicon glyphicon-eye-close"></span>&nbsp;隐藏</a>
+	</div>
+</div>
+
+<div class="course-t">
+	<div class="chapter">
+		<div class="title">
+			第一章 欢迎
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="desc text-justify">欢迎来到“大学计算机系列课程”的第一部分——系统平台与计算环境。这门课程的学习目标是了解计算机软硬件系统组成、信息表示方法、网络技术等计算机学科的基础知识和基本操作技能。希望通过了解计算机，建立和掌握利用计算机求解问题的基本思路和方法，能给你的学习，研究和生活带来无限的便利。</div>
+		<div class="duration">预计5分钟</div>
+	</div>
+	<div class="lecture">
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">课程简介与学习目标</span>
+				<span class="type">阅读</span>
+				<span class="duration"></span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">课程导学</span>
+				<span class="type"><span class="glyphicon glyphicon-facetime-video"></span></span>
+				<span class="duration">11分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="action">
+		<a href="javascript:;" onclick="doHideLecture()"><span class="glyphicon glyphicon-chevron-up"></span>&nbsp;隐藏</a>
+	</div>
+</div>
+
+<div class="course-t">
+	<div class="chapter">
+		<div class="title">
+			第二章 计算模型与计算机
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="desc text-justify">通过这一个模块的学习，重点需要理解这几个重点内容：学习“大学计算机”课程的原因；计算机系统的概念结构。包括计算机系统的组成，主机系统中的主要部件。内存储器的组织结构和图灵模型的价值及它的工作过程。</div>
+		<div class="duration">预计1小时38分钟</div>
+	</div>
+	<div class="lecture">
+		<div class="title">
+			第一节 走近计算机
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="duration"></div>
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">课程课件</span>
+				<span class="type">阅读</span>
+				<span class="duration"></span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">前言</span>
+				<span class="type"><span class="glyphicon glyphicon-facetime-video"></span></span>
+				<span class="duration">11分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">计算机系统</span>
+				<span class="type"><span class="glyphicon glyphicon-facetime-video"></span></span>
+				<span class="duration">5分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="lecture">
+		<div class="title">
+			小组讨论
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="duration"></div>
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">图灵模型与计算在实际情况中的应用</span>
+				<span class="type">讨论</span>
+				<span class="duration">5分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="lecture">
+		<div class="title">
+			章节作业
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="duration"></div>
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">写一篇关于计算机实践应用的文章</span>
+				<span class="type">作业</span>
+				<span class="duration">5分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="lecture">
+		<div class="title">
+			小结
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="duration"></div>
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">计算机模型与计算机</span>
+				<span class="type"><span class="glyphicon glyphicon-facetime-video"></span></span>
+				<span class="duration">5分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="lecture">
+		<div class="title">
+			单元测试
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="duration"></div>
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">计算机模型与计算机</span>
+				<span class="type">测试</span>
+				<span class="duration">5分钟</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="action">
+		<a href="javascript:;" onclick="doHideLecture()"><span class="glyphicon glyphicon-chevron-up"></span>&nbsp;隐藏</a>
+	</div>
+</div>
+
+<div class="course-t">
+	<div class="lecture">
+		<div class="title">
+			结业考试
+			<span class="action">
+				<a href="javascript:;">编辑</a>&nbsp;
+				<a href="javascript:;">删除</a>
+			</span>
+		</div>
+		<div class="duration">预计40分钟</div>
+		<div class="topiclist">
+			<div class="line"></div>
+			<div class="topic">
+				<span class="status"><span class="dot"></span></span>
+				<span class="title">结业考试</span>
+				<span class="desc">30道题目</span>
+				<span class="action">
+					<a href="#">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>

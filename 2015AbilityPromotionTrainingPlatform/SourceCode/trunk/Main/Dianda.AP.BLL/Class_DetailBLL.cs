@@ -1,0 +1,261 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace Dianda.AP.BLL
+{
+    //Class_Detail
+    public partial class Class_DetailBLL
+    {
+
+        private DAL.Class_DetailDAL dal = new DAL.Class_DetailDAL();
+        public Class_DetailBLL()
+        { }
+        #region  Method
+        /// <summary>
+        /// 得到最大ID
+        /// </summary>
+        public int GetMaxId()
+        {
+            return dal.GetMaxId();
+        }
+
+        /// <summary>
+        /// 是否存在该记录
+        /// </summary>
+        public bool Exists(int Id)
+        {
+            return dal.Exists(Id);
+        }
+
+        /// <summary>
+        /// 增加一条数据
+        /// </summary>
+        public int Add(Model.Class_Detail model)
+        {
+            return dal.Add(model);
+        }
+
+        /// <summary>
+        /// 更新一条数据
+        /// </summary>
+        public bool Update(Model.Class_Detail model)
+        {
+            return dal.Update(model);
+        }
+
+        /// <summary>
+        /// 删除一条数据
+        /// </summary>
+        public bool Delete(int Id)
+        {
+            return dal.Delete(Id);
+        }
+        /// <summary>
+        /// 批量删除一批数据
+        /// </summary>
+        public bool DeleteList(string Idlist)
+        {
+            return dal.DeleteList(Idlist);
+        }
+
+        /// <summary>
+        /// 得到一个对象实体
+        /// </summary>
+        public Model.Class_Detail GetModel(int Id)
+        {
+            return dal.GetModel(Id);
+        }
+
+        /// <summary>
+        /// 获得数据列表
+        /// </summary>
+        public DataSet GetList(string strWhere)
+        {
+            return dal.GetList(strWhere);
+        }
+        /// <summary>
+        /// 获得前几行数据
+        /// </summary>
+        public DataSet GetList(int Top, string strWhere, string filedOrder)
+        {
+            return dal.GetList(Top, strWhere, filedOrder);
+        }
+        /// <summary>
+        /// 获得数据列表
+        /// </summary>
+        public List<Model.Class_Detail> GetListModel(string strWhere)
+        {
+            DataSet ds = dal.GetList(strWhere);
+            return DataTableToList(ds.Tables[0]);
+        }
+        /// <summary>
+        /// 获得前几行数据
+        /// </summary>
+        public List<Model.Class_Detail> GetListModel(int Top, string strWhere, string filedOrder)
+        {
+            DataSet ds = dal.GetList(Top, strWhere, filedOrder);
+            return DataTableToList(ds.Tables[0]);
+        }
+        /// <summary>
+        /// 获得数据列表
+        /// </summary>
+        public List<Model.Class_Detail> DataTableToList(DataTable dt)
+        {
+            List<Model.Class_Detail> modelList = new List<Model.Class_Detail>();
+            int rowsCount = dt.Rows.Count;
+            if (rowsCount > 0)
+            {
+                Model.Class_Detail model;
+                for (int n = 0; n < rowsCount; n++)
+                {
+                    model = new Model.Class_Detail();
+                    if (dt.Rows[n]["Id"].ToString() != "")
+                    {
+                        model.Id = int.Parse(dt.Rows[n]["Id"].ToString());
+                    }
+                    if (dt.Rows[n]["People"].ToString() != "")
+                    {
+                        model.People = int.Parse(dt.Rows[n]["People"].ToString());
+                    }
+                    if (dt.Rows[n]["LimitPeopleCnt"].ToString() != "")
+                    {
+                        model.LimitPeopleCnt = int.Parse(dt.Rows[n]["LimitPeopleCnt"].ToString());
+                    }
+                    model.Address = dt.Rows[n]["Address"].ToString();
+                    model.Content = dt.Rows[n]["Content"].ToString();
+                    if (dt.Rows[n]["ManagerId"].ToString() != "")
+                    {
+                        model.ManagerId = int.Parse(dt.Rows[n]["ManagerId"].ToString());
+                    }
+                    if (dt.Rows[n]["OrganId"].ToString() != "")
+                    {
+                        model.OrganId = int.Parse(dt.Rows[n]["OrganId"].ToString());
+                    }
+                    if (dt.Rows[n]["Subject"].ToString() != "")
+                    {
+                        if ((dt.Rows[n]["Subject"].ToString() == "1") || (dt.Rows[n]["Subject"].ToString().ToLower() == "true"))
+                        {
+                            model.Subject = true;
+                        }
+                        else
+                        {
+                            model.Subject = false;
+                        }
+                    }
+                    if (dt.Rows[n]["StudyLevel"].ToString() != "")
+                    {
+                        if ((dt.Rows[n]["StudyLevel"].ToString() == "1") || (dt.Rows[n]["StudyLevel"].ToString().ToLower() == "true"))
+                        {
+                            model.StudyLevel = true;
+                        }
+                        else
+                        {
+                            model.StudyLevel = false;
+                        }
+                    }
+                    if (dt.Rows[n]["TeachGrade"].ToString() != "")
+                    {
+                        if ((dt.Rows[n]["TeachGrade"].ToString() == "1") || (dt.Rows[n]["TeachGrade"].ToString().ToLower() == "true"))
+                        {
+                            model.TeachGrade = true;
+                        }
+                        else
+                        {
+                            model.TeachGrade = false;
+                        }
+                    }
+                    if (dt.Rows[n]["TeachRank"].ToString() != "")
+                    {
+                        if ((dt.Rows[n]["TeachRank"].ToString() == "1") || (dt.Rows[n]["TeachRank"].ToString().ToLower() == "true"))
+                        {
+                            model.TeachRank = true;
+                        }
+                        else
+                        {
+                            model.TeachRank = false;
+                        }
+                    }
+                    model.Title = dt.Rows[n]["Title"].ToString();
+                    model.OrganRange = dt.Rows[n]["OrganRange"].ToString();
+                    if (dt.Rows[n]["Instructor"].ToString() != "")
+                    {
+                        model.Instructor = int.Parse(dt.Rows[n]["Instructor"].ToString());
+                    }
+                    if (dt.Rows[n]["Status"].ToString() != "")
+                    {
+                        model.Status = int.Parse(dt.Rows[n]["Status"].ToString());
+                    }
+                    model.ApplyRemark = dt.Rows[n]["ApplyRemark"].ToString();
+                    if (dt.Rows[n]["Display"].ToString() != "")
+                    {
+                        if ((dt.Rows[n]["Display"].ToString() == "1") || (dt.Rows[n]["Display"].ToString().ToLower() == "true"))
+                        {
+                            model.Display = true;
+                        }
+                        else
+                        {
+                            model.Display = false;
+                        }
+                    }
+                    if (dt.Rows[n]["Delflag"].ToString() != "")
+                    {
+                        if ((dt.Rows[n]["Delflag"].ToString() == "1") || (dt.Rows[n]["Delflag"].ToString().ToLower() == "true"))
+                        {
+                            model.Delflag = true;
+                        }
+                        else
+                        {
+                            model.Delflag = false;
+                        }
+                    }
+                    if (dt.Rows[n]["CreateDate"].ToString() != "")
+                    {
+                        model.CreateDate = DateTime.Parse(dt.Rows[n]["CreateDate"].ToString());
+                    }
+                    if (dt.Rows[n]["PartitionId"].ToString() != "")
+                    {
+                        model.PartitionId = int.Parse(dt.Rows[n]["PartitionId"].ToString());
+                    }
+                    if (dt.Rows[n]["TraningId"].ToString() != "")
+                    {
+                        model.TraningId = int.Parse(dt.Rows[n]["TraningId"].ToString());
+                    }
+                    if (dt.Rows[n]["PlanId"].ToString() != "")
+                    {
+                        model.PlanId = int.Parse(dt.Rows[n]["PlanId"].ToString());
+                    }
+                    if (dt.Rows[n]["SignUpStartTime"].ToString() != "")
+                    {
+                        model.SignUpStartTime = DateTime.Parse(dt.Rows[n]["SignUpStartTime"].ToString());
+                    }
+                    if (dt.Rows[n]["SignUpEndTime"].ToString() != "")
+                    {
+                        model.SignUpEndTime = DateTime.Parse(dt.Rows[n]["SignUpEndTime"].ToString());
+                    }
+                    if (dt.Rows[n]["OpenClassFrom"].ToString() != "")
+                    {
+                        model.OpenClassFrom = DateTime.Parse(dt.Rows[n]["OpenClassFrom"].ToString());
+                    }
+                    if (dt.Rows[n]["OpenClassTo"].ToString() != "")
+                    {
+                        model.OpenClassTo = DateTime.Parse(dt.Rows[n]["OpenClassTo"].ToString());
+                    }
+                    if (dt.Rows[n]["ClassForm"].ToString() != "")
+                    {
+                        model.ClassForm = int.Parse(dt.Rows[n]["ClassForm"].ToString());
+                    }
+
+
+                    modelList.Add(model);
+                }
+            }
+            return modelList;
+        }
+
+        #endregion
+
+    }
+}

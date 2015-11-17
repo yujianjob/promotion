@@ -1,0 +1,427 @@
+﻿@{
+    ViewBag.Title = "创建班级";
+    Layout = Url.Content("~/Views/Shared/LinkLayout.cshtml");
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div class="d-form">
+                    <ol class="breadcrumb">
+                        <li><a href="ClassList">班级开班</a></li>
+                        <li class="active">开设新班级</li>
+                    </ol>
+                    <div class="blk_class_add" id="blk_class_add">
+                        <h4 class="text-center">开设新班级</h4>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">选择课程 <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="course" onchange="selectSchool();">
+                                        <option value="">请选择课程</option>
+                                        @if (ViewBag.CourseList != null && ViewBag.CourseList.Count > 0)
+                                        {
+                                            foreach (var item in ViewBag.CourseList)
+                                            {
+                                            <option value="@item.Id">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">班级名称 <span class="text-danger">*</span></label>
+                                    <input id="title" type="text" maxlength="30" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">开设学期 <span class="text-danger">*</span></label>
+                                    @if (ViewBag.PlanList != null && ViewBag.PlanList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.PlanList)
+                                        {
+                                        <label class="chk">
+                                            <input type="radio" id="plan"   value="@item.Id" name="a1">
+                                            @item.Title
+                                        </label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">报名日期 <span class="text-danger">*</span></label>
+                                    <input id="SignUpStartTime" type="text" style="width: 130px;" maxlength="30" class="form-control input-date">
+                                    -
+		
+                                    <input id="SignUpEndTime" type="text" style="width: 130px;" maxlength="30" class="form-control input-date">
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">开班日期 <span class="text-danger">*</span></label>
+                                    <input id="OpenClassFrom" type="text" style="width: 130px;" maxlength="30" class="form-control input-date">
+                                    -
+		
+                                    <input id="OpenClassTo" type="text" style="width: 130px;" maxlength="30" class="form-control input-date">
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">班级形式 <span class="text-danger">*</span></label>
+                                    @if (ViewBag.ClassesList != null && ViewBag.ClassesList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.ClassesList)
+                                        {
+                                        <label class="chk">
+                                            <input type="radio" id="ClassForm"  value="@item.Id" name="a2">
+                                            @item.Title
+                                        </label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">招收人数 <span class="text-danger">*(若为-1,则不限制人数)</span></label>
+                                    <input id="LimitPeopleCnt" type="text" maxlength="30" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">上课地点 <span class="text-danger">*</span></label>
+                                    <input id="Address" type="text" maxlength="30" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="control-label">上课安排描述 <span class="text-danger">*</span></label>
+                                    <input id="Content" type="text" maxlength="30" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <h4>报名条件</h4>
+                                <hr>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">任教学科 <span class="text-danger">*</span></label>
+                                    <label class="chk">
+                                        <input type="checkbox" id="SubjectAll" value="0" name="a3" onclick="chkAll('Subject', 'a3')">
+                                        全部
+                                    </label>
+                                    @if (ViewBag.SubjectList != null && ViewBag.SubjectList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.SubjectList)
+                                        {
+                                        <label class="chk">
+                                            <input type="checkbox" id="Subject"  value="@item.Id" name="a3">
+                                            @item.Title
+                                        </label>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">任教学段 <span class="text-danger">*</span></label>
+                                    <label class="chk">
+                                        <input type="checkbox" id="StudyLevelAll" value="0" name="a4" onclick='chkAll("StudyLevel", "a4")'>
+                                        全部
+                                    </label>
+                                    @if (ViewBag.StudyLevelList != null && ViewBag.StudyLevelList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.StudyLevelList)
+                                        {
+                                        <label class="chk">
+                                            <input type="checkbox" id="StudyLevel"  value="@item.Id" name="a4">
+                                            @item.Title
+                                        </label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">任教年级 <span class="text-danger">*</span></label>
+                                    <label class="chk">
+                                        <input type="checkbox" id="TeachGradeAll" value="0" name="a5" onclick='chkAll("TeachGrade", "a5")'>
+                                        全部
+                                    </label>
+                                    @if (ViewBag.TeachGradeList != null && ViewBag.TeachGradeList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.TeachGradeList)
+                                        {
+                                        <label class="chk">
+                                            <input type="checkbox" id="TeachGrade"  value="@item.Id" name="a5">
+                                            @item.Title
+                                        </label>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">教师职称 <span class="text-danger">*</span></label>
+                                    <label class="chk">
+                                        <input type="checkbox" id="TeachRankAll" value="0" name="a6" onclick='chkAll("TeachRank", "a6")'>
+                                        全部
+                                    </label>
+                                    @if (ViewBag.TeachRankList != null && ViewBag.TeachRankList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.TeachRankList)
+                                        {
+                                        <label class="chk">
+                                            <input type="checkbox" id="TeachRank"  value="@item.Id" name="a6">
+                                            @item.Title
+                                        </label>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">学校范围 <span class="text-danger">*</span></label>
+                                    <label class="chk" id="schoolAll">
+                                        <input type="checkbox" id="OrganRangeAll" value="0" name="a7" onclick='chkAll("OrganRange", "a7")'>
+                                        全部
+                                    </label>
+@*                                    @if (ViewBag.CourseList != null && ViewBag.CourseList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.CourseList)
+                                        {
+                                            
+                                        <label class="chk">
+                                            <input type="checkbox" id="OrganRange"  value="@item.Id" name="a7" nowrap>
+                                            @item.Title
+                                        </label>
+                                            
+                                        }
+                                    }*@
+
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <button style="width: 150px;" class="btn btn-success" id="btnSave" onclick="btnSubmit(1);">保存</button>
+                                <button style="width: 150px;" class="btn btn-success" id="btnSubmit" onclick="btnSubmit(2);">保存并提交</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<a href="ClassList">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function selectSchool() {
+        var courseId = $('#course').val();
+        $("label[name='schoolRange']").each(function () {
+            $(this).remove();
+        });
+        if (courseId != '') {
+            $.ajax({
+                type: 'get',
+                url: '/ClassApply/GetSchoolByCourse',
+                data: { courseid: courseId },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code != -1) {
+                        for(var i=0;i<result.length;i++)
+                        {
+                            $("#schoolAll").after("<label class='chk' name='schoolRange'><input type='checkbox' id='OrganRange'  value='" + result[i].Id + "' name='a7' >" + result[i].Title + " </label>")
+                        }
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+    }
+
+    function chkAll(obj, name) {
+
+        $("input[name='" + name + "']").each(function () {
+            $(this).prop('checked', $("#" + obj + "All").prop('checked'));
+        });
+    }
+
+    $(".chk :checkbox").on('click', function () {
+
+        if ($(this).attr('checked') == undefined || $(this).attr('checked') == '') {
+            $(this).attr('checked', "checked");
+        }
+        else {
+            $(this).removeAttr('checked', '');
+        }
+    });
+
+    function GetCheckValue(name) {
+        var val = '';
+        $("input[name='" + name + "']").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                val += $(this).val() + ',';
+            }
+        });
+        return val;
+    }
+    $(document).ready(function () {
+
+    });
+
+
+    function btnSubmit(status) {
+        var titleVal = $('#title').val();
+        var courseVal = $('#course').val();
+        var planVal = $('#plan:checked').val();
+        var SignUpStartTimeVal = $('#SignUpStartTime').val();
+        var SignUpEndTimeVal = $('#SignUpEndTime').val();
+        var OpenClassFromVal = $('#OpenClassFrom').val();
+        var OpenClassToVal = $('#OpenClassTo').val();
+        var ClassFormVal = $('#ClassForm:checked').val();
+        var LimitPeopleCntVal = $('#LimitPeopleCnt').val();
+        var AddressVal = $('#Address').val();
+        var ContentVal = $('#Content').val();
+        var SubjectVal = $('#Subject').val();
+        var StudyLevelVal = $('#StudyLevel').val();
+        var TeachGradeVal = $('#TeachGrade').val();
+        var TeachRankVal = $('#TeachRank').val();
+        var OrganRangeVal = $('#OrganRange').val();
+
+        if (planVal == undefined || planVal == '') {
+            Alert('请选择开设学期!');
+            return;
+        }
+        if (ClassFormVal == undefined || ClassFormVal == '') {
+            Alert('请选择班级形式!');
+            return;
+        }
+        var a3 = '';
+        a3 = GetCheckValue('a3');
+        if (a3 == '') {
+            Alert('请选择任教学科!');
+            return;
+        }
+        if (a3.indexOf(',') > -1)
+            a3 = a3.substring(0, a3.lastIndexOf(','));
+        var a4 = '';
+        a4 = GetCheckValue('a4');
+        if (a4 == '') {
+            Alert('请选择任教学段!');
+            return;
+        }
+        if (a4.indexOf(',') > -1)
+            a4 = a4.substring(0, a4.lastIndexOf(','));
+        var a5 = '';
+        a5 = GetCheckValue('a5');
+        if (a5 == '') {
+            Alert('请选择任教年级!');
+            return;
+        }
+        if (a5.indexOf(',') > -1)
+            a5 = a5.substring(0, a5.lastIndexOf(','));
+        var a6 = '';
+        a6 = GetCheckValue('a6');
+        if (a6 == '') {
+            Alert('请选择教师职称!');
+            return;
+        }
+        if (a6.indexOf(',') > -1)
+            a6 = a6.substring(0, a6.lastIndexOf(','));
+        var a7 = '';
+        a7 = GetCheckValue('a7');
+        if (a7 == '') {
+            Alert('请选择学校范围!');
+            return;
+        }
+        if (a7.indexOf(',') > -1)
+            a7 = a7.substring(0, a7.lastIndexOf(','));
+        if (titleVal == '') {
+            Alert('请填写班级名称!');
+            return;
+        }
+        if (LimitPeopleCntVal == '') {
+            Alert('请填写招生人数!');
+            return;
+        }
+        if (SignUpStartTimeVal == '' || SignUpEndTimeVal == '' || OpenClassFromVal == '' || OpenClassToVal == '') {
+            Alert('请填写完整时间!');
+            return;
+        }
+        if (AddressVal == '') {
+            Alert('请填写上课地点!');
+            return;
+        }
+        if (ContentVal == '') {
+            Alert('请填写上课安排描述!');
+            return;
+        }
+        if (SignUpStartTimeVal > SignUpEndTimeVal) {
+            Alert('报名开始时间应小于结束时间');
+            return;
+        }
+        if (OpenClassFromVal > OpenClassToVal) {
+            Alert('开班开始时间应小于结束时间');
+            return;
+        }
+        if (SignUpEndTimeVal > OpenClassFromVal) {
+            Alert('开班开始时间应大于报名结束时间');
+            return;
+        }
+        var organId = '@ViewBag.OrganId';
+        var artitionId = '@ViewBag.PartitionId';
+        $.ajax({
+            type: 'get',
+            url: '/ClassApply/CreateClass',
+            data: {
+                Title: titleVal, TraningId: courseVal, PlanId: planVal, SignUpStartTime: SignUpStartTimeVal, SignUpEndTime: SignUpEndTimeVal
+        , OpenClassFrom: OpenClassFromVal, OpenClassTo: OpenClassToVal, ClassForm: ClassFormVal, LimitPeopleCnt: LimitPeopleCntVal
+        , Address: AddressVal, Content: ContentVal, Subject: a3, StudyLevel: a4, TeachGrade: a5
+        , TeachRank: a6, OrganRange: a7, OrganId: organId, Status: status, PartitionId: artitionId
+            },
+            contentType: 'application/json',
+            dataType: "text",
+            success: function (data) {
+                var result = $.parseJSON(data);
+                if (result.Code == 0) {
+                    Alert(result.Msg);
+                    window.location.href = 'ClassList';
+                }
+                else {
+                    Alert(result.Msg);
+                }
+            },
+            error: function () {
+                Alert('服务器错误！');
+            }
+        });
+
+    }
+</script>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            $('input.input-date').datepicker({});
+
+
+        });
+    });
+
+
+</script>

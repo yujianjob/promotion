@@ -1,0 +1,201 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Areas.Statistics.Controllers
+{
+    public class StatisticsController : Controller
+    {
+        //
+        // GET: /Statistics/Statistics/
+
+        public ActionResult StatisticsListView()
+        {
+            //加载区县信息
+            var List_Regin = this.GetReginListItem();
+
+            var accBll = new accountBLL();
+            var List_accountOther = new List<accountOther>();
+            var stbSqlWhere = new StringBuilder();
+
+            int  PageIndex = 0;
+            string SearchTxt = string.Empty;
+
+            stbSqlWhere.Append(" 1 = 1 ");
+
+            int iRecordCount = accBll.GetListOtherCount(stbSqlWhere.ToString());
+            int iPageSize = 10, iPageIndex;
+            int iPageCount = (int)Math.Ceiling((double)iRecordCount / iPageSize);
+            int.TryParse(Convert.ToString(PageIndex), out iPageIndex);
+            if (iPageIndex < 1)
+                iPageIndex = 1;
+            else if (iPageIndex > iPageCount)
+                iPageIndex = iPageCount;
+
+            ViewBag.List_Regin = List_Regin;
+            ViewBag.GroupId = Code.SiteCache.Instance.GroupId;//当前登录人的权限
+            ViewBag.ManageOrganId = Code.SiteCache.Instance.ManageOrganId;//当前登录人的权限
+            ViewBag.DetailUrl = Code.SiteCache.Instance.GetSysValue("NLPCView");//评测统计详细页链接
+            ViewBag.RecordCount = iRecordCount;
+            ViewBag.PageCount = iPageCount;
+            ViewBag.PageIndex = iPageIndex;
+            ViewBag.PageSize = iPageSize;
+            
+            return View();
+        }
+
+        public ActionResult StatisticsDetailView(int? userid,int? id)
+        {
+            id = id == null ? 0 : id;
+
+            ViewBag.UserId = userid;
+            ViewBag.Id = id;
+
+            int outId = (int)userid;
+            ViewBag.OutId = outId;
+
+            MyTestRound mode = null;
+            List<MyTestRound> round = new List<MyTestRound>();
+            if (outId == 0)
+            {
+                ViewBag.RoundData = round;
+                ViewBag.Score1 = "";
+                ViewBag.Score2 = "";
+                ViewBag.Tick1 = "";
+                ViewBag.Tick2 = "";
+            }
+            else
+            {
+                LearnMyTestBLL bll = new LearnMyTestBLL();
+
+                round = bll.GetRoundList(outId, "uploaddatetime desc");
+                ViewBag.RoundData = round;
+
+                mode = round.FirstOrDefault(t => t.Id == id);
+
+                List<MyTestScore> score = bll.GetScoreList(Convert.ToInt32(id), "dimensionid");
+                StringBuilder sbScore1 = new StringBuilder();
+                if (score.Count >= 10)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sbScore1.Append(score[i].Score + ",");
+                    }
+                    sbScore1.Remove(sbScore1.Length - 1, 1);
+                }
+                ViewBag.Score1 = sbScore1.ToString();
+                StringBuilder sbScore2 = new StringBuilder();
+                if (score.Count >= 10)
+                {
+                    for (int i = 5; i < 10; i++)
+                    {
+                        sbScore2.Append(score[i].Score + ",");
+                    }
+                    sbScore2.Remove(sbScore2.Length - 1, 1);
+                }
+                ViewBag.Score2 = sbScore2.ToString();
+
+                string[] tick = new string[] { "技术素养", "计划与准备", "组织与管理", "评论与诊断", "学习与发展", "技术素养", "计划与准备", "组织与管理", "评论与诊断", "学习与发展" };
+                StringBuilder sbTick1 = new StringBuilder();
+                for (int i = 0; i < 5; i++)
+                {
+                    sbTick1.Append("\"" + tick[i] + "\",");
+                }
+                sbTick1.Remove(sbTick1.Length - 1, 1);
+                ViewBag.Tick1 = sbTick1.ToString();
+                StringBuilder sbTick2 = new StringBuilder();
+                for (int i = 5; i < 10; i++)
+                {
+                    sbTick2.Append("\"" + tick[i] + "\",");
+                }
+                sbTick2.Remove(sbTick2.Length - 1, 1);
+                ViewBag.Tick2 = sbTick2.ToString();
+            }
+
+            return View(mode);
+        }
+
+        #region 获取数据列表信息
+        public ActionResult ScoreList(int RegionId, int OrganId, int IsTest, int PageIndex, string SearchTxt)
+        {
+            var accBll = new accountBLL();
+            var List_accountOther = new List<accountOther>();
+            var stbSqlWhere = new StringBuilder();
+
+            stbSqlWhere.Append(" 1 = 1 ");
+            if (RegionId > 0)
+                stbSqlWhere.Append(" and RegionId = " + RegionId);
+            if (OrganId > 0)
+                stbSqlWhere.Append(" and OrganId = " + OrganId);
+            if (IsTest != -1)
+            {
+                if (IsTest > 0)
+                {
+                    stbSqlWhere.Append(" and DiscussCnt > 0 ");
+                }
+                else
+                {
+                    stbSqlWhere.Append(" and DiscussCnt = 0 ");
+                }
+            }
+                
+            if (!string.IsNullOrEmpty(SearchTxt))
+                stbSqlWhere.AppendFormat(" and (RealName like '%{0}%' or TeacherNo like '%{0}%')", SearchTxt);
+
+            int iRecordCount = accBll.GetListOtherCount(stbSqlWhere.ToString());
+            int iPageSize = 10, iPageIndex;
+            int iPageCount = (int)Math.Ceiling((double)iRecordCount / iPageSize);
+            int.TryParse(Convert.ToString(PageIndex), out iPageIndex);
+            if (iPageIndex < 1)
+                iPageIndex = 1;
+            else if (iPageIndex > iPageCount)
+                iPageIndex = iPageCount;
+            //获取分页数据集合
+            List_accountOther = accBll.GetListOther(iPageSize, iPageIndex, stbSqlWhere.ToString(), out iRecordCount);
+
+            return Json(new { Data = List_accountOther}, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+        
+        #region 加载区县信息
+        private List<SelectListItem> GetReginListItem()
+        {            
+            var bll = new AccountEditBLL();
+            var Regindt = bll.GetRegin(5);
+            var Regin = new List<SelectListItem>();
+            for (int i = 0; i < Regindt.Rows.Count; i++)
+            {
+                var item = new SelectListItem();
+                item.Text = Regindt.Rows[i][1].ToString();
+                item.Value = Regindt.Rows[i][0].ToString();
+                Regin.Add(item);
+            }
+
+            return Regin;
+        }
+        #endregion
+
+        #region 获取机构信息
+        public ActionResult GetRegion(int id)
+        {
+            var bll = new AccountEditBLL();
+            var Regindt = bll.GetRegionTo(id);
+            var Regin = new List<SelectListItem>();
+            for (int i = 0; i < Regindt.Rows.Count; i++)
+            {
+                var item = new SelectListItem();
+                item.Text = Regindt.Rows[i][1].ToString();
+                item.Value = Regindt.Rows[i][0].ToString();
+                Regin.Add(item);
+            }
+            return Json(Regin, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+    }
+}

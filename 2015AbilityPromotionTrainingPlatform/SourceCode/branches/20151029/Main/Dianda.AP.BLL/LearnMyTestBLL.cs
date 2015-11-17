@@ -1,0 +1,48 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.BLL
+{
+    public class LearnMyTestBLL
+    {
+        LearnMyTestDAL dal = new LearnMyTestDAL();
+
+        /// <summary>
+        /// 取得测试数据集
+        /// </summary>
+        /// <param name="outId">用户的外部平台Id</param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<MyTestRound> GetRoundList(int outId, string orderBy)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("userid=" + outId);
+            return dal.GetRoundList(where.ToString(), orderBy);
+        }
+
+        public List<MyTestRound> V_GetRoundList(int outId, string orderBy)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("userid=" + outId);
+            return dal.V_GetRoundList(where.ToString(), orderBy);
+        }
+
+        /// <summary>
+        /// 取得分数数据集
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<MyTestScore> GetScoreList(int id, string orderBy)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("userid=" + id);
+            return dal.GetScoreList(where.ToString(), orderBy);
+        }
+    }
+}

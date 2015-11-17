@@ -1,0 +1,159 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+using Web.Attributes;
+
+namespace Web.Areas.Statistics.Controllers
+{
+    public class StatisticsController : Controller
+    {
+        //
+        // GET: /Statistics/Statistics/
+        [UrlDecrypt]
+        public ActionResult StatisticsListView(int? RegionId, int? OrganId, int? IsTest, string SearchTxt, int PageIndex = 1)
+        {
+            ViewBag.GroupId = Code.SiteCache.Instance.GroupId;//当前登录人的权限
+            ViewBag.ManageOrganId = Code.SiteCache.Instance.ManageOrganId;//当前登录人的权限
+            ViewBag.DetailUrl = Code.SiteCache.Instance.GetSysValue("NLPCView");//评测统计详细页链接
+            ViewBag.IsTest = (IsTest == null) ? -1 : IsTest;
+            ViewBag.SearchTxt = SearchTxt;
+            
+            //加载区县信息
+            var List_Regin = this.GetReginListItem();
+
+            var accBll = new accountBLL();
+            var List_accountOther = new List<accountOther>();
+            var stbSqlWhere = new StringBuilder();
+
+            stbSqlWhere.Append(" 1 = 1 ");
+
+            switch ((int)ViewBag.GroupId)
+            {
+                case (int)XXW.Enum.PlatformGroupEnum.ManagerCity:
+                    {
+                        ViewBag.RegionId = (RegionId == null) ? -1 : RegionId;
+                        ViewBag.OrganId = (OrganId == null) ? -1 : OrganId;
+
+                        if (RegionId > 0)
+                            stbSqlWhere.Append(" and RegionId=" + RegionId);
+                        if (OrganId > 0)
+                            stbSqlWhere.Append(" and OrganId=" + OrganId);
+                        break;
+                    }
+                case (int)XXW.Enum.PlatformGroupEnum.ManagerArea:
+                    {
+                        ViewBag.RegionId = (RegionId == null) ? -1: RegionId;
+                        ViewBag.OrganId = (OrganId == null) ? (Code.SiteCache.Instance.ManageOrganId) : OrganId;
+
+                        if (RegionId > 0)
+                            stbSqlWhere.Append(" and RegionId=" + RegionId);
+                        stbSqlWhere.Append(" and OrganId=" + ViewBag.OrganId);
+                        
+                        break;
+                    }
+                case (int)XXW.Enum.PlatformGroupEnum.ManagerTraining:
+                    {
+                        ViewBag.OrganId = (OrganId == null) ? (Code.SiteCache.Instance.ManageOrganId) : OrganId;
+
+                        stbSqlWhere.Append(" and OrganId=" + ViewBag.OrganId);
+                        break;
+                    }
+                case (int)XXW.Enum.PlatformGroupEnum.ManagerSchool:
+                    {
+                        ViewBag.OrganId = (OrganId == null) ? (Code.SiteCache.Instance.ManageOrganId) : OrganId;
+
+                        stbSqlWhere.Append(" and OrganId=" + ViewBag.OrganId);
+                        break;
+                    }
+                default:
+                    {
+                        stbSqlWhere.Append(" and 1 != 1 ");
+                        break;
+                    }
+            }
+            
+            if (IsTest != -1)
+            {
+                if (IsTest > 0)
+                {
+                    stbSqlWhere.Append(" and DiscussCnt > 0 ");
+                }
+                else
+                {
+                    stbSqlWhere.Append(" and DiscussCnt = 0 ");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(SearchTxt))
+                stbSqlWhere.AppendFormat(" and (RealName like '%{0}%' or TeacherNo like '%{0}%')", SearchTxt);
+
+            int iRecordCount = accBll.GetListOtherCount(stbSqlWhere.ToString());
+            int iPageSize = 10, iPageIndex;
+            int iPageCount = (int)Math.Ceiling((double)iRecordCount / iPageSize);
+            int.TryParse(Convert.ToString(PageIndex), out iPageIndex);
+            if (iPageIndex < 1)
+                iPageIndex = 1;
+            else if (iPageIndex > iPageCount)
+                iPageIndex = iPageCount;
+            //获取分页数据集合
+            List_accountOther = accBll.GetListOther(iPageSize, iPageIndex, stbSqlWhere.ToString(), out iRecordCount);
+
+            ViewBag.List_Regin = List_Regin;
+            ViewBag.RecordCount = iRecordCount;
+            ViewBag.PageCount = iPageCount;
+            ViewBag.PageIndex = iPageIndex;
+            ViewBag.PageSize = iPageSize;
+
+            return View(List_accountOther);
+        }
+        
+        #region 加载区县信息
+        private List<SelectListItem> GetReginListItem()
+        {            
+            var bll = new AccountEditBLL();
+            var Regindt = bll.GetRegin(5);
+            var Regin = new List<SelectListItem>();
+            for (int i = 0; i < Regindt.Rows.Count; i++)
+            {
+                var item = new SelectListItem();
+                item.Text = Regindt.Rows[i][1].ToString();
+                item.Value = Regindt.Rows[i][0].ToString();
+                Regin.Add(item);
+            }
+
+            return Regin;
+        }
+        #endregion
+
+        #region 获取机构信息
+        public ActionResult GetRegion(int id)
+        {
+            var bll = new AccountEditBLL();
+            var Regindt = bll.GetRegionTo(id);
+            var Regin = new List<SelectListItem>();
+            for (int i = 0; i < Regindt.Rows.Count; i++)
+            {
+                var item = new SelectListItem();
+                item.Text = Regindt.Rows[i][1].ToString();
+                item.Value = Regindt.Rows[i][0].ToString();
+                Regin.Add(item);
+            }
+            return Json(Regin, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region 获取Url参数加密字符串
+        public ActionResult EnCode(string Code)
+        {
+            string EnCode = Dianda.Common.QueryString.UrlEncrypt(Code);
+            return Json(new { Data = EnCode }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+    }
+}

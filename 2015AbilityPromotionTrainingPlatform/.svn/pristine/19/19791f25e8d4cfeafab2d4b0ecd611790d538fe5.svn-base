@@ -1,0 +1,52 @@
+using System;
+using System.ComponentModel;
+
+namespace Dianda.AP.Model
+{
+	public partial class PracticalCourse_Detail
+	{
+        public int Id { get; set; }
+
+        public string Title { get; set; }
+
+        public int TraingField { get; set; }
+
+        public string Content { get; set; }
+
+        public bool IsBatch { get; set; }
+
+        public int? OrganId { get; set; }
+
+        public int? AccountId { get; set; }
+
+        public int PlanId { get; set; }
+
+        public int People { get; set; }
+
+        public bool Display { get; set; }
+
+        public bool Delflag { get; set; }
+
+        public DateTime CreateDate { get; set; }
+
+        public int TraingCategory { get; set; }
+
+        public int TraingTopic { get; set; }
+
+
+	}
+
+
+    public partial class PracticalCourseAddSingle : PracticalCourse_Detail
+    {
+        public int Teacher { get; set; }
+    }
+
+
+    public partial class PracticalCourseEdit : PracticalCourse_Detail
+    {
+        public int MemberPCourseid { get; set; }
+
+        public int Role { get; set; }
+    }
+}

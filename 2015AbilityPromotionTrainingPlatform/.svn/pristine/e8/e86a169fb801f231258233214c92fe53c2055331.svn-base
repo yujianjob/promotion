@@ -1,0 +1,207 @@
+﻿@using System.Data;
+@{
+    ViewBag.Title = "证书管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DataTable ColumnDt = ViewBag.ColumnDt as DataTable;
+    DataTable dt = ViewBag.GetList as DataTable;
+    int pageSize = Convert.ToInt32(ViewData["pageSize"]);
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">证书管理</div>
+                <hr>
+                <div id="blk_ac_certificate_list" class="blk_ac_certificate_list">
+                    <div class="d-search">              
+                            @using (Html.BeginForm("Index", "Certificate", FormMethod.Post, new { @class = "form-inline" }))
+                        {
+                            
+                            <div class="form-group">
+                                @Html.DropDownList("whereOrgan", ViewData["Organ"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.DropDownList("whereOrganTo", ViewData["OrganTo"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBox("whereName", null, new { @class = "form-control", @placeholder = "姓名、师训编号、证件编号搜索" })
+                            </div>
+                            <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                        }
+                        <div class="action">
+                            @using (Html.BeginForm("Export", "Certificate", FormMethod.Post, new { @class = "form-inline" }))
+                            {
+                                <div style="display:none;">
+                                    @Html.TextBox("EwhereOrgan",ViewData["whereOrgan"])
+                                    @Html.TextBox("EwhereOrganTo",ViewData["whereOrganTo"])
+                                    @Html.TextBox("EwhereName",ViewData["whereName"].ToString())
+                                    @Html.TextBox("EpageSize",ViewData["pageSize"].ToString())
+                                </div>
+                                 <input type="submit" class="btn btn-success" value="批量导出证书信息" />
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="d-datatable">
+
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    @for (int i = 0; i < ColumnDt.Rows.Count; i++)
+                                    { 
+                                        <th>
+                                            @ColumnDt.Rows[i][1].ToString()
+                                        </th>
+                                    }
+                                    <th>结业状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dt.Rows.Count; i++)
+                                {
+                                    <tr>
+                                    <td>@dt.Rows[i]["RealName"].ToString()</td>
+                                    <td>@dt.Rows[i]["TeacherNo"].ToString()</td>
+                                    @for (int k = 0; k < ColumnDt.Rows.Count; k++)
+                                    { 
+                                        string[] item = dt.Rows[i][ColumnDt.Rows[k][1].ToString()].ToString().Split('/');
+                                        
+                                        if(item.Length==2)
+                                        {
+                                            if(int.Parse(item[0].ToString())>=int.Parse(item[1].ToString()))
+                                            {
+                                            <td style="color:green;">
+                                              @item[0]/@item[1] 
+                                             </td>
+                                             }else
+                                             {
+                                                   <td style="color:red;">
+                                                  @item[0]/@item[1]
+                                                 </td>
+                                              }
+                                         }else
+                                         {
+                                            <td style="color:red;">
+                                                  0/0
+                                                 </td>
+                                        }
+                                    }
+                                         @if (dt.Rows[i]["Result"].ToString()=="1")
+                                            {
+                                                     <td style="color:red;">未完成</td>
+                                            }
+                                         else
+                                            {
+                                                     <td style="color:green;">已完成</td>
+                                            }
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            总页数<span>@ViewData["pageCount"]</span>
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="@Url.Action("Index", "Period", new { PageIndex = 1 })">首页</a>
+                            <a id="OnPage" href="@Url.Action("Index", "Period", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) - 1 })">上一页</a>
+                            <a id="NextPage" href="@Url.Action("Index", "Period", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) + 1 })">下一页</a>
+                            <a id="LastPage" href="@Url.Action("Index", "Period", new { PageIndex = int.Parse(ViewData["pageCount"].ToString()) })">尾页</a>
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+
+
+        var id = $("#whereOrgan").val();
+        var OrganTo = "@ViewData["whereOrganTo"]";
+        if (id != "" && id != null) {
+            $.ajax({
+                url: '@Url.Action("GetOrganTo")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    for (var i = 0; i < json.length; i++) {
+                        if (OrganTo == json[i].Value) {
+                            $("#whereOrganTo").append("<option value=" + json[i].Value + " selected>" + json[i].Text + "</option>");
+                        } else {
+                            $("#whereOrganTo").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>");
+                        }
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    alert(errorMessage);
+                }
+            });
+        }
+    })
+
+    $("#whereOrgan").change(function () {
+        var id = $(this).val();
+        if (id != null && id != 0) {
+            $("#whereOrganTo").html("<option value>请选择</option>");
+            $.ajax({
+                url: '@Url.Action("GetOrganTo")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    for (var i = 0; i < json.length; i++) {
+                        $("#whereOrganTo").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    alert(errorMessage);
+                }
+            });
+        }
+    })
+
+    $("#GoBtn").click(function () {      //输入页数跳转页面
+        var index = $("#GoPageIndex").val();
+        if (index == "" || index == null) {
+            alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = '/Prepare/Certificate/Index?pageIndex=@ViewData["pageIndex"]';
+        }
+    });
+</script>

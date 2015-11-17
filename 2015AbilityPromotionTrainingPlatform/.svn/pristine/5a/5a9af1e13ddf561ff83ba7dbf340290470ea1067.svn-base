@@ -1,0 +1,179 @@
+﻿@using Dianda.AP.Model;
+@using System.Data;
+@{
+    ViewBag.Title = "学时标准设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DataTable dt = ViewBag.GetList as DataTable;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">标准设置</div>
+                <div id="blk_ac_setup_period" class="blk_ac_setup_period">
+                    <div class="d-datatable">
+
+                        @if (int.Parse(ViewData["GroupId"].ToString()) == (int)XXW.Enum.PlatformGroupEnum.ManagerCity)
+                        {
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>课程学期</th>
+                                    <th>最低标准学时</th>
+                                    <th>最高标准学时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dt.Rows.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@dt.Rows[i]["TraningFieTitle"].ToString()</td>
+                                    <td>
+                                        <input type="text" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control sstyle" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MinValue"]"></td>
+                                    <td>
+                                        <input type="text" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control sstyle" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MaxValue"]"></td>
+                                    </tr>
+                                }
+                               
+                                <tr>
+                                    <td>总分标准</td>
+                                    <td>
+                                        <input type="text" readonly="readonly" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control sstyle" id="@ViewData["AvgId"]" value="@ViewData["Avg"]"></td>
+                                    <td></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        }
+                        else
+                        {
+                            <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>课程学期</th>
+                                    <th>最低标准学时</th>
+                                    <th>最高标准学时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dt.Rows.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@dt.Rows[i]["TraningFieTitle"].ToString()</td>
+                                    <td>
+                                        <input type="text" class="form-control sstyle" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MinValue"]"></td>
+                                        <td>
+                                            <p name="Span" style="color:red;">可设范围:@dt.Rows[i]["MinValue"]~@dt.Rows[i]["MaxValue"]</p>
+                                        </td>
+                                    <td style="display:none;">
+                                        <input type="text" class="form-control sstyle" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MaxValue"]"><p name="Span" style="color:red;">可设范围:@dt.Rows[i]["MinValue"]~@dt.Rows[i]["MaxValue"]</p></td>
+                                    </tr>
+                                }
+                               
+                                <tr>
+                                    <td>总分标准</td>
+                                    <td>
+                                        <input readonly="readonly" type="text" class="form-control sstyle" id="@ViewData["AvgId"]" value="@ViewData["Avg"]"></td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-right text-right">
+                            <button type="button" class="btn btn-success" style="margin-left: 20px;">保存</button>
+                            <button type="button" class="btn btn-success" style="margin-left: 20px;">清空</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(".btn").eq(0).click(function () {
+        var Value = "",Avg="";
+        var count = $(".table :input[type='text']").length;
+        for (var i = 0; i < count; i++)
+        {
+            if (i < count - 1)
+            {
+                if (i % 2 == 0) {
+                    var id = $(".table :input[type='text']").eq(i).attr("id");
+                    Value += id + "," + $(".table :input[type='text']").eq(i).val() + "," + $(".table :input[type='text']").eq(i + 1).val() + ";";
+                }
+            } else if (i == count - 1)
+            {
+                var id = $(".table :input[type='text']").eq(i).attr("id");
+                Value += id + "," + $(".table :input[type='text']").eq(i).val() + "," + "0";
+            }
+        }
+        var GroupId = "@ViewData["GroupId"]";
+        var TextCount = $("p[name='Span']").length;
+        if (GroupId == "2")
+        {
+            for (var i = 0 ; i < TextCount; i++) {
+                if (i % 2 != 0) {
+                    var text = $("p[name='Span']").eq(i).text();
+                    var src = text.split(':');
+                    var data = src[1].split('~');
+                    var MinValue = $(".table :input[type='text']").eq(i - 1).val();
+                    if (parseInt(MinValue) < parseInt(data[0]) || parseInt(MinValue) > parseInt(data[1]))
+                    {
+                        alert('输入的值超出范围！！！');
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        $.ajax({
+            url: '@Url.Action("UpdateSetup")',
+            type: 'get',
+            data: { Value: Value},
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var list = data.split(':');
+                alert(list[1]);
+                location.href = "";
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    })
+
+
+    $(".btn").eq(1).click(function () {
+        var count = $(".table :input[type='text']").length;
+        for (var i = 0; i < count; i++)
+        {
+            $(".table :input[type='text']").eq(i).val(0);
+        }
+    })
+
+    $(".table :input[type='text']").change(function () {
+        var count = $(".table :input[type='text']").length;
+        var value = 0;
+        for (var i = 0; i < count; i++)
+        {
+            if (i % 2 == 0 && i != count - 1) {
+                value += parseInt($(".table :input[type='text']").eq(i).val());
+            }
+        }
+
+        $(".table :input[type='text']").eq(count-1).val(value);
+    })
+</script>

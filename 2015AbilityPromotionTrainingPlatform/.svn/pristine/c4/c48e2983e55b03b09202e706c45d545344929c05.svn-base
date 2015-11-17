@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Dianda.AP.Model;
+using Dianda.AP.BLL;
+using System.Data;
+using XXW.Enum;
+
+namespace Web.Areas.Prepare.Controllers
+{
+    public class ClassAddressListController : Controller
+    {
+        //
+        // GET: /Prepare/Standard_Setting/
+        public ActionResult Index(int ClassId)
+        {
+            Member_BaseInfoBLL bll = new Member_BaseInfoBLL();
+
+            ViewBag.MemberInfo = bll.GetMemberInfo(ClassId);
+            
+            return View();
+        }
+    }
+}

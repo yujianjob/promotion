@@ -1,0 +1,176 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model;
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+@model  MPracticalCourseModel
+
+@{
+    object pc_Title = ViewData["pc_Title"];
+    object pc_TraingCategory = ViewData["pc_TraingCategory"];
+    object pc_TraingTopic = ViewData["pc_TraingTopic"];
+    object pc_Content = ViewData["pc_Content"];
+    object pc_Attachment = ViewData["pc_Attachment"];
+    object pc_PlanId = ViewData["pc_PlanId"];
+    object pc_Members = ViewData["pc_Members"];
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div class="d-form">
+                    <ol class="breadcrumb">
+                        <li><a href="PracticalCourseList">实践课程管理</a></li>
+                        <li class="active">新增实践记录</li>
+                    </ol>
+                    <div id="blk_teacher_practice_add" class="blk_teacher_practice_add" data-km-htm="../blk_teacher_practice_add.html">
+                        @using (Html.BeginForm("CreatePracticalCourse", "PracticalCourse", null, FormMethod.Post, new { id = "FormAdd", enctype = "multipart/form-data" }))
+                        {
+                            <h4 class="text-center">新增实践记录</h4>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">实践名称 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="title" name="title" maxlength="100" style="width: 893px;"><span style="color: red;"></span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        @*<label class="control-label">实践类型 <span class="text-danger">*</span></label>*@
+                                        <label class="control-label">课程大类 <span class="text-danger">*</span></label>
+                                        <input type="hidden" id="traingField" name="traingField" value="3" style="width: 893px;"><span style="color: red;"></span>
+                                        <input type="text" readonly="true" class="form-control" id="traingFieldname" style="width: 893px;" name="traingFieldname" value="实践应用课程">
+                                        <label class="control-label">课程小类 <span class="text-danger">*</span></label>
+                                        @*@ViewBag.TraingCategoryList.Count*@
+                                        <select id="createtraingCategory" name="createtraingCategory" style="width: 893px;" class="form-control">
+                                            <option value="-1">--请选择课程小类--</option>
+                                            @if (ViewBag.TraingCategoryList != null && ViewBag.TraingCategoryList.Count > 0)
+                                            {
+                                                foreach (var item in ViewBag.TraingCategoryList)
+                                                {
+                                                <option value="@item.Id">@item.Title</option>
+                                                }
+                                            }
+                                        </select><span style="color: red;"></span>
+
+
+                                        <label class="control-label">课程主题 <span class="text-danger">*</span></label>
+                                        <select id="createtraingTopic" name="createtraingTopic" style="width: 893px;" class="form-control">
+                                            <option value="-1">--请选择课程主题--</option>
+                                        </select><span style="color: red;"></span>
+
+                                        <label class="control-label">国家标准 </label>
+                                        <select id="createtraingNation" name="createtraingNation" style="width: 893px;" class="form-control">
+                                            <option value="-1" selected="selected">--请选择国家标准--</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">实践内容 </label>
+                                        <textarea class="form-control" id="content" name="Content" maxlength="4000" style="height: 200px;"></textarea><span style="color: red;"></span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">相关材料 </label>
+                                        <div class="form-control" style="overflow: hidden; height: auto; min-height: 100px;">
+                                            <div style="float: left; width: 300px; position: relative;">
+                                                <input type="file" maxlength="30" id="AttachUpload">
+                                                <a href="javascript:$('#AttachUpload').uploadify('upload', '*')">上传</a>
+                                            </div>
+                                            <div style="float: right; width: 500px; padding: 5px 0;" id="AttachNameList">
+                                            </div>
+                                            @Html.Hidden("AttachPathList")
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">参与教师 <span class="text-danger">*</span></label>
+                                        <div class="action" style="width: 82px; float: left;" onclick="addmembers(@Web.Code.SiteCache.Instance.ManageOrganId)">
+                                            <span class="btn btn-success">添加教师</span>
+                                        </div>
+                                        <div id="teachers" class="teachers" style="padding-top: 20px; width: 100%;"></div>
+                                        <span style="color: red;"></span>
+                                        <div style="display: none;">
+                                            <div id="createroleList" style="width: 270px;">
+                                                <select style="width: 270px;" name="createroleList" class="form-control createroleList">
+                                                    <option value="-1">--请选择实践角色--</option>
+                                                    @if (ViewBag.RoleList != null && ViewBag.RoleList.Count > 0)
+                                                    {
+                                                        foreach (var role in ViewBag.RoleList)
+                                                        {
+                                                        <option value="@role.Id">@role.Title</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.Hidden("Roles")
+                                @Html.Hidden("Members")
+                                <div class="col-xs-12">
+                                    <hr>
+                                    @*<button style="width: 150px;" class="btn btn-success" id="btnSubmit" onclick="btnSubmit();">提交</button>*@
+                                    <button style="width: 150px;" class="btn btn-success" id="btnSubmit" name="submit">提交</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Practice/PracticalCourse/PracticalCourseList">取消</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="chooseMembers">
+    <div class="modal-dialog" style="width: 960px; height: 600px;">
+
+        <div class="modal-content d-form" style="padding: 5px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">选择教师</h4>
+            </div>
+            <iframe id="iframe-teacherlsit" name="showlist" src="" width="100%" height="600" frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling="no"></iframe>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" id="traingCategory" data-name="traingCategory" value="@(Model.TraingCategory > 0 ? Model.TraingCategory : -1)" />
+<input type="hidden" id="traingTopic" data-name="traingTopic" value="@(Model.TraingTopic > 0 ? Model.TraingTopic : -1)" />
+<input type="hidden" id="traingNation" data-name="traingNation" value="@(Model.NationalCoursId > 0 ? Model.NationalCoursId : -1)" />
+<input type="hidden" id="traingMembers" data-name="traingMembers" />
+
+<input id="hidmembers" type="hidden" value="" />
+<input id="hidmembernames" type="hidden" value="" />
+<input id="hidmemberorgans" type="hidden" value="" />
+<input id="hidmembermobiles" type="hidden" value="" />
+<input id="hidmemberemails" type="hidden" value="" />
+<input id="hidmemberpics" type="hidden" value="" />
+
+<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/Practice/Practice.css")">
+<script src="~/Resources/Scripts/Practice/practicalCourseAdd.js"></script>
+<script src="~/Resources/Scripts/Practice/practicecommon.js"></script>
+<script>
+    $(function () {
+        initAddPage();
+    });
+</script>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+        });
+    });
+</script>

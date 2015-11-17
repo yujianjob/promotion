@@ -1,0 +1,64 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model.Learn.MyLearn;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.BLL
+{
+    public class LearnMyCourseBLL
+    {
+        LearnMyCourseDAL dal = new LearnMyCourseDAL();
+        
+        /// <summary>
+        /// 取得我的选课记录数
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="partitionId"></param>
+        /// <param name="statusId">1,2:待批准；3，5：不批准；4:已批准；</param>
+        /// <returns></returns>
+        public int GetMyCourseCount(int accountId, int partitionId, string statusId)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("A.Delflag=0 and A.AccountId=" + accountId + " and A.Status in (" + statusId + ")");
+            where.Append(" and B.Delflag=0");
+            where.Append(" and C.Delflag=0 and C.PartitionId=" + partitionId);
+            where.Append(" and D.Delflag=0");
+            where.Append(" and E.Delflag=0 and E.IsSpec=0");
+            return dal.GetMyCourseCount(where.ToString());
+        }
+
+        /// <summary>
+        /// 取得我的选课分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="accountId"></param>
+        /// <param name="partitionId"></param>
+        /// <param name="statusId">1,2:待批准；3，5：不批准；4:已批准；</param>
+        /// <returns></returns>
+        public List<MyCourseInfo> GetMyCourseList(int pageSize, int pageIndex, string orderBy, int accountId, int partitionId, string statusId)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("A.Delflag=0 and A.AccountId=" + accountId + " and A.Status in (" + statusId + ")");
+            where.Append(" and B.Delflag=0");
+            where.Append(" and C.Delflag=0 and C.PartitionId=" + partitionId);
+            where.Append(" and D.Delflag=0");
+            where.Append(" and E.Delflag=0 and E.IsSpec=0");
+
+            return dal.GetMyCourseList(pageSize, pageIndex, where.ToString(), orderBy);
+        }
+
+        /// <summary>
+        /// 放弃选课
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteCourse(int id)
+        {
+            dal.DeleteCourse(id);
+        }
+    }
+}

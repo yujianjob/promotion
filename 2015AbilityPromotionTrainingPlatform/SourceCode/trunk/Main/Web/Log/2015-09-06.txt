@@ -1,0 +1,64 @@
+﻿2015/9/6 8:59:34 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 8:59:34 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 8:59:52 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 8:59:52 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:10:47 ----------------------------------------------------------------------------------------------------
+对象“/a14014b0_95f8_4696_b03b_8d88c7e2b005/lfg0komqsryt94t5s5lbhskm_252.rem”已断开连接或不在该服务器上。
+2015/9/6 9:21:53 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:21:53 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:22:04 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:22:04 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:31:00 ----------------------------------------------------------------------------------------------------
+对象“/1cc36fcc_c35f_4cf9_819c_c44140188a1e/z_tlpvjotjq2i_rrtjvt5ely_279.rem”已断开连接或不在该服务器上。
+2015/9/6 9:45:03 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:45:03 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:46:42 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:46:42 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:46:50 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 9:46:50 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 17:35:26 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 17:35:26 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 17:35:40 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 17:35:41 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 17:35:47 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters
+2015/9/6 17:35:47 ----------------------------------------------------------------------------------------------------
+对于“Web.Areas.ClassDomain.Controllers.ClassTeacherController”中方法“System.Web.Mvc.ActionResult ClassProgress(Int32, System.Nullable`1[System.Int32], Int32)”的不可以为 null 的类型“System.Int32”的参数“classId”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。
+参数名: parameters

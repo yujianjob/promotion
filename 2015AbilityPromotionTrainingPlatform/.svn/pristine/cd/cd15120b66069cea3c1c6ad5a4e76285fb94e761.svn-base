@@ -1,0 +1,237 @@
+﻿@using Dianda.AP.Model;
+@using System.Data;
+@{
+    ViewBag.Title = "通知提醒";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Sys_Message> list = ViewBag.GetList as List<Sys_Message>;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $('.Delbtn').click(function () {
+            if (confirm('确认删除吗？')) {
+                var key = $(this).attr('id');
+                $.ajax({
+                    url: '@Url.Action("DelDetail")',
+                    type: 'get',
+                    data: { id: key,Type:"@ViewData["Type"]" },
+                    cache: false,
+                    datatype: 'text',
+                    success: function (data) {
+                        var res = data.split(':');
+                        if (res[0] == 'yes') {
+                            alert(res[1]);
+                            window.location.href = '@Url.Action("Index")?Type=@ViewData["Type"]';
+                        }
+                        else if (res[0] == 'no') {
+                            alert(res[1]);
+                            window.location.href = '@Url.Action("Index")?Type=@ViewData["Type"]';
+                        }
+                        else {
+                            alert('未知错误！');
+                            window.location.href = '@Url.Action("Index")?Type=@ViewData["Type"]';
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        alert(errorMessage);
+                    }
+                });
+            }
+            return false;
+        });
+
+
+
+        $('.BatchDel').click(function () {
+            if (confirm('确认删除所选内容吗？')) {
+                var idlist = "";
+                var count = $("input[type='checkbox']:checked").length;
+                if (count != 0)
+                {
+                    for (var i = 0; i < count; i++)
+                    {
+                        var id=$("input[type='checkbox']:checked").eq(i).attr("id");
+                        if (id != "" && id != null)
+                        {
+                            if (i != count - 1) {
+                                idlist += id + ";";
+                            } else {
+                                idlist += id;
+                            }
+                        }
+                    }
+                }
+
+                if (idlist == "")
+                {
+                    alert("请选择需要删除的内容！！！");
+                    return false;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("BatchDel")',
+                    type: 'get',
+                    data: { IdList: idlist,Type:"@ViewData["Type"]" },
+                    cache: false,
+                    datatype: 'text',
+                    success: function (data) {
+                        var res = data.split(':');
+                        if (res[0] == 'yes') {
+                            alert(res[1]);
+                            window.location.href = '';
+                        }
+                        else if (res[0] == 'no') {
+                            alert(res[1]);
+                            window.location.href = '';
+                        }
+                        else {
+                            alert('未知错误！');
+                            window.location.href = '';
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        alert(errorMessage);
+                    }
+                });
+            }
+            return false;
+        });
+
+        $("input[type='checkbox']").eq(0).click(function () {
+            if (this.checked==true) {
+                $("input[type='checkbox']").each(function () {
+                    this.checked = true;
+                })
+            } else {
+                $("input[type='checkbox']").each(function () {
+                    this.checked = false;
+                })
+            }
+        })
+    });
+</script>
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">通知提醒</div>
+                <div id="blk_ln_menu_notification" class="blk_ln_menu_notification">
+                    <div class="d-navmenu">
+                        <a id="d_learner_notification_unread" href="@Url.Action("Index","Message", new {Type="NotRead" })" class="i">未读通知</a>
+                        <a id="d_learner_notification_read" href="@Url.Action("Index","Message", new {Type="Read" })" class="i">已读通知</a>
+                        <a id="d_learner_notification_trash" href="@Url.Action("Index","Message", new {Type="Recovery" })" class="i">回收站</a>
+                    </div>
+                </div>
+                <div id="blk_ln_notification_unread" class="d-notificationlist unread blk_ln_notification_unread">
+                    <div class="action">
+                        <label>
+                            <input class="chk" type="checkbox">全选</label>
+                        @Html.ActionLink("批量删除", "BatchDel", null, new {Type=ViewData["Type"],@class="btn btn-default btn-sm BatchDel" })
+                    </div>
+                    @if(list.Count>0)
+                    {
+                    for (int i = 0; i < list.Count; i++)
+                    { 
+                        <div class="i">
+                        <a href="@Url.Action("Details", "Message", new { id=list[i].Id,Type=ViewData["Type"] })"><span class="title">@list[i].Title</span></a>
+                        <span class="date">@list[i].CreateDate.ToString("yyyy-MM-dd")</span>
+                        <div class="content">@list[i].Content</div>
+                        <div class="action">
+                            <label>
+                                <input id="@list[i].Id" type="checkbox" class="chk">选择</label>
+                            @Html.ActionLink("删除", "DelDetail", null, new { id=list[i].Id,Type=ViewData["Type"],@class="btn btn-default btn-sm Delbtn" })
+                        </div>
+                    </div>
+                    }
+                    }else
+                    {
+                        <div class="i">
+                            <span style="font-size:18px;">暂无通知！！！</span>
+                        </div>
+                    }
+                    <hr>
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            @if (@ViewData["pageCount"].ToString() == "0")
+                            {
+                                <span>总页数 1</span>
+                            }
+                            else
+                            {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                            }
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="@Url.Action("Index", "Message", new { PageIndex = 1, Type = ViewData["Type"] })">首页</a>
+                            <a id="OnPage" href="@Url.Action("Index", "Message", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) - 1, Type = ViewData["Type"] })">上一页</a>
+                            <a id="NextPage" href="@Url.Action("Index", "Message", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) + 1, Type = ViewData["Type"] })">下一页</a>
+                            <a id="LastPage" href="@Url.Action("Index", "Message", new { PageIndex = int.Parse(ViewData["pageCount"].ToString()), Type = ViewData["Type"] })">尾页</a>
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+            $('input.input-date').datepicker({});
+        });
+    });
+    $("#GoBtn").click(function () {
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (pagecount == "0") {
+            pagecount = "1";
+        }
+        if (parseInt(index) > parseInt(pagecount)) {
+            Alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            Alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = "/Prepare/Message/Index?PageIndex=" + index + "&Type=@ViewData["Type"]";
+        }
+    })
+
+    $(document).ready(function () {
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10 || index == pagecount) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+
+        var type = "@ViewData["Type"]";
+        if (type == "NotRead")
+        {
+            //$("#d_learner_notification_unread").css("color", "blue");
+            $("#d_learner_notification_unread").addClass('active');
+        } else if (type == "Read") {
+            //$("#d_learner_notification_read").css("color", "blue");
+            $("#d_learner_notification_read").addClass('active');
+        } else {
+            //$("#d_learner_notification_trash").css("color", "blue");
+            $("#d_learner_notification_trash").addClass('active');
+        }
+    })
+</script>

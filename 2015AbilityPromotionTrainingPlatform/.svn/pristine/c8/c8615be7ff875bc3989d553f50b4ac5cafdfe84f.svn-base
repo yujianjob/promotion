@@ -1,0 +1,191 @@
+﻿@{
+    ViewBag.Title = "统计详细";
+    IHtmlString Loading = @Html.Raw("<div style='left:400px;position:relative;font-size:15px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='left:400px;top:-7px;position:relative;font-size:15px'>没有分数信息……</div>");
+    
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/Statistics/jquery.jqplot.css")">
+<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/Statistics/examples.css")">
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jquery-1.5.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jquery.jqplot.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jqplot.barRenderer.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jqplot.categoryAxisRenderer.js")"></script>
+
+<style type="text/css">
+    .jqplot-target {
+        margin-bottom: 2em;
+    }
+    
+    pre {
+        background: #D8F4DC;
+        border: 1px solid rgb(200, 200, 200);
+        padding-top: 1em;
+        padding-left: 3em;
+        padding-bottom: 1em;
+        margin-top: 1em;
+        margin-bottom: 4em;
+        
+    }
+    
+    p {
+        margin: 2em 0;
+    }
+    
+    .note {
+        font-size: 0.8em;
+    }
+</style>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="chart1" style ="height:280px;"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="chart2" style ="height:280px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var Loading = "@Loading";
+    var noDataTip = "@noDataTip";
+    var UserId = "@ViewBag.UserId";
+    var s1, ticks;
+
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            LoadingData1();
+            //加载Chart1
+            plot1 = $.jqplot('chart1', [s1], {
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks
+                    }
+                },
+                highlighter: { show: false }
+            });
+
+            $('#chart1').bind('jqplotDataClick',
+                function (ev, seriesIndex, pointIndex, data) {
+                    $('#info1').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data);
+                }
+            );
+
+            LoadingData2();
+            //加载Chart2
+            plot1 = $.jqplot('chart2', [s1], {
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks
+                    }
+                },
+                highlighter: { show: false }
+            });
+
+            $('#chart2').bind('jqplotDataClick',
+                function (ev, seriesIndex, pointIndex, data) {
+                    $('#info2').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data);
+                }
+            );
+        });
+    });
+
+    //加载chart1数据
+    function LoadingData1() {
+        var obj = JSON.stringify({ Id: UserId, Type: 1 });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/Statistics/Statistics/ScoreInfo',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                $("#chart1").html(Loading);
+
+                if (!data || !data.Data || data.Data.length == 0) {
+                    $("#chart1").html(noDataTip);
+                    return;
+                }
+
+                ticks = "[";
+                s1 = "[";
+
+                for (var i = 0; i < data.Data.length; i++) {
+                    ticks += "'" + data.Data[i]["content"] + "',";
+                    s1 += data.Data[i]["userscore"] + ",";
+                }
+
+                ticks = ticks.substring(0, ticks.length - 1) + "]";
+                s1 = s1.substring(0, s1.length - 1) + "]";
+
+                ticks = eval('(' + ticks + ')');
+                s1 = eval('(' + s1 + ')');
+
+                $("#chart1").html("");
+            },
+            error: function () {
+            }
+        });
+    }
+
+    //加载chart2数据
+    function LoadingData2() {
+        var obj = JSON.stringify({ Id: UserId, Type: 2 });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/Statistics/ScoreInfo',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                $("#chart2").html(Loading);
+
+                if (!data || !data.Data || data.Data.length == 0) {
+                    $("#chart2").html(noDataTip);
+                    return;
+                }
+
+                ticks = "[";
+                s1 = "[";
+
+                for (var i = 0; i < data.Data.length; i++) {
+                    ticks += "'" + data.Data[i]["content"] + "',";
+                    s1 += data.Data[i]["userscore"] + ",";
+                }
+
+                ticks = ticks.substring(0, ticks.length - 1) + "]";
+                s1 = s1.substring(0, s1.length - 1) + "]";
+
+                ticks = eval('(' + ticks + ')');
+                s1 = eval('(' + s1 + ')');
+
+                $("#chart2").html("");
+            },
+            error: function () {
+            }
+        });
+    }
+</script>

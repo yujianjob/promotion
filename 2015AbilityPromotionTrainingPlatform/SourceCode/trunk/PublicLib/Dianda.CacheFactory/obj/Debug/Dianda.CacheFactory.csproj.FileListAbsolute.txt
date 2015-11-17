@@ -1,0 +1,17 @@
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Dianda.CacheFactory.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Dianda.CacheFactory.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Enyim.Caching.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\XXW.CommonBLL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\XXW.CommonModels.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\XXW.CommonDAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\log4net.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Dianda.DALSqlServer.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\XXW.CommonBLL.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\XXW.CommonModels.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\XXW.CommonDAL.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\bin\Debug\Dianda.DALSqlServer.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\obj\Debug\Dianda.CacheFactory.csprojResolveAssemblyReference.cache
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\obj\Debug\Dianda.CacheFactory.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.CacheFactory\obj\Debug\Dianda.CacheFactory.pdb

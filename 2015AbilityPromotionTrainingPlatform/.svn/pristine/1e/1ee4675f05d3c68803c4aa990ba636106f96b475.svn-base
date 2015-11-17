@@ -1,0 +1,38 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model.Learn.MyLearn;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.BLL
+{
+    public class LearnMyPracticeBLL
+    {
+        LearnMyPracticeDAL dal = new LearnMyPracticeDAL();
+
+        /// <summary>
+        /// 获取我的实践总记录数
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public int GetMyPracticeCount(string where)
+        {
+            return dal.GetMyPracticeCount(where);
+        }
+
+        /// <summary>
+        /// 获取我的实践分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<MyPracticeInfo> GetMyPracticeList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            return dal.GetMyPracticeList(pageSize, pageIndex, where, orderBy);
+        }
+    }
+}

@@ -1,0 +1,120 @@
+﻿//关闭选择教师弹出层
+//$("#close_Iframe").click(function () {
+//    var index = parent.layer.getFrameIndex(window.name);
+//    parent.layer.close(index);
+//});
+
+//点选时赋值隐藏值
+$(function () {
+    $("input[name=chkItem]").each(function () {
+
+        var ss = SeleIsId($("#hidmembers", parent.document).val(), "," + this.value + ",");
+        if (ss != "-1") {
+            $(this).prop("checked", true);
+        }
+    })
+
+
+    $("input[name=chkItem]").click(function () {
+        if ($(this).prop("checked")) {
+            //Id
+            var id = this.value;
+            if ($("#hidmembers", parent.document).val() == "" || $("#hidmembers", parent.document).val() == ",")
+            { var ids = "," + id + ","; }
+            else {
+                var ids = $("#hidmembers", parent.document).val() + id + ",";
+            }
+            $("#hidmembers", parent.document).val(ids);
+
+            //name
+            var name = $(this).parent().parent().find(".name").text();
+            if ($("#hidmembernames", parent.document).val() == "" || $("#hidmembernames", parent.document).val() == ",")
+            { var names = "," + name + ","; }
+            else {
+                var names = $("#hidmembernames", parent.document).val() + name + ",";
+            }
+            $("#hidmembernames", parent.document).val(names);
+
+            //organ
+            var organ = $(this).parent().parent().find(".organ").text();
+            if ($("#hidmemberorgans", parent.document).val() == "" || $("#hidmemberorgans", parent.document).val() == ",")
+            { var organs = "," + organ + ","; }
+            else {
+                var organs = $("#hidmemberorgans", parent.document).val() + organ + ",";
+            }
+            $("#hidmemberorgans", parent.document).val(organs);
+
+            //mobile
+            var mobile = $(this).parent().parent().find(".mobile").attr("title");
+            if (typeof (mobile) == "undefined") { mobile = ""; }
+            if ($("#hidmembermobiles", parent.document).val() == "" || $("#hidmembermobiles", parent.document).val() == ",")
+            { var mobiles = "," + mobile + ","; }
+            else {
+                var mobiles = $("#hidmembermobiles", parent.document).val() + mobile + ",";
+            }
+            $("#hidmembermobiles", parent.document).val(mobiles);
+
+            //email
+            var email = $(this).parent().parent().find(".email").attr("title");
+            if (typeof (email) == "undefined") { email = ""; }
+            if ($("#hidmemberemails", parent.document).val() == "" || $("#hidmemberemails", parent.document).val() == ",")
+            { var emails = "," + email + ","; }
+            else {
+                var emails = $("#hidmemberemails", parent.document).val() + email + ",";
+            }
+            $("#hidmemberemails", parent.document).val(emails);
+
+            //pic
+            var pic = $(this).parent().parent().find(".pic").attr("src");
+            if (typeof (pic) == "undefined") { pic = ""; }
+            if ($("#hidmemberpics", parent.document).val() == "" || $("#hidmemberpics", parent.document).val() == ",")
+            { var pics = "," + pic + ","; }
+            else {
+                var pics = $("#hidmemberpics", parent.document).val() + pic + ",";
+            }
+            $("#hidmemberpics", parent.document).val(pics);
+
+
+        } else {
+            $("#hidmembers", parent.document).val($("#hidmembers", parent.document).val().replace("," + this.value + ",", ","));
+            $("#hidmembernames", parent.document).val($("#hidmembernames", parent.document).val().replace("," + $(this).parent().parent().find(".name").text() + ",", ","));
+            $("#hidmemberorgans", parent.document).val($("#hidmemberorgans", parent.document).val().replace("," + $(this).parent().parent().find(".organ").text() + ",", ","));
+            $("#hidmembermobiles", parent.document).val($("#hidmembermobiles", parent.document).val().replace("," + $(this).parent().parent().find(".mobile").attr("title") + ",", ","));
+            $("#hidmemberemails", parent.document).val($("#hidmemberemails", parent.document).val().replace("," + $(this).parent().parent().find(".email").attr("title") + ",", ","));
+            $("#hidmemberpics", parent.document).val($("#hidmemberpics", parent.document).val().replace("," + $(this).parent().parent().find(".pic").attr("src") + ",", ","));
+        }
+    });
+})
+
+//查询是否有选教师 加载选择
+function SeleIsId(str1, str2) { 
+    var s = str1.indexOf(str2);
+    return (s);
+}
+
+//学校--新增--教师搜索
+function SearchMember() {
+    var urlPath = $('#urlPath').val();
+    var _d = '';
+    _d += "&searchName=" + encodeURIComponent($('#searchName').val());
+    var a = urlPath + _d;
+    window.location = a;
+}
+
+//验证是否选择教师
+function checkMembers() {
+    if ($("#hidmembers", parent.document).val() == "") {
+        alert("请选教师");
+        return false;
+    }
+    return true;
+}
+
+//添加到父页面
+function saveMembers() {
+    if (checkMembers()) {
+        parent.createMembers();
+    }
+}
+
+

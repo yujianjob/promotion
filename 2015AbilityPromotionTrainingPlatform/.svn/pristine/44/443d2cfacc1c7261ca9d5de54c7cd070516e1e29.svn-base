@@ -1,0 +1,226 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using Dianda.AP.Model;
+
+namespace Dianda.AP.DAL
+{
+    public class PeriodDAL
+    {
+        public DataTable GetTrainingFie()
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Traning_Field where DisPlay = 1 and Delflag = 0 ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+
+        public DataTable GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            DataTable Fie = GetTrainingFie();
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" select * from (   ");
+            sb.Append(" select a.AccountId,b.TeacherNo,case when b.RealName is null  ");
+            sb.Append(" then g.UserName else b.RealName end as RealName,d.Title,  ");
+            sb.Append(" convert(varchar,c.Credits)+'/'+CONVERT(varchar,e.MinValue) ");
+            sb.Append(" as value,f.Result  from Member_ClassRegister a  ");
+            sb.Append(" left join Member_BaseInfo b on a.AccountId = b.AccountId   ");
+            sb.Append(" left join Member_TrainingRedit c on a.AccountId = c.AccountId  ");
+            sb.Append(" left join Traning_Field d on c.TrainingField = d.Id ");
+            sb.Append(" left join Training_Credits e on d.Id = e.TraningField  ");
+            sb.Append(" and b.Organid = e.OrganId   ");
+            sb.Append(" left join Member_PlanOverall f on a.AccountId = f.AccountId  ");
+            sb.Append(" left join Member_Account g on a.AccountId = g.Id  where a.Delflag = 0  ");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(where);
+            sb.Append(" ) t pivot ( Max(value) for t.Title in ( ");
+            for (int i = 0; i < Fie.Rows.Count; i++)
+            {
+                if (i != Fie.Rows.Count - 1)
+                {
+                    sb.Append("[" + Fie.Rows[i][1].ToString() + "],");
+                }
+                else
+                {
+                    sb.Append("[" + Fie.Rows[i][1].ToString() + "]");
+                }
+            }
+            sb.Append(")) as ourpivot");
+            recordCount = MSEntLibSqlHelper.ExecuteDataSetBySql(sb.ToString()).Tables[0].Rows.Count;
+
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select * from ( ");
+            sql.Append(" select *,ROW_NUMBER() over (order by " + orderBy + ") as RowNum from (   ");
+            sql.Append(" select a.AccountId,b.TeacherNo,case when b.RealName is null  ");
+            sql.Append(" then g.UserName else b.RealName end as RealName,d.Title,  ");
+            sql.Append(" convert(varchar,c.Credits)+'/'+CONVERT(varchar,e.MinValue) ");
+            sql.Append(" as value,f.Result  from Member_ClassRegister a  ");
+            sql.Append(" left join Member_BaseInfo b on a.AccountId = b.AccountId   ");
+            sql.Append(" left join Member_TrainingRedit c on a.AccountId = c.AccountId  ");
+            sql.Append(" left join Traning_Field d on c.TrainingField = d.Id ");
+            sql.Append(" left join Training_Credits e on d.Id = e.TraningField  ");
+            sql.Append(" and b.Organid = e.OrganId   ");
+            sql.Append(" left join Member_PlanOverall f on a.AccountId = f.AccountId  ");
+            sql.Append(" left join Member_Account g on a.AccountId = g.Id  where a.Delflag = 0  ");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(where);
+            sql.Append(" ) t pivot ( Max(value) for t.Title in ( ");
+            for (int i = 0; i < Fie.Rows.Count; i++)
+            {
+                if (i != Fie.Rows.Count - 1)
+                {
+                    sql.Append("[" + Fie.Rows[i][1].ToString() + "],");
+                }
+                else
+                {
+                    sql.Append("[" + Fie.Rows[i][1].ToString() + "]");
+                }
+            }
+            sql.Append(")) as ourpivot) as t  where RowNum between " + start + " and " + end);
+
+            DataTable dt = MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+            return dt;
+        }
+
+
+        public DataTable GetSearch(int AccountId,int PlanId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select d.Title as FidTitle,b.Title as DetailTitle,c.Credits,c.CreateDate from Member_ClassRegister a ");
+            sql.Append(" left join Traning_Detail b on a.TrainingId = b.Id ");
+            sql.Append(" left join Member_TrainingRedit c on a.TrainingId = c.AccountId ");
+            sql.Append(" left join dbo.Traning_Field d on b.TraingField = d.Id ");
+            sql.Append(" where a.AccountId = " + AccountId + " and a.PlanId = " + PlanId + "");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+
+        public DataTable GetListTo(int pageSize, int pageIndex, string where, string orderBy, out int recordCount, int PlanId)
+        {
+
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(distinct a.AccountId) from dbo.Member_ClassRegister a left join Member_Account c on a.AccountId = c.Id left join Member_BaseInfo d on a.AccountId = d.AccountId where 1=1 ");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+
+            DataTable fiedt = GetTrainingFie();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("AccountId");
+            dt.Columns.Add("RealName");
+            dt.Columns.Add("TeacherNo");
+            dt.Columns.Add("Result");
+            for (int i = 0; i < fiedt.Rows.Count; i++)
+            {
+                dt.Columns.Add(fiedt.Rows[i][1].ToString());
+            }
+
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select * from ( ");
+            sql.Append(" select *,ROW_NUMBER() over (order by " + orderBy + ") as RowNum from ( ");
+            sql.Append(" select distinct a.AccountId, ");
+            sql.Append(" case when d.RealName is null then c.Nickname else d.RealName end as RealName,b.Result,d.TeacherNo ");
+            sql.Append(" from Member_ClassRegister a  ");
+            sql.Append(" left join Member_PlanOverall b on a.AccountId = b.AccountId ");
+            sql.Append(" left join Member_Account c on a.AccountId = c.Id ");
+            sql.Append(" left join Member_BaseInfo d on a.AccountId = d.AccountId where 1=1 ");
+            if (!string.IsNullOrEmpty(where))
+            {
+                sql.Append(where);
+            }
+            sql.Append(")as d)as T where RowNum between " + start + " and " + end);
+            DataTable adt = MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+
+            for (int i = 0; i < adt.Rows.Count; i++)
+            {
+                DataTable cdt = GetCredits(Convert.ToInt32(adt.Rows[i]["AccountId"].ToString()), PlanId);
+                DataRow dr = dt.NewRow();
+                dr["AccountId"] = adt.Rows[i]["AccountId"].ToString();
+                dr["RealName"] = adt.Rows[i]["RealName"].ToString();
+                dr["TeacherNo"] = adt.Rows[i]["TeacherNo"].ToString();
+                dr["Result"] = adt.Rows[i]["Result"].ToString();
+                for (int k = 0; k < fiedt.Rows.Count; k++)
+                {
+                    DataTable tdt = GetTrainingRedit(Convert.ToInt32(adt.Rows[i]["AccountId"].ToString()), Convert.ToInt32(fiedt.Rows[k][0].ToString()), PlanId);
+                    string Credits = "";
+                    string MinValue = "";
+                    if (fiedt.Rows.Count == cdt.Rows.Count)
+                    {
+                        for (int y = 0; y < cdt.Rows.Count; y++)
+                        {
+                            if (cdt.Rows[y][0].ToString() == fiedt.Rows[k][0].ToString())
+                            {
+                                MinValue = cdt.Rows[y][1].ToString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MinValue = "0";
+                    }
+                    if (tdt.Rows.Count == 0)
+                    {
+                        Credits = "0";
+                    }
+                    else
+                    {
+                        Credits = tdt.Rows[0][0].ToString();
+                    }
+
+                    dr[fiedt.Rows[k][1].ToString()] = Credits + "/" + MinValue;
+                }
+                dt.Rows.Add(dr);
+            }
+            return dt;
+        }
+
+
+        public DataTable GetCredits(int AccountId, int PlanId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" select TraningField,MinValue from Training_Credits where OrganId in ");
+            sb.Append(" (select ParentId from Organ_Detail where Id in ");
+            sb.Append(" (select OrganId from Member_Account where Id = " + AccountId + ")) and TraningField <> -1 and PlanId=" + PlanId + " ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sb.ToString()).Tables[0];
+        }
+
+        public DataTable GetTrainingRedit(int AccountId, int TraningField, int PlanId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" select Credits from Member_TrainingRedit where AccountId =" + AccountId + " and TrainingField = " + TraningField + " and PlanId = " + PlanId + " ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sb.ToString()).Tables[0];
+        }
+
+        private void ConvertToModel(IDataReader reader, PeriodModel model)
+        {
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = reader["TeacherNo"].ToString();
+
+            if (reader["Value"] != DBNull.Value)
+                model.Value = reader["Value"].ToString();
+
+            if (reader["Result"] != DBNull.Value)
+                model.Result = Convert.ToInt32(reader["Result"]);
+        }
+    }
+}

@@ -1,0 +1,123 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 结业考试";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_quiz" class="blk_ln_course_quiz" data-km-htm="blk_ln_course_quiz.html">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent modelContent = ViewBag.Model_Course_UnitContent;
+                        Dianda.AP.Model.Member_CourseContentTestAnswerResult ModelResult = ViewBag.Model_Member_CourseContentTestAnswerResult;
+                        <h3>@modelContent.Title：@modelContent.Content</h3>
+                        <p class="text-danger">共 @ModelResult.QuestionCnt 道题目，答错 @ModelResult.WrongAnswer 道题目，答对 @ModelResult.RightAnswer 道题目，成绩 : @ModelResult.Score 分</p>
+                    }
+                    <hr>
+
+                    <div id="QuizQuestions">
+
+                        @if (ViewBag.List_Course_UnitTest != null && ViewBag.List_Course_UnitTest.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Member_CourseContentTestAnswer> List_Member_CourseContentTestAnswer = ViewBag.List_Member_CourseContentTestAnswer;
+                            List<Dianda.AP.Model.Course_UnitTest> List_Course_UnitTest = ViewBag.List_Course_UnitTest;
+                            for (int i = 1; i <= List_Course_UnitTest.Count; i++)
+                            {
+                                Dianda.AP.Model.Course_UnitTest UnitQuestionModel = List_Course_UnitTest[i - 1];
+
+                                var Model_Answer = List_Member_CourseContentTestAnswer.Find(x => x.Question == UnitQuestionModel.Id);
+                                var UserAnswer = Model_Answer == null ? string.Empty : Model_Answer.Answer;
+
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var UnitTestQuestion = jr.Deserialize<List<Dianda.AP.Model.Course_UnitTestQuestion>>(UnitQuestionModel.Question);
+                            
+                            <div class="item">
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Html.Raw(UnitQuestionModel.Content) ( @UnitQuestionModel.Credit 分)</div>
+                                <div class="ques" id="unit_@UnitQuestionModel.Id" itemid="@UnitQuestionModel.Credit">                                    
+                                    @if (UnitQuestionModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                            if (Quitem.Id.ToString() == UserAnswer)
+                                            {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" checked="checked" />
+                                            @Html.Raw(UnitQuestionModel.Answer == Quitem.Id.ToString() ? "<font style='color: red;'>" + Quitem.Content + "</font>" : Quitem.Content)
+                                        </label>
+                                            }
+                                            else
+                                            {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />
+                                            @Html.Raw(UnitQuestionModel.Answer == Quitem.Id.ToString() ? "<font style='color: red;'>" + Quitem.Content + "</font>" : Quitem.Content)
+                                        </label>
+                                            }
+                                        }
+                                    }
+                                    else if (UnitQuestionModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                            if (UserAnswer.Contains(Quitem.Id.ToString()))
+                                            {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="checkbox" checked="checked" />
+                                            @Html.Raw(UnitQuestionModel.Answer.Contains(Quitem.Id.ToString()) ? "<font style='color: red;'>" + Quitem.Content + "</font>" : Quitem.Content)
+                                        </label>
+                                            }
+                                            else
+                                            {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="checkbox" />
+                                            @Html.Raw(UnitQuestionModel.Answer.Contains(Quitem.Id.ToString()) ? "<font style='color: red;'>" + Quitem.Content + "</font>" : Quitem.Content)
+                                        </label>
+                                            }
+                                        }
+                                    }
+                                    else if (UnitQuestionModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                            if (UserAnswer.Contains(Quitem.Id.ToString()))
+                                            {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" checked="checked" />
+                                            @Html.Raw(UnitQuestionModel.Answer == Quitem.Id.ToString() ? "<font style='color: red;'>" + Html.Raw(Quitem.Content == "1" ? '对' : '错') + "</font>" : Html.Raw(Quitem.Content == "1" ? '对' : '错').ToString())
+                                        </label>
+                                            }
+                                            else
+                                            {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />
+                                            @Html.Raw(UnitQuestionModel.Answer == Quitem.Id.ToString() ? "<font style='color: red;'>" + Html.Raw(Quitem.Content == "1" ? '对' : '错') + "</font>" : Html.Raw(Quitem.Content == "1" ? '对' : '错').ToString())
+                                        </label>
+                                            }
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+        });
+    });
+
+
+
+</script>

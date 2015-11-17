@@ -1,0 +1,506 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using Dianda.AP.Model;
+using System.Configuration;
+
+namespace Dianda.AP.DAL
+{
+    public class accountDAL
+    {
+        string StatisticDataName = ConfigurationManager.AppSettings["StatisticDataName"];
+
+        /// <summary>
+        /// 新增一条记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int Add(account model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("insert into [dbo].[account] ([userid],[zid],[uploaddatetime],[provid],[city],[sex],[age],[grade],[subject],[area],[experience],[job],[designation],[record],[suggession],[iden],[classid])");
+            sql.Append(" values (@userid,@zid,@uploaddatetime,@provid,@city,@sex,@age,@grade,@subject,@area,@experience,@job,@designation,@record,@suggession,@iden,@classid)");
+            sql.Append(" set @id=@@IDENTITY");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@id", SqlDbType.Int, 4) { Value = model.id, Direction = ParameterDirection.Output },
+				new SqlParameter("@userid", SqlDbType.Int, 4) { Value = model.userid },
+				new SqlParameter("@zid", SqlDbType.VarChar, 100) { Value = model.zid },
+				new SqlParameter("@uploaddatetime", SqlDbType.DateTime, 8) { Value = model.uploaddatetime },
+				new SqlParameter("@provid", SqlDbType.Int, 4) { Value = model.provid },
+				new SqlParameter("@city", SqlDbType.VarChar, 100) { Value = model.city },
+				new SqlParameter("@sex", SqlDbType.Int, 4) { Value = model.sex },
+				new SqlParameter("@age", SqlDbType.Int, 4) { Value = model.age },
+				new SqlParameter("@grade", SqlDbType.Int, 4) { Value = model.grade },
+				new SqlParameter("@subject", SqlDbType.Int, 4) { Value = model.subject },
+				new SqlParameter("@area", SqlDbType.Int, 4) { Value = model.area },
+				new SqlParameter("@experience", SqlDbType.Int, 4) { Value = model.experience },
+				new SqlParameter("@job", SqlDbType.Int, 4) { Value = model.job },
+				new SqlParameter("@designation", SqlDbType.Int, 4) { Value = model.designation },
+				new SqlParameter("@record", SqlDbType.Int, 4) { Value = model.record },
+				new SqlParameter("@suggession", SqlDbType.NVarChar, 8000) { Value = model.suggession },
+				new SqlParameter("@iden", SqlDbType.Int, 4) { Value = model.iden },
+				new SqlParameter("@classid", SqlDbType.VarChar, 20) { Value = model.classid }
+			};
+            int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+            model.id = Convert.ToInt32(cmdParams[0].Value);
+            return result;
+        }
+
+        /// <summary>
+        /// 更新一条记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int Update(account model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[account] set ");
+            sql.Append("[userid]=@userid,[zid]=@zid,[uploaddatetime]=@uploaddatetime,[provid]=@provid,[city]=@city,[sex]=@sex,[age]=@age,[grade]=@grade,[subject]=@subject,[area]=@area,[experience]=@experience,[job]=@job,[designation]=@designation,[record]=@record,[suggession]=@suggession,[iden]=@iden,[classid]=@classid");
+            sql.Append(" where [id]=@id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@id", SqlDbType.Int, 4) { Value = model.id },
+				new SqlParameter("@userid", SqlDbType.Int, 4) { Value = model.userid },
+				new SqlParameter("@zid", SqlDbType.VarChar, 100) { Value = model.zid },
+				new SqlParameter("@uploaddatetime", SqlDbType.DateTime, 8) { Value = model.uploaddatetime },
+				new SqlParameter("@provid", SqlDbType.Int, 4) { Value = model.provid },
+				new SqlParameter("@city", SqlDbType.VarChar, 100) { Value = model.city },
+				new SqlParameter("@sex", SqlDbType.Int, 4) { Value = model.sex },
+				new SqlParameter("@age", SqlDbType.Int, 4) { Value = model.age },
+				new SqlParameter("@grade", SqlDbType.Int, 4) { Value = model.grade },
+				new SqlParameter("@subject", SqlDbType.Int, 4) { Value = model.subject },
+				new SqlParameter("@area", SqlDbType.Int, 4) { Value = model.area },
+				new SqlParameter("@experience", SqlDbType.Int, 4) { Value = model.experience },
+				new SqlParameter("@job", SqlDbType.Int, 4) { Value = model.job },
+				new SqlParameter("@designation", SqlDbType.Int, 4) { Value = model.designation },
+				new SqlParameter("@record", SqlDbType.Int, 4) { Value = model.record },
+				new SqlParameter("@suggession", SqlDbType.NVarChar, 8000) { Value = model.suggession },
+				new SqlParameter("@iden", SqlDbType.Int, 4) { Value = model.iden },
+				new SqlParameter("@classid", SqlDbType.VarChar, 20) { Value = model.classid }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        /// <summary>
+        /// 取得一条记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public account GetModel(int id, string where)
+        {
+            string sql = "select * from [dbo].[account] where [id]=@Id";
+            if (!string.IsNullOrEmpty(where))
+                sql += " and " + where;
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                if (reader.Read())
+                {
+                    account model = new account();
+                    ConvertToModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取数据集
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<account> GetList(string where, string orderBy)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from [dbo].[account]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            if (!string.IsNullOrEmpty(orderBy))
+                sql.Append(" order by " + orderBy);
+            List<account> list = new List<account>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    account model = new account();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public List<account> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from [dbo].[account]");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" where " + where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[account]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<account> list = new List<account>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    account model = new account();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取数据集总记录数
+        /// </summary>
+        /// <param name="strWhere"></param>
+        /// <returns></returns>
+        public int GetListOtherCount(string strWhere)
+        {
+            int OtherCount = 0;
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@" select COUNT(1) as OtherCount from (select distinct * from (select MA.id as accountid,MA.OutSourceId as id,MB.RealName, MB.TeacherNo, ODR.id as RegionId,ODR.Title as RegionTitle, ODO.id as OrganId,ODO.Title as OrganTitle, ");
+            sql.Append(" (select COUNT(1) from " + StatisticDataName + ".dbo.V_account where userid = MA.OutSourceId) as DiscussCnt");
+            sql.Append(" from dbo.Member_Account MA");
+            sql.Append(" LEFT JOIN dbo.Member_BaseInfo MB ON MA.Id = MB.AccountId AND MB.Delflag = 0");
+            sql.Append(" LEFT JOIN dbo.Organ_Detail ODR ON MB.RegionId = ODR.Id AND ODR.Delflag = 0");
+            sql.Append(" LEFT JOIN dbo.Organ_Detail ODO ON MB.OrganId = ODO.Id AND ODO.Delflag = 0");
+            sql.Append(" where mb.Delflag=0 and  ma.delflag=0 and ma.OutSourceId is not null and ma.OutSourceId <>0) AS TAB ");
+            if (!string.IsNullOrEmpty(strWhere))
+                sql.Append(" Where " + strWhere);
+            sql.Append(") AS TTT");
+
+            List<accountOther> list = new List<accountOther>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                if (reader.Read())
+                {
+                    if (reader["OtherCount"] != DBNull.Value)
+                        OtherCount = Convert.ToInt32(reader["OtherCount"]);
+                }
+            }
+            return OtherCount;
+        }
+
+        /// <summary>
+        /// 获取分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public List<accountOther> GetListOther(int pageSize, int pageIndex, string where, out int recordCount)
+        {
+            recordCount = GetListOtherCount(where);
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select * from (select *,ROW_NUMBER() over (order by id) as [RowNum] from  ");
+            sql.Append(" (select distinct * from(select MA.id as accountid,MA.OutSourceId as id,(case when MB.RealName is null then MA.UserName else MB.RealName end) as RealName, MB.TeacherNo, ODR.id as RegionId,ODR.Title as RegionTitle, ODO.id as OrganId,ODO.Title as OrganTitle, ");
+            sql.Append(" (select COUNT(1) from " + StatisticDataName + ".dbo.V_account where userid = MA.OutSourceId) as DiscussCnt ");
+            sql.Append(" from dbo.Member_Account MA ");
+            sql.Append(" LEFT JOIN dbo.Member_BaseInfo MB ON MA.Id = MB.AccountId AND MB.Delflag = 0");
+            sql.Append(" LEFT JOIN dbo.Organ_Detail ODR ON MB.RegionId = ODR.Id AND ODR.Delflag = 0");
+            sql.Append(" LEFT JOIN dbo.Organ_Detail ODO ON MB.OrganId = ODO.Id AND ODO.Delflag = 0 WHERE mb.Delflag=0 and  ma.delflag=0 and ma.OutSourceId is not null and ma.OutSourceId <>0) as Tab ");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T) as TT where [RowNum] between " + start + " and " + end);
+            sql.Append(" ORDER BY id");
+            List<accountOther> list = new List<accountOther>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    accountOther model = new accountOther();
+                    ConvertToModelOther(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取DataTable
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public DataTable GetTable(string where, string orderBy)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select [id],[userid],[zid],[uploaddatetime],[provid],[city],[sex],[age],[grade],[subject],[area],[experience],[job],[designation],[record],[suggession],[iden],[classid] from [dbo].[account]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            if (!string.IsNullOrEmpty(orderBy))
+                sql.Append(" order by " + orderBy);
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        /// <summary>
+        /// 获取分页DataTable
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from [dbo].[account]");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" where " + where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select [id],[userid],[zid],[uploaddatetime],[provid],[city],[sex],[age],[grade],[subject],[area],[experience],[job],[designation],[record],[suggession],[iden],[classid],ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[account]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        private void ConvertToModelOther(IDataReader reader, accountOther model)
+        {
+            if (reader["id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["id"]);
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = Convert.ToString(reader["RealName"]);
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = Convert.ToString(reader["TeacherNo"]);
+            if (reader["RegionId"] != DBNull.Value)
+                model.RegionId = Convert.ToInt32(reader["RegionId"]);
+            if (reader["RegionTitle"] != DBNull.Value)
+                model.RegionTitle = Convert.ToString(reader["RegionTitle"]);
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["OrganTitle"] != DBNull.Value)
+                model.OrganTitle = Convert.ToString(reader["OrganTitle"]);
+            if (reader["DiscussCnt"] != DBNull.Value)
+                model.DiscussCnt = Convert.ToInt32(reader["DiscussCnt"]);
+        }
+
+        private void ConvertToModel(IDataReader reader, account model)
+        {
+            if (reader["id"] != DBNull.Value)
+                model.id = Convert.ToInt32(reader["id"]);
+            if (reader["userid"] != DBNull.Value)
+                model.userid = Convert.ToInt32(reader["userid"]);
+            if (reader["zid"] != DBNull.Value)
+                model.zid = reader["zid"].ToString();
+            if (reader["uploaddatetime"] != DBNull.Value)
+                model.uploaddatetime = Convert.ToDateTime(reader["uploaddatetime"]);
+            if (reader["provid"] != DBNull.Value)
+                model.provid = Convert.ToInt32(reader["provid"]);
+            if (reader["city"] != DBNull.Value)
+                model.city = reader["city"].ToString();
+            if (reader["sex"] != DBNull.Value)
+                model.sex = Convert.ToInt32(reader["sex"]);
+            if (reader["age"] != DBNull.Value)
+                model.age = Convert.ToInt32(reader["age"]);
+            if (reader["grade"] != DBNull.Value)
+                model.grade = Convert.ToInt32(reader["grade"]);
+            if (reader["subject"] != DBNull.Value)
+                model.subject = Convert.ToInt32(reader["subject"]);
+            if (reader["area"] != DBNull.Value)
+                model.area = Convert.ToInt32(reader["area"]);
+            if (reader["experience"] != DBNull.Value)
+                model.experience = Convert.ToInt32(reader["experience"]);
+            if (reader["job"] != DBNull.Value)
+                model.job = Convert.ToInt32(reader["job"]);
+            if (reader["designation"] != DBNull.Value)
+                model.designation = Convert.ToInt32(reader["designation"]);
+            if (reader["record"] != DBNull.Value)
+                model.record = Convert.ToInt32(reader["record"]);
+            if (reader["suggession"] != DBNull.Value)
+                model.suggession = reader["suggession"].ToString();
+            if (reader["iden"] != DBNull.Value)
+                model.iden = Convert.ToInt32(reader["iden"]);
+            if (reader["classid"] != DBNull.Value)
+                model.classid = reader["classid"].ToString();
+        }
+
+        #region 前测统计
+        //市级数据
+        public DataSet Statistics()
+        {
+            StringBuilder sql = new StringBuilder();
+            //机构
+            sql.Append("select Id,Title from Organ_Detail where Delflag=0 and ParentId=1 and code is not null");
+
+            //总人数
+            sql.Append(" select A.ParentId as OrganId,Count(1) as UserCount from");
+            sql.Append(" Organ_Detail A");
+            sql.Append(" join Member_Account B on B.OrganId=A.Id");
+            sql.Append(" where A.Delflag=0");
+            sql.Append(" and B.Delflag=0");
+            sql.Append(" group by A.ParentId");
+            sql.Append(" order by A.ParentId");
+
+            //评测次数
+            sql.Append(" select C.ParentId as OrganId,COUNT(1) as UserCount from");
+            sql.Append(" [2015NlCP].[dbo].[V_account] A");
+            sql.Append(" join Member_Account B on B.OutSourceId=A.userid");
+            sql.Append(" join Organ_Detail C on C.Id=B.OrganId");
+            sql.Append(" where B.Delflag=0");
+            sql.Append(" and C.Delflag=0");
+            sql.Append(" group by C.ParentId");
+            sql.Append(" order by C.ParentId");
+
+            //评测人数
+            sql.Append(" select C.ParentId as OrganId,COUNT(DISTINCT B.Id) as UserCount from");
+            sql.Append(" [2015NlCP].[dbo].[V_account] A");
+            sql.Append(" join Member_Account B on B.OutSourceId=A.userid");
+            sql.Append(" join Organ_Detail C on C.Id=B.OrganId");
+            sql.Append(" where B.Delflag=0");
+            sql.Append(" and C.Delflag=0");
+            sql.Append(" group by C.ParentId");
+            sql.Append(" order by C.ParentId");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString());
+        }
+
+        //区级、培训机构数据
+        public DataSet Statistics(int organId)
+        {
+            StringBuilder sql = new StringBuilder();
+            //机构
+            sql.Append("select Id,Title from Organ_Detail where Delflag=0 and ParentId=" + organId);
+
+            //总人数
+            sql.Append(" select A.Id as OrganId,Count(1) as UserCount from");
+            sql.Append(" Organ_Detail A");
+            sql.Append(" join Member_Account B on B.OrganId=A.Id");
+            sql.Append(" where A.Delflag=0 and A.ParentId=" + organId);
+            sql.Append(" and B.Delflag=0");
+            sql.Append(" group by A.Id");
+            sql.Append(" order by A.Id");
+
+            //评测次数
+            sql.Append(" select C.Id as OrganId,COUNT(1) as UserCount from");
+            sql.Append(" [2015NlCP].[dbo].[V_account] A");
+            sql.Append(" join Member_Account B on B.OutSourceId=A.userid");
+            sql.Append(" join Organ_Detail C on C.Id=B.OrganId");
+            sql.Append(" where B.Delflag=0");
+            sql.Append(" and C.Delflag=0 and C.ParentId=" + organId);
+            sql.Append(" group by C.Id");
+            sql.Append(" order by C.Id");
+
+            //评测人数
+            sql.Append(" select C.Id as OrganId,COUNT(DISTINCT B.Id) as UserCount from");
+            sql.Append(" [2015NlCP].[dbo].[V_account] A");
+            sql.Append(" join Member_Account B on B.OutSourceId=A.userid");
+            sql.Append(" join Organ_Detail C on C.Id=B.OrganId");
+            sql.Append(" where B.Delflag=0");
+            sql.Append(" and C.Delflag=0 and C.ParentId=" + organId);
+            sql.Append(" group by C.Id");
+            sql.Append(" order by C.Id");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString());
+        }
+
+        //校级数据
+        public DataSet StatisticsSub(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            //机构
+            sql.Append("select Id,Title from Organ_Detail where Delflag=0 and Id=" + id);
+
+            //总人数
+            sql.Append(" select A.Id as OrganId,Count(1) as UserCount from");
+            sql.Append(" Organ_Detail A");
+            sql.Append(" join Member_Account B on B.OrganId=A.Id");
+            sql.Append(" where A.Delflag=0 and A.Id=" + id);
+            sql.Append(" and B.Delflag=0");
+            sql.Append(" group by A.Id");
+            sql.Append(" order by A.Id");
+
+            //评测次数
+            sql.Append(" select C.Id as OrganId,COUNT(1) as UserCount from");
+            sql.Append(" [2015NlCP].[dbo].[V_account] A");
+            sql.Append(" join Member_Account B on B.OutSourceId=A.userid");
+            sql.Append(" join Organ_Detail C on C.Id=B.OrganId");
+            sql.Append(" where B.Delflag=0");
+            sql.Append(" and C.Delflag=0 and C.Id=" + id);
+            sql.Append(" group by C.Id");
+            sql.Append(" order by C.Id");
+
+            //评测人数
+            sql.Append(" select C.Id as OrganId,COUNT(DISTINCT B.Id) as UserCount from");
+            sql.Append(" [2015NlCP].[dbo].[V_account] A");
+            sql.Append(" join Member_Account B on B.OutSourceId=A.userid");
+            sql.Append(" join Organ_Detail C on C.Id=B.OrganId");
+            sql.Append(" where B.Delflag=0");
+            sql.Append(" and C.Delflag=0 and C.Id=" + id);
+            sql.Append(" group by C.Id");
+            sql.Append(" order by C.Id");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString());
+        }
+
+        //图形统计数据
+        public DataSet ChartData(string where)
+        {
+            StringBuilder sql = new StringBuilder();
+            //人数
+            sql.Append("select count(1) from [2015NlCP].[dbo].[V_account] as T");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+
+            //图表数据
+            sql.Append(" select dimensionid,");
+            sql.Append("SUM(case when cast(score as decimal(2,1))>=0.9 then 1 else 0 end) as Rank1,");
+            sql.Append("SUM(case when cast(score as decimal(2,1))>=0.6 and cast(score as decimal(2,1))<0.9 then 1 else 0 end) as Rank2,");
+            sql.Append("SUM(case when cast(score as decimal(2,1))<0.6 then 1 else 0 end) as Rank3,");
+            sql.Append("cast(AVG(cast(score as decimal(2,1))) as decimal(2,1)) as AvgRank,");
+            sql.Append("COUNT(1) as CNT");
+            sql.Append(" from [2015NlCP].[dbo].[V_score] A join [2015NlCP].[dbo].[V_account] T on A.userid=T.id");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(" group by dimensionid order by dimensionid");
+
+            //国家能力等级数据
+            sql.Append(" select respect,COUNT(1) as CNT");
+            sql.Append(" from [2015NlCP].[dbo].[V_recommend] A join [2015NlCP].[dbo].[V_account] T on A.userid=T.id");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(" group by respect");
+            sql.Append(" order by case when isnumeric(SUBSTRING(respect,2,2))=1 then CAST(SUBSTRING(respect,2,2) AS int) else CAST(SUBSTRING(respect,2,1) AS int) end");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString());
+        }
+        #endregion
+    }
+}

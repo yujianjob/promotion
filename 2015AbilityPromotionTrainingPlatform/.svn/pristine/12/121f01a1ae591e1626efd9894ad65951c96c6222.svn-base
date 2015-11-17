@@ -1,0 +1,427 @@
+﻿@using Dianda.AP.Model;
+
+@model Traning_Detail
+
+@{
+    ViewBag.Title = "审核";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <div class="d-form">
+            <ol class="breadcrumb">
+            <li><a href="@Url.Action("List")">课程审核</a></li>
+            <li class="active">上报新课程</li>
+            </ol>
+            <div id="blk_course_add" class="blk_course_add">
+                <h4 class="text-center">上报新课程</h4>
+                <div class="row">
+	                <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">课程名称 <span class="text-danger">*</span></label>
+                            @*<div class="form-control" name="Title" id="Title">@Model.Title</div>*@
+                            @Html.TextBoxFor(model => model.Title, new { @class = "form-control", maxlength = "30", @readonly = "" })
+		                </div>
+	                </div>
+
+                    <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">培训平台类型 <span class="text-danger">*</span></label>
+                            @if(Model.OutSideType == -1)
+                            {
+                                <label class="chk">
+                                    <input type="radio" name="OutSideType" class="OutSideType" value="-1" checked="checked" disabled /> 内部平台
+                                </label>
+                                <label class="chk">
+                                    <input type="radio" name="OutSideType" class="OutSideType" value="0" disabled /> 外部平台
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="chk">
+                                    <input type="radio" name="OutSideType" class="OutSideType" value="-1" disabled /> 内部平台
+                                </label>
+                                <label class="chk">
+                                    <input type="radio" name="OutSideType" class="OutSideType" value="0" checked="checked" disabled /> 外部平台
+                                </label>
+                            }
+                            
+		                </div>
+	                </div>
+
+                    <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">区级/市级 <span class="text-danger">*</span></label>
+                            @if (Model.Range == 1)
+                            {
+                                <label class="chk">
+				                    <input type="radio" name="Range" class="Range" value="1" checked="checked" disabled> 区级
+			                    </label>
+                                <label class="chk">
+				                    <input type="radio" name="Range" class="Range" value="2" disabled> 市级
+			                    </label>
+                            }
+                            else
+                            {
+                                <label class="chk">
+				                    <input type="radio" name="Range" class="Range" value="1" disabled> 区级
+			                    </label>
+                                <label class="chk">
+				                    <input type="radio" name="Range" class="Range" value="2" checked="checked" disabled> 市级
+			                    </label>
+                            }
+		                </div>
+	                </div>
+
+                    @if(Model.OutSideType != -1)
+                    {
+                        <div class="col-xs-6 out-course-type">
+		                    <div class="form-group form-inline">
+			                    <label class="control-label">外部课程类别 <span class="text-danger">*</span></label>
+                                @{
+                                    var outCourseType = ((List<Dianda.AP.Model.Traning_OutCourseType>)ViewBag.OutCourseTypeData).FirstOrDefault(t => t.Id == Model.OutSideType);
+                                    string outCourseTypeName = outCourseType == null ? "" : outCourseType.Title;
+                                }
+                                @*<div class="form-control" style="min-width:150px;">@outCourseTypeName</div>&nbsp;
+                                <div class="form-control" name="OutSideLink" id="OutSideLink" style="min-width:150px;overflow:auto;">@Model.OutSideLink</div>*@
+                                <input type="text" readonly="" style="width:130px;" value="@outCourseTypeName" class="form-control" />
+                                &nbsp;
+                                <input type="text" readonly="" style="width:250px;" value="@Model.OutSideLink" class="form-control" />
+		                    </div>
+	                    </div>
+                    }
+
+	                <div class="col-xs-12 Training-Field">
+		                <div class="form-group">
+			                <label class="control-label">课程类别 <span class="text-danger">*</span></label>
+                            @foreach (var item in ViewBag.TrainingFeildData)
+                            {
+                                if (item.Id == Model.TraingField)
+                                {
+                                    <label class="chk">
+				                        <input type="radio" name="TraingField" value="@item.Id" onclick="SelectField(this);" checked="checked" disabled> @item.Title
+			                        </label>
+                                }
+                                else
+                                {
+                                    <label class="chk">
+				                        <input type="radio" name="TraingField" value="@item.Id" onclick="SelectField(this);" disabled> @item.Title
+			                        </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+                    <div class="col-xs-12 Training-Category">
+		                <div class="form-group">
+			                <label class="control-label">课程小类 <span class="text-danger">*</span></label>
+			                @foreach (var item in ViewBag.TrainingCategoryData)
+                            {
+                                //if (item.Title.Length > 6)
+                                //{
+                                //    item.Title = item.Title.Substring(0, 6);
+                                //}
+                                if (item.Id == Model.TraingCategory)
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+				                        <input type="radio" name="TraingCategory" value="@item.Id" onclick="SelectCategory(this);" checked="checked" disabled> @item.Title
+			                        </label>
+                                }
+                                else
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+				                        <input type="radio" name="TraingCategory" value="@item.Id" onclick="SelectCategory(this);" disabled> @item.Title
+			                        </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+                    <div class="col-xs-12 Training-Topic">
+		                <div class="form-group">
+			                <label class="control-label">课程主题 <span class="text-danger">*</span></label>
+			                @foreach (var item in ViewBag.TrainingTopicData)
+                            {
+                                //if (item.Title.Length > 6)
+                                //{
+                                //    item.Title = item.Title.Substring(0, 6);
+                                //}
+                                if (item.Id == Model.TraingTopic)
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+				                        <input type="radio" name="TraingTopic" value="@item.Id" onclick="SelectTopic(this);" checked="checked" disabled> @item.Title
+			                        </label>
+                                }
+                                else
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+				                        <input type="radio" name="TraingTopic" value="@item.Id" onclick="SelectTopic(this);" disabled> @item.Title
+			                        </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+                    <div class="col-xs-12" >
+                        <div class="form-group">
+                            <label class="control-label">国家能力标准 </label>
+                            @foreach (var item in ViewBag.NationalCoursData)
+                            {
+                                if (item.Title.Length > 6)
+                                {
+                                    item.Title = item.Title.Substring(0, 6);
+                                }
+                                if (item.Id == Model.NationalCoursId)
+                                {
+                                <label class="chk"  style="width:auto;  padding-right: 10px;" >
+                                    <input type="radio" name="Nation" value="@item.Id" onclick="SelectNation(this);" checked="checked" disabled>
+                                    @item.Title (@item.Content)
+                                </label>
+                                }
+                                else
+                                {
+                                <label class="chk"  style="width:auto;  padding-right: 10px;" >
+                                    <input type="radio" name="Nation"  value="@item.Id" onclick="SelectNation(this);" disabled>
+                                    @item.Title (@item.Content)
+                                </label>
+                                }
+                            }
+                        </div>
+                    </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">适用培训对象 <span class="text-danger">*</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.TrainingObjectData)
+                            {
+                                string[] array = Model.TraningObject.Split(',');
+                                if (array.Any(t => t == item.Id.ToString()))
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="checkbox" value="@item.Id" checked="checked" disabled> @item.Title
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="checkbox" value="@item.Id" disabled> @item.Title
+                                    </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">任教学科 <span class="text-danger">*</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.SubjectData)
+                            {
+                                string[] array = Model.Subject.Split(',');
+                                if (array.Any(t => t == item.Id.ToString()))
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="checkbox" value="@item.Id" checked="checked" disabled> @item.Title
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="checkbox" value="@item.Id" disabled> @item.Title
+                                    </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">任教学段 <span class="text-danger">*</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.StudyLevelData)
+                            {
+                                string[] array = Model.StudyLevel.Split(',');
+                                if (array.Any(t => t == item.Id.ToString()))
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="checkbox" value="@item.Id" checked="checked" disabled> @item.Title
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="checkbox" value="@item.Id" disabled> @item.Title
+                                    </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+	                <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">课程课时 <span class="text-danger">*</span></label>
+                            <div class="form-control" name="TotalTime" id="TotalTime" style="width:400px;">@Model.TotalTime</div>
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group form-inline">
+			                <label class="control-label">课程图标 <span class="text-danger">*</span></label>
+                            <img src="@Model.Pic" width="48" height="48" />
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">培训形式 <span class="text-danger">*</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.TrainingFormData)
+                            {
+                                if (item.Id == Model.TrainingForm)
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="radio" name="TrainingForm" class="TrainingForm" value="@item.Id" checked="checked" disabled> @item.Title
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label class="chk" style="width:auto;padding-right:10px;">
+                                        <input type="radio" name="TrainingForm" class="TrainingForm" value="@item.Id" disabled> @item.Title
+                                    </label>
+                                }
+                            }
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group form-inline">
+			                <label class="control-label">课程讲师 <span class="text-danger">*</span></label>
+                            @{
+                            var teacherTitle = ((List<Dianda.AP.Model.Traning_InfoFk>)ViewBag.TeacherTitleData).FirstOrDefault(t => t.Id == Model.TeacherTitle);
+                            string teacherTitleName = teacherTitle == null ? "" : teacherTitle.Title;
+                            }
+                            @*<div class="form-control" style="width:120px;">@teacherTitleName</div>&nbsp;
+                            <div class="form-control" TeacherName="TotalTime" id="TeacherName" style="width:180px;overflow:auto;">@Model.TeacherName</div>&nbsp;
+                            <div class="form-control" name="TeacherFrom" id="TeacherFrom" style="width:180px;overflow:auto;">@Model.TeacherFrom</div>*@
+                            <input type="text" readonly="" style="width:120px;" value="@teacherTitleName" class="form-control" />
+                            &nbsp;
+                            <input type="text" readonly="" style="width:180px;" value="@Model.TeacherName" class="form-control" />
+                            &nbsp;
+                            <input type="text" readonly="" style="width:180px;" value="@Model.TeacherFrom" class="form-control" />
+                            <img src="@Model.TeacherPic" width="48" height="48" />
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">课程简介 <span class="text-danger">*</span></label>
+			                <div class="form-control" name="Content" id="Content" style="min-height:200px;overflow:auto;white-space:pre-wrap;">@Model.Content</div>
+		                </div>
+	                </div>
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">课程大纲 <span class="text-danger">*</span></label>
+			                <div class="form-control" name="Outline" id="Outline" style="min-height:200px;overflow:auto;white-space:pre-wrap;">@Model.Outline</div>
+		                </div>
+	                </div>
+
+                    @if (Model.OutSideType != -1)
+                    {
+                        <div class="col-xs-12 out-side-content">
+		                    <div class="form-group">
+			                    <label class="control-label">外部课程内容 <span class="text-danger">*</span></label>
+                                <div class="form-control" name="Outline" id="OutSideContent" style="min-height:200px;overflow:auto;white-space:pre-wrap;">@Html.Raw(Model.OutSideContent)</div>
+		                    </div>
+	                    </div>
+                    }
+
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">相关申请材料附件</label>
+                            <div class="form-control" style="overflow:hidden;height:auto;">
+                                <div style="float:left;width:500px;padding:5px 0;" id="AttachNameList">
+                                    @{ 
+                                        System.Text.StringBuilder attachPathList = new System.Text.StringBuilder();
+                                        foreach (System.Data.DataRow row in ViewBag.AttachData.Rows)
+                                        {
+                                            attachPathList.AppendFormat("{0}|{1}|{2}:", row["Id"], row["Title"], row["Link"]);
+                                        }
+                                    }
+                                    @foreach (System.Data.DataRow row in ViewBag.AttachData.Rows)
+                                    {
+                                        @*<p><a href="@row["Link"]">@row["Title"]</a></p>*@
+                                        <p><a href="DownloadFile?FilePath=@row["Link"]&FileName=@row["Title"]">@row["Title"]</a></p>
+                                    }
+                                </div>
+                            </div>
+		                </div>
+	                </div>
+
+                    @using (Html.BeginForm("Check", "TrainingCheck", null, FormMethod.Post, new { id = "FormCheck" }))
+                    {
+                        <input type="hidden" name="Id" value="@Model.Id" />
+	                    <div class="col-xs-12" id="training-check">
+		                <hr>
+                            <div class="form-group form-inline">
+                                <label class="control-label">审核结果 <span class="text-danger">*</span></label>
+                                <label class="chk"><input type="radio" name="CheckResult" value="1">通过</label>
+                                <label class="chk"><input type="radio" name="CheckResult" value="2">不通过</label>
+                                <label class="control-label" id="UnpassRemarkLabel" style="display:none;">原因<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="UnpassRemark" id="UnpassRemark" maxlength="60" style="width:320px;display:none;" />
+                            </div>
+                        <button type="button" class="btn btn-success" onClick="CheckSubmit();">提交审核结果</button>
+		                &nbsp;&nbsp;&nbsp;&nbsp;<a href="@Url.Action("List")">取消</a>
+	                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    function CheckSubmit() {
+        var obj = $('#training-check input[type=radio]:checked');
+        if (obj.length > 0) {
+            if (obj.val() == '2' && $('#training-check input[type=text]').val() == '') {
+                Alert('请输入不通过原因！');
+                return false;
+            }
+            else {
+                $('#FormCheck').submit();
+            }
+        }
+        else {
+            Alert('请选择审核结果！');
+            return false;
+        }
+    }
+
+    $(function () {
+        $('#training-check input[type=radio]').click(function () {
+            if ($(this).val() == '2') {
+                $('#UnpassRemarkLabel').css('display', 'block');
+                $('#UnpassRemark').css('display', 'block');
+            }
+            else {
+                $('#UnpassRemarkLabel').css('display', 'none');
+                $('#UnpassRemark').css('display', 'none');
+            }
+        });
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $('input.input-date').datepicker({});
+
+            var msg = '@TempData["Msg"]';
+            if (msg != '') {
+                Alert(msg);
+            }
+        });
+    });
+    
+</script>

@@ -1,0 +1,9 @@
+<div class="video-container">
+	<div class="video-player">
+
+	</div>
+	<div class="video-info">
+		<span class="title">课程导学</span>
+		<span class="duration">13分钟</span>
+	</div>
+</div>

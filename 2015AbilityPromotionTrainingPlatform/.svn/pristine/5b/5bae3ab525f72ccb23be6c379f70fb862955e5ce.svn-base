@@ -1,0 +1,597 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using Dianda.AP.Model.API;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Transactions;
+using System.Web;
+using System.Web.Services;
+
+namespace Web.API
+{
+    enum SchoolManageTypeEnum
+    {
+        Add = 0,
+        Update = 1,
+        Delete = 2
+    }
+
+    /// <summary>
+    /// Interface 的摘要说明
+    /// </summary>
+    [WebService(Namespace = "http://tempuri.org/")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [System.ComponentModel.ToolboxItem(false)]
+    // 若要允许使用 ASP.NET AJAX 从脚本中调用此 Web 服务，请取消注释以下行。 
+    // [System.Web.Script.Services.ScriptService]
+    public class Interface : System.Web.Services.WebService
+    {
+        /// <summary>
+        /// 写日志
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        private void WriteLog(TraceEventType type, int id, string msg)
+        {
+            string direct = Server.MapPath("~/Log/Api/");
+            if (!Directory.Exists(direct))
+                Directory.CreateDirectory(direct);
+            string file = direct + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
+
+            TextWriterTraceListener listen = new TextWriterTraceListener(file);
+            listen.TraceOutputOptions = TraceOptions.ProcessId |
+                                        TraceOptions.ThreadId |
+                                        TraceOptions.Timestamp |
+                                        TraceOptions.DateTime |
+                                        TraceOptions.LogicalOperationStack |
+                                        TraceOptions.Callstack;
+
+            Trace.Listeners.Add(listen);
+            Trace.AutoFlush = false;
+            //Trace.WriteLine("Test");
+
+            SourceSwitch sourceSwitch = new SourceSwitch("sourceSwitch");
+            sourceSwitch.Level = SourceLevels.Verbose;
+
+            TraceSource traceSource = new TraceSource("traceSource");
+            traceSource.Switch = sourceSwitch;
+            traceSource.Listeners.Add(listen);
+
+            traceSource.TraceEvent(type, id, msg);
+            Trace.Close();
+        }
+
+        /// <summary>
+        /// 学校管理接收方法
+        /// </summary>
+        /// <param name="schoolCodeBytes"></param>
+        /// <param name="manageTypeEnumBytes"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public int SchoolManageReceive(byte[] schoolCodeBytes, byte[] manageTypeEnumBytes)
+        {
+            int rst = 0;
+            try
+            {
+                schoolcode school = (schoolcode)(this.DeserializeObject(schoolCodeBytes));
+                Organ_Detail model = ToOrgan(school);
+                SchoolManageTypeEnum doType = (SchoolManageTypeEnum)(this.DeserializeObject(manageTypeEnumBytes));
+
+                APIBLL api = new APIBLL();
+                Organ_Detail tempOrgan;
+                
+                switch (doType)
+                {
+                    case SchoolManageTypeEnum.Add:
+                        this.WriteLog(TraceEventType.Information, 1, "新增学校");
+                        if (api.AddOrgan(model))
+                            rst++;
+                        break;
+                    case SchoolManageTypeEnum.Update:
+                        this.WriteLog(TraceEventType.Information, 1, "更新学校");
+                        tempOrgan = api.GetOrganByOutId(Convert.ToInt32(model.OutSourceId));
+                        model.Id = tempOrgan == null ? 0 : tempOrgan.Id;
+                        if (api.UpdateOrgan(model))
+                            rst++;
+                        break;
+                    case SchoolManageTypeEnum.Delete:
+                        this.WriteLog(TraceEventType.Information, 1, "删除学校");
+                        tempOrgan = api.GetOrganByOutId(Convert.ToInt32(model.OutSourceId));
+                        model.Id = tempOrgan == null ? 0 : tempOrgan.Id;
+                        if (api.DeleteOrgan(model.Id))
+                            rst++;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(TraceEventType.Error, 0, e.Message);
+            }
+
+            return rst;
+        }
+
+        /// <summary>
+        /// 添加教师
+        /// </summary>
+        /// <param name="userModelBytes"></param>
+        /// <param name="userNameBytes"></param>
+        /// <param name="logContentBytes"></param>
+        /// <param name="resultBytes"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string TeacherAddReceive(byte[] userModelBytes, byte[] userNameBytes, byte[] logContentBytes, byte[] resultBytes)
+        {
+            bool TnF;
+            string TS;
+            int rst;
+            
+            try
+            {
+                APIBLL api = new APIBLL();
+
+                CBK_SHERC_USERINFO model = (CBK_SHERC_USERINFO)(this.DeserializeObject(userModelBytes));
+                string userName = this.DeserializeObject(userNameBytes).ToString();
+                string logContent = this.DeserializeObject(logContentBytes).ToString();
+                string result = this.DeserializeObject(resultBytes).ToString();
+                Member_Account account = ToMemberAccount(model);
+                MemberBaseInfo info = ToMemberBaseInfo(model);
+                if (account.OutSourceId == null || account.OutSourceId < 1)
+                {
+                    return string.Format("{0};{1};{2}", false, "用户编号不能为空");
+                }
+
+                using (TransactionScope trans = new TransactionScope())
+                {
+                    this.WriteLog(TraceEventType.Information, 1, "新增教师,外部编号：" + account.OutSourceId);
+                    api.AddMemberAccount(account);
+                    info.AccountId = account.Id;
+                    api.AddMemberBaseInfo(info);
+                    api.UpdateSubject(account.Id, "", api.ConvertKey("Member_TeachSubject", model.XUEKEID));
+                    api.UpdateSection(account.Id, "", api.ConvertKey("Member_StudySection", model.XUEDUANID));
+                    api.UpdateGrade(account.Id, "", api.ConvertKey("Member_TeachGrade", model.NIANJIID));
+                    api.UpdateJob(account.Id, "", api.ConvertKey("Member_Job", model.USERJOBID));
+                    api.UpdateRank(account.Id, "", api.ConvertKey("Member_WorkRank", model.ZHICHENGID));
+                    api.UpdateTrainingType(account.Id, "", api.ConvertKey("Member_TraningType", model.TrainingTypeID));
+                    api.UpdateGroup(account.Id,
+                        Convert.ToInt32(api.ConvertKey("Organ", model.QUXIANID.ToString())),
+                        Convert.ToInt32(api.ConvertKey("Organ", model.SCHOOLID.ToString())),
+                        "", this.ConvertGroupId(model.USERGroupsID));
+                    trans.Complete();
+                    TnF = true;
+                    TS = "新增成功！";
+                    rst = account.Id;
+                }
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(TraceEventType.Error, 0, e.Message);
+                TnF = false;
+                TS = "新增失败！";
+                rst = 0;
+            }
+
+            TempClass tc = new TempClass();
+            tc.BIs = TnF;
+            tc.Str = TS;
+            tc.I = rst;
+            return string.Format("{0};{1};{2}", tc.BIs, tc.Str, tc.I);
+        }
+
+        /// <summary>
+        /// 更新教师
+        /// </summary>
+        /// <param name="userModelBytes"></param>
+        /// <param name="userNameBytes"></param>
+        /// <param name="logContentBytes"></param>
+        /// <param name="resultBytes"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string TeacherUpdateReceive(byte[] userModelBytes, byte[] userNameBytes, byte[] logContentBytes, byte[] resultBytes)
+        {
+            bool TnF;
+            string TS;
+            int rst;
+            
+            try
+            {
+                CBK_SHERC_USERINFO model = (CBK_SHERC_USERINFO)(this.DeserializeObject(userModelBytes));
+                string userName = this.DeserializeObject(userNameBytes).ToString();
+                string logContent = this.DeserializeObject(logContentBytes).ToString();
+                string result = this.DeserializeObject(resultBytes).ToString();
+                Member_Account account = ToMemberAccount(model);
+                MemberBaseInfo info = ToMemberBaseInfo(model);
+                if (account.OutSourceId == null || account.OutSourceId < 1)
+                {
+                    return string.Format("{0};{1};{2}", false, "用户编号不能为空", 0);
+                }
+
+                APIBLL api = new APIBLL();
+
+                using (TransactionScope trans = new TransactionScope())
+                {
+                    Member_Account tempModel = api.GetMemberAccountByOutId(Convert.ToInt32(account.OutSourceId));
+                    if (tempModel != null)
+                    {
+                        int accountId = tempModel.Id;
+                        account.Id = accountId;
+                        info.AccountId = accountId;
+                        this.WriteLog(TraceEventType.Information, 1, "更新教师,外部编号：" + account.OutSourceId);
+                        api.UpdateMemberAccount(account);
+                        api.UpdateMemberBaseInfo(info);
+                        api.UpdateSubject(account.Id, api.GetKeyByAccountId("Member_TeachSubject", accountId), api.ConvertKey("Member_TeachSubject", model.XUEKEID));
+                        api.UpdateSection(account.Id, api.GetKeyByAccountId("Member_StudySection", accountId), api.ConvertKey("Member_StudySection", model.XUEDUANID));
+                        api.UpdateGrade(account.Id, api.GetKeyByAccountId("Member_TeachGrade", accountId), api.ConvertKey("Member_TeachGrade", model.NIANJIID));
+                        api.UpdateJob(account.Id, api.GetKeyByAccountId("Member_Job", accountId), api.ConvertKey("Member_Job", model.USERJOBID));
+                        api.UpdateRank(account.Id, api.GetKeyByAccountId("Member_WorkRank", accountId), api.ConvertKey("Member_WorkRank", model.ZHICHENGID));
+                        api.UpdateTrainingType(account.Id, api.GetKeyByAccountId("Member_TraningType", accountId), api.ConvertKey("Member_TraningType", model.TrainingTypeID));
+                        api.UpdateGroup(account.Id,
+                            Convert.ToInt32(api.ConvertKey("Organ", model.QUXIANID.ToString())),
+                            Convert.ToInt32(api.ConvertKey("Organ", model.SCHOOLID.ToString())),
+                            api.GetKeyByAccountId("PlatformManager_Detail", accountId),
+                            this.ConvertGroupId(model.USERGroupsID));
+                        trans.Complete();
+                        TnF = true;
+                        TS = "更新成功！";
+                        rst = accountId;
+                    }
+                    else
+                    {
+                        TnF = false;
+                        TS = "没有用户信息！";
+                        rst = 0;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(TraceEventType.Error, 0, e.Message);
+                TnF = false;
+                TS = "更新失败！";
+                rst = 0;
+            }
+
+            TempClass tc = new TempClass();
+            tc.BIs = TnF;
+            tc.Str = TS;
+            tc.I = rst;
+            return string.Format("{0};{1};{2}", tc.BIs, tc.Str, tc.I);
+        }
+
+        /// <summary>
+        /// 删除教师
+        /// </summary>
+        /// <param name="UserIDBytes"></param>
+        /// <param name="userNameBytes"></param>
+        /// <param name="logContentBytes"></param>
+        /// <param name="resultBytes"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string TeacherDeleteReceive(byte[] UserIDBytes, byte[] userNameBytes, byte[] logContentBytes, byte[] resultBytes)
+        {
+            bool TnF;
+            string TS;
+            int rst;
+            
+            try
+            {
+                int outId = Convert.ToInt32(this.DeserializeObject(UserIDBytes));
+                string userName = this.DeserializeObject(userNameBytes).ToString();
+                string logContent = this.DeserializeObject(logContentBytes).ToString();
+                string result = this.DeserializeObject(resultBytes).ToString();
+                APIBLL api = new APIBLL();
+
+                using (TransactionScope trans = new TransactionScope())
+                {
+                    Member_Account tempModel = api.GetMemberAccountByOutId(outId);
+                    if (tempModel != null)
+                    {
+                        int accountId = tempModel.Id;
+                        this.WriteLog(TraceEventType.Information, 1, "删除教师");
+                        api.DeleteMemberAccount(accountId);
+                        api.DeleteMemberBaseInfo(accountId);
+                        api.DeleteSubject(accountId);
+                        api.DeleteSection(accountId);
+                        api.DeleteGrade(accountId);
+                        api.DeleteJob(accountId);
+                        api.DeleteRank(accountId);
+                        api.DeleteTrainingType(accountId);
+                        api.DeleteGroup(accountId);
+                        trans.Complete();
+                        TnF = true;
+                        TS = "删除成功！";
+                        rst = accountId;
+                    }
+                    else
+                    {
+                        TnF = false;
+                        TS = "没有用户信息！";
+                        rst = 0;
+                    }
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(TraceEventType.Error, 0, e.Message);
+                TnF = false;
+                TS = "删除失败！";
+                rst = 0;
+            }
+
+            TempClass tc = new TempClass();
+            tc.BIs = TnF;
+            tc.Str = TS;
+            tc.I = rst;
+            return string.Format("{0};{1};{2}", tc.BIs, tc.Str, tc.I);
+        }
+
+        /// <summary>
+        /// 删除教师
+        /// </summary>
+        /// <param name="UserIDBytes"></param>
+        /// <param name="userNameBytes"></param>
+        /// <param name="logContentBytes"></param>
+        /// <param name="resultBytes"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string TeacherDelReceive(byte[] UserIDBytes, byte[] userNameBytes, byte[] logContentBytes, byte[] resultBytes)
+        {
+            bool TnF;
+            string TS;
+            int rst;
+
+            try
+            {
+                int outId = Convert.ToInt32(this.DeserializeObject(UserIDBytes));
+                string userName = this.DeserializeObject(userNameBytes).ToString();
+                string logContent = this.DeserializeObject(logContentBytes).ToString();
+                string result = this.DeserializeObject(resultBytes).ToString();
+                APIBLL api = new APIBLL();
+
+                using (TransactionScope trans = new TransactionScope())
+                {
+                    Member_Account tempModel = api.GetMemberAccountByOutId(outId);
+                    if (tempModel != null)
+                    {
+                        int accountId = tempModel.Id;
+                        this.WriteLog(TraceEventType.Information, 1, "删除教师");
+                        api.DeleteMemberAccount(accountId);
+                        api.DeleteMemberBaseInfo(accountId);
+                        api.DeleteSubject(accountId);
+                        api.DeleteSection(accountId);
+                        api.DeleteGrade(accountId);
+                        api.DeleteJob(accountId);
+                        api.DeleteRank(accountId);
+                        api.DeleteTrainingType(accountId);
+                        trans.Complete();
+                        TnF = true;
+                        TS = "删除成功！";
+                        rst = accountId;
+                    }
+                    else
+                    {
+                        TnF = false;
+                        TS = "没有用户信息！";
+                        rst = 0;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(TraceEventType.Error, 0, e.Message);
+                TnF = false;
+                TS = "删除失败！";
+                rst = 0;
+            }
+
+            TempClass tc = new TempClass();
+            tc.BIs = TnF;
+            tc.Str = TS;
+            tc.I = rst;
+            return string.Format("{0};{1};{2}", tc.BIs, tc.Str, tc.I);
+        }
+
+        //转换外部的权限Id
+        private string ConvertGroupId(string source)
+        {
+            string[] array = source.Split(',');
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < array.Length; i++)
+            {
+                switch (array[i])
+                {
+                    case "1":
+                        sb.Append("1,");
+                        continue;
+                    case "2":
+                        sb.Append("2,");
+                        continue;
+                    case "3":
+                        sb.Append("4,");
+                        continue;
+                    case "4":
+                        sb.Append("6,");
+                        continue;
+                    case "5":
+                        sb.Append("5,");
+                        continue;
+                    default:
+                        continue;
+                }
+            }
+            if (sb.Length > 0)
+                sb.Remove(sb.Length - 1, 1);
+            return sb.ToString();
+        }
+
+        #region 实体转换
+        private Organ_Detail ToOrgan(schoolcode model)
+        {
+            Organ_Detail organ = new Organ_Detail();
+            organ.Title = model.classname;
+            if (!string.IsNullOrEmpty(model.DistrictID))
+                organ.ParentId = Convert.ToInt32(model.DistrictID);
+            organ.OType = 2;
+            organ.CreateDate = DateTime.Now;
+            organ.PartitionId = 1;
+            if (!string.IsNullOrEmpty(model.XueQuID))
+                organ.StudyRegionId = Convert.ToInt32(model.XueQuID);
+            if (!string.IsNullOrEmpty(model.ID))
+                organ.OutSourceId = Convert.ToInt32(model.ID);
+            
+            return organ;
+        }
+
+        private Member_Account ToMemberAccount(CBK_SHERC_USERINFO model)
+        {
+            APIBLL api = new APIBLL();
+            Member_Account account = new Member_Account();
+            account.UserName = model.ENAME;
+            account.Password = model.PWD;
+            account.Email = model.EMAIL;
+            account.Status = 2;
+            string organ = model.SCHOOLID == null ? "" : model.SCHOOLID.ToString();
+            organ = api.ConvertKey("Organ", organ);
+            if (!string.IsNullOrEmpty(organ))
+                account.OrganId = Convert.ToInt32(organ);
+            
+            account.Pic = model.IMAGES;
+            account.Nickname = model.REALNAME;
+            account.IsRealName = !string.IsNullOrEmpty(model.REALNAME);
+            account.OutSourceId = model.ID;
+            account.CreateDate = DateTime.Now;
+            return account;
+        }
+
+        private MemberBaseInfo ToMemberBaseInfo(CBK_SHERC_USERINFO model)
+        {
+            APIBLL api = new APIBLL();
+            MemberBaseInfo info = new MemberBaseInfo();
+            info.TeacherNo = model.TEACHNUMBER;
+            info.RealName = model.REALNAME;
+            if (!string.IsNullOrEmpty(model.TELE) && model.TELE.IndexOf('@') != -1)
+            {
+                info.Mobile = model.TELE.Split('@')[1];
+                info.Phone = model.TELE.Split('@')[0];
+            }
+            else
+            {
+                info.Mobile = "";
+                info.Phone = "";
+            }
+            info.Address = model.ADDRESS;
+            info.PostCode = model.POST;
+            info.CredentialsType = 57;
+            info.CredentialsNumber = model.IDCARD;
+
+            if (model.SEX == "男")
+                info.Sex = 1;
+            else
+                info.Sex = 0;
+
+            if (string.IsNullOrEmpty(model.BIRTHDAY))
+                info.Birthday = new DateTime(1900, 1, 1);
+            else
+                info.Birthday = Convert.ToDateTime(model.BIRTHDAY);
+
+            string nation = model.NATIONALID == null ? "" : model.NATIONALID.ToString();
+            nation = api.ConvertKey("Nation", nation);
+            if (!string.IsNullOrEmpty(nation))
+                info.Nation = Convert.ToInt32(nation);
+            else
+                info.Nation = 0;
+
+            string political = model.POLITICSID == null ? "" : model.POLITICSID.ToString();
+            political = api.ConvertKey("Political", political);
+            if (!string.IsNullOrEmpty(political))
+                info.PoliticalStatus = Convert.ToInt32(political);
+            else
+                info.PoliticalStatus = 0;
+
+            string region = model.QUXIANID == null ? "" : model.QUXIANID.ToString();//RegionId是区县Id
+            region = api.ConvertKey("Organ", region);
+            if (!string.IsNullOrEmpty(region))
+                info.RegionId = Convert.ToInt32(region);
+            else
+                info.RegionId = 0;
+
+            string organ = model.SCHOOLID == null ? "" : model.SCHOOLID.ToString();
+            organ = api.ConvertKey("Organ", organ);
+            if (!string.IsNullOrEmpty(organ))
+                info.Organid = Convert.ToInt32(organ);
+            else
+                info.Organid = 0;
+
+            info.StudySection = model.XUEDUANID;
+            info.TraningObject = model.TrainingObjectID;
+            info.EduLevel = model.XUELIID;
+            info.EduDegree = model.XUEWEIID;
+            info.EduMajor = model.ZYDM;
+            info.GraduateSchool = model.SchoolTag;
+            info.GraduateTime = model.TIMESOFGRADUATE;
+            info.CreateDate = DateTime.Now;
+            return info;
+        }
+        #endregion
+
+        /// <summary>
+        /// 序列化二进制数据流
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private byte[] SerializeObject(object obj)
+        {
+            byte[] rst;
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Serialize(memoryStream, obj);
+            rst = memoryStream.GetBuffer();
+            memoryStream.Dispose();
+            memoryStream.Close();
+            return rst;
+        }
+
+        /// <summary>
+        /// 反序列化二进制数据流
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private object DeserializeObject(byte[] bytes)
+        {
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Binder = new UBinder();
+            return binaryFormatter.Deserialize(new MemoryStream(bytes));
+        }
+
+        private class UBinder : SerializationBinder
+        {
+            public override Type BindToType(string assemblyName, string typeName)
+            {
+                if (typeName.EndsWith("CBK_SHERC_USERINFO")) 
+                    return typeof(Dianda.AP.Model.CBK_SHERC_USERINFO);
+
+                if (typeName.EndsWith("schoolcode"))
+                    return typeof(Dianda.AP.Model.schoolcode);
+
+                if (typeName.EndsWith("SchoolManageTypeEnum"))
+                    return typeof(Web.API.SchoolManageTypeEnum);
+
+                if (typeName.EndsWith("TempClass"))
+                    return typeof(Dianda.AP.Model.TempClass);
+
+                Assembly ass = Assembly.GetExecutingAssembly();
+                return ass.GetType(typeName);
+            }
+
+        }
+    }
+}

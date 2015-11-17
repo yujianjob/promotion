@@ -1,0 +1,4 @@
+<div class="d-navmenu">
+	<a id="d_admindistrict_setup_period" href="/jnpx/dist/admindistrict/setup-period.html" class="i">学时标准设置</a>
+	<a id="d_admindistrict_setup_range" href="/jnpx/dist/admindistrict/setup-range.html" class="i">选课范围设置</a>
+</div>

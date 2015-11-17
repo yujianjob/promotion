@@ -1,0 +1,66 @@
+<h3>单元测试：计算机模型与计算机</h3>
+<p class="text-danger">答题规则 : 共10道题目，答对8题可以过关，限时20分钟。</p>
+<hr>
+
+<div class="item">
+	<div class="h">1. 下列叙述中正确的是（ ）.</div>
+	<div class="ques">
+		<label class="i"><input name="a1" class="chk" type="radio">计算机中数的存储和处理都使用二进制</label>
+		<label class="i"><input name="a1" class="chk" type="radio">存储一个汉字和一个英文字符所占用的存储空间相同</label>
+		<label class="i"><input name="a1" class="chk" type="radio">微型机只能进行数值计算</label>
+	</div>
+</div>
+
+<div class="item">
+	<div class="h">2. 十进制数76.25转换为二进制数，结果为（ ）。</div>
+	<div class="ques">
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001100.01</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001110.01</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1101100.1</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001100.1</label>
+	</div>
+</div>
+
+<div class="item">
+	<div class="h">3. 下列叙述中正确的是（ ）.</div>
+	<div class="ques">
+		<label class="i"><input name="a1" class="chk" type="radio">计算机中数的存储和处理都使用二进制</label>
+		<label class="i"><input name="a1" class="chk" type="radio">存储一个汉字和一个英文字符所占用的存储空间相同</label>
+		<label class="i"><input name="a1" class="chk" type="radio">微型机只能进行数值计算</label>
+	</div>
+</div>
+
+<div class="item">
+	<div class="h">4. 十进制数76.25转换为二进制数，结果为（ ）。</div>
+	<div class="ques">
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001100.01</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001110.01</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1101100.1</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001100.1</label>
+	</div>
+</div>
+
+<div class="item">
+	<div class="h">5. 下列叙述中正确的是（ ）.</div>
+	<div class="ques">
+		<label class="i"><input name="a1" class="chk" type="radio">计算机中数的存储和处理都使用二进制</label>
+		<label class="i"><input name="a1" class="chk" type="radio">存储一个汉字和一个英文字符所占用的存储空间相同存储一个汉字和一个英文字符所占用的存储空间相同存储一个汉字和一个英文字符所占用的存储空间相同存储一相同存储一个汉字和一同</label>
+		<label class="i"><input name="a1" class="chk" type="radio">微型机只能进行数值计算</label>
+	</div>
+</div>
+
+<div class="item">
+	<div class="h">6. 十进制数76.25转换为二进制数，结果为（ ）。</div>
+	<div class="ques">
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001100.01</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001110.01</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1101100.1</label>
+		<label class="i"><input name="a1" class="chk" type="checkbox">1001100.1</label>
+	</div>
+</div>
+
+<div>
+	<hr>
+	<button class="btn btn-success" style="width:150px;">提交</button>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:">重新做题</a>
+</div>

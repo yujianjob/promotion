@@ -1,0 +1,6 @@
+<manifest>
+  <id>Multicast_Fusion</id>
+  <streamType>live</streamType>
+  <duration>0</duration>
+  <media url="rtmfp://192.168.62.139/multicast" groupspec="G:01012105bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a010c160e666d732e6d756c7469636173742e6578616d706c65210e319c7f634d5283be021ad227dc065604af6950f46a93e911d3a3f9b6d245bbac011b00070ae00000fe7530" multicastStreamName="cctv"/>
+</manifest>

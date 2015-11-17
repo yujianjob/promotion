@@ -1,0 +1,118 @@
+﻿@using Dianda.AP.Model;
+@model Dianda.AP.Model.News_Detail
+@{
+    ViewBag.Title = "编辑公告信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript" src="~/Resources/Scripts/jquery.validate.js"></script>
+<script type="text/javascript" src="~/Resources/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+@using (Html.BeginForm("NewsEdit", "News", FormMethod.Post))
+{
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div class="d-form">
+                    <ol class="breadcrumb">
+                        <li><a href="/Prepare/News/Index">培训公告</a></li>
+                        <li class="active">编辑公告</li>
+                    </ol>
+                    <div id="blk_announcement_add" class="blk_announcement_add">
+                        <h4 class="text-center">编辑公告</h4>
+
+                            @Html.ValidationSummary(true)
+                            <div class="row">
+                                <div class="col-xs-12" style="display:none;">
+                                    <div class="form-group">
+                                        <label class="control-label">@Html.LabelFor(model => model.Id) <span class="text-danger">*</span></label>
+                                        @Html.TextBoxFor(model => model.Id, new { @class = "form-control", @maxlength = "20" })
+                                        <p style="color: red;">@Html.ValidationMessageFor(model => model.Id)</p>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">@Html.LabelFor(model => model.Title) <span class="text-danger">*</span></label>
+                                        @Html.TextBoxFor(model => model.Title, new { @class = "form-control", @maxlength = "20" })
+                                        <p style="color: red;">@Html.ValidationMessageFor(model => model.Title)</p>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">@Html.LabelFor(model => model.PublishDate) <span class="text-danger">*</span></label>
+                                        @Html.TextBoxFor(model => model.PublishDate, new { @class = "form-control input-date", @maxlength = "30", @style = "width:200px" })
+                                        <p style="color: red;">@Html.ValidationMessageFor(model => model.PublishDate)</p>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">@Html.LabelFor(model => model.Content) <span class="text-danger">*</span></label>
+                                        @Html.TextAreaFor(model => model.Content, new { @class = "form-control", @style = "height: 300px;" })
+                                        <p style="color: red;">@Html.ValidationMessageFor(model => model.Content)</p>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">@Html.LabelFor(model => model.sort) <span class="text-danger">*</span></label>
+                                        @Html.TextBoxFor(model => model.sort, new { @class = "form-control", @style = "width:300px" })
+                                        <p style="color: red;">@Html.ValidationMessageFor(model => model.sort)</p>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">@Html.LabelFor(model => model.Display) <span class="text-danger">*</span></label>
+                                        @Html.EditorFor(model => model.Display)
+                                        <p style="color: red;">@Html.ValidationMessageFor(model => model.Display)</p>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    @*<button class="btn btn-success" style="width: 150px;">提交</button>*@
+                                    <input type="submit" class="btn btn-success" id="submit" value="提交" />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Prepare/News/Index?pageIndex=@ViewData["pageIndex"]">取消</a>
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            $('input.input-date').datepicker({ });
+        });
+    });
+
+    $(document).ready(function () {
+        var id = "@Model.Id";
+        $("#Id").val(id);
+    })
+
+    $(".btn").click(function () {
+        var title = $("#Title").val();
+        var content = $("#Content").val();
+        if (title.length >= 100) {
+            Alert("标题长度不能超过100字！！！");
+            return false;
+        } else if (content.length >= 4000) {
+            Alert("内容长度不能超过4000字！！！");
+            return false;
+        }
+        var sort = $("#sort").val();
+        if (parseInt(sort) <= 0) {
+            Alert("请输入正确的显示顺序！！！");
+            return false;
+        }
+    })
+</script>

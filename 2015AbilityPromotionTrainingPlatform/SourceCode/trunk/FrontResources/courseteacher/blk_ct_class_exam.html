@@ -1,0 +1,90 @@
+<div class="form-group form-inline filter">
+  <select class="form-control">
+    <option>全部状态</option>
+    <option>未提交</option>
+    <option>未打分</option>
+    <option>已打分</option>
+  </select>
+  <div class="action">
+    <a href="#">查看答题统计</a>
+  </div>
+</div>
+
+<div class="i">
+  <div class="t">
+    <div class="thumb"><img src="/jnpx/dist/resource/user/1-48x48.png"></div>
+    <div class="name">李红</div>
+    <div class="source trim">徐汇区东安小学</div>
+  </div>
+  <div class="form-group form-inline pg">
+    <span class="title">结业考试</span>&nbsp;
+    <span class="date">截止日期 : 2015-09-29</span>
+    <a href="javascript:;">查看答题卷</a>
+    <a href="javascript:;" onclick="$(this).parent().find('.action .edit').toggle()">打分</a>
+    <div class="action">
+      <div class="edit">
+        <input type="text" class="form-control" style="width:60px;" value="78">&nbsp;
+        <button type="button" class="btn btn-success">保存</button>&nbsp;
+        <a href="javascript:;">取消</a>
+      </div>
+      <span class="score"></span>
+    </div>
+  </div>
+</div>
+
+<div class="i">
+  <div class="t">
+    <div class="thumb"><img src="/jnpx/dist/resource/user/2-48x48.png"></div>
+    <div class="name">李红</div>
+    <div class="source trim">徐汇区东安小学</div>
+  </div>
+  <div class="form-group form-inline pg">
+    <span class="title">结业考试</span>&nbsp;
+    <span class="date">截止日期 : 2015-09-29</span>
+    <a href="javascript:;">查看答题卷</a>
+    <a href="javascript:;" onclick="$(this).parent().find('.action .edit').toggle()">重新打分</a>
+    <div class="action">
+      <div class="edit">
+        <input type="text" class="form-control" style="width:60px;" value="78">&nbsp;
+        <button type="button" class="btn btn-success">保存</button>&nbsp;
+        <a href="javascript:;">取消</a>
+      </div>
+      <span class="score">得分 : 78</span>
+    </div>
+  </div>
+</div>
+
+<div class="i">
+  <div class="t">
+    <div class="thumb"><img src="/jnpx/dist/resource/user/1-48x48.png"></div>
+    <div class="name">王晓明</div>
+    <div class="source trim">徐汇区东安小学</div>
+  </div>
+  <div class="form-group form-inline pg">
+    <span class="title">结业考试</span>&nbsp;
+    <span class="date">截止日期 : 2015-09-29</span>
+    <span class="status text-danger">未提交</span>&nbsp;
+    <div class="action">
+      &nbsp;
+    </div>
+  </div>
+</div>
+
+<hr>
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

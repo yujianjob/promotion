@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9A2722DD-A568-46A3-AADC-1BEF5D62A13B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dianda.AP.BLL</RootNamespace>
+    <AssemblyName>Dianda.AP.BLL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XXW.Enum">
+      <HintPath>..\..\Tools\SolutionLib\XXW.Enum.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="accountBLL.cs" />
+    <Compile Include="AccountEditBLL.cs" />
+    <Compile Include="answer_infoBLL.cs" />
+    <Compile Include="APIBLL.cs" />
+    <Compile Include="CertificateBLL.cs" />
+    <Compile Include="ClassDomain\Course_UnitContentBLL.cs" />
+    <Compile Include="ClassDomain\Member_AccountBLL.cs" />
+    <Compile Include="ClassDomain\Member_ClassRegisterBLL.cs" />
+    <Compile Include="ClassDomain\Organ_DetailBLL.cs" />
+    <Compile Include="ClassDomain\PagingQueryBll.cs" />
+    <Compile Include="Class_ApplyApplicationBLL.cs" />
+    <Compile Include="Class_DetailBLL.cs" />
+    <Compile Include="Class_GroupBLL.cs" />
+    <Compile Include="Class_GroupMemberBLL.cs" />
+    <Compile Include="Class_HomeWorkBLL.cs" />
+    <Compile Include="Class_HomeWorkMissionBLL.cs" />
+    <Compile Include="Class_NoticeBLL.cs" />
+    <Compile Include="Class_StudySectionBLL.cs" />
+    <Compile Include="Class_TeachGradeBLL.cs" />
+    <Compile Include="Class_TeachRankBLL.cs" />
+    <Compile Include="Class_TeachSubjectBLL.cs" />
+    <Compile Include="Class_TraningCommentAnswerBLL.cs" />
+    <Compile Include="Class_TraningCommentQuestionBLL.cs" />
+    <Compile Include="Class_TraningCommentResultBLL.cs" />
+    <Compile Include="Course_DetailBLL.cs" />
+    <Compile Include="Course_OutCourseRecordBLL.cs" />
+    <Compile Include="Course_UnitContentBLL.cs" />
+    <Compile Include="Course_UnitDetailBLL.cs" />
+    <Compile Include="Course_UnitHomeWorkBLL.cs" />
+    <Compile Include="Course_UnitQuestionBLL.cs" />
+    <Compile Include="Course_UnitReplyDetailBLL.cs" />
+    <Compile Include="Course_UnitTestBLL.cs" />
+    <Compile Include="EntranceHomeBLL.cs" />
+    <Compile Include="EntranceLoginBLL.cs" />
+    <Compile Include="LearnMyCourseBLL.cs" />
+    <Compile Include="LearnMyLearnBLL.cs" />
+    <Compile Include="LearnMyPracticeBLL.cs" />
+    <Compile Include="LearnMyTestBLL.cs" />
+    <Compile Include="Member_AccountBLL.cs" />
+    <Compile Include="Member_BaseInfoBLL.cs" />
+    <Compile Include="Member_ClassCommentBLL.cs" />
+    <Compile Include="Member_ClassContentNoteBLL.cs" />
+    <Compile Include="Member_ClassContentTimeRecordBLL.cs" />
+    <Compile Include="Member_ClassRegisterApplicationBLL.cs" />
+    <Compile Include="Member_ClassRegisterBLL.cs" />
+    <Compile Include="Member_ClassUnitContentScheduleBLL.cs" />
+    <Compile Include="Member_ContentAnswerResultBLL.cs" />
+    <Compile Include="Member_CourseContentAnswerBLL.cs" />
+    <Compile Include="Member_CourseContentTestAnswerBLL.cs" />
+    <Compile Include="Member_CourseContentTestAnswerResultBLL.cs" />
+    <Compile Include="Member_Course_UnitContentTestAnswerResultBLL.cs" />
+    <Compile Include="Member_InfoFKBLL.cs" />
+    <Compile Include="Member_JobBLL.cs" />
+    <Compile Include="Member_PlanOverallBLL.cs" />
+    <Compile Include="Member_PracticalCourseApplicationBLL.cs" />
+    <Compile Include="Member_PracticalCourseBLL.cs" />
+    <Compile Include="Member_StudySectionBLL.cs" />
+    <Compile Include="Member_TeachGradeBLL.cs" />
+    <Compile Include="Member_TeachSubjectBLL.cs" />
+    <Compile Include="Member_TrainingReditBLL.cs" />
+    <Compile Include="LearnMyCreditBLL.cs" />
+    <Compile Include="Member_TraningTypeBLL.cs" />
+    <Compile Include="Member_WorkRankBLL.cs" />
+    <Compile Include="NationalAbility_CourseBLL.cs" />
+    <Compile Include="NationalAbility_SCourseFieldInCourseBLL.cs" />
+    <Compile Include="News_DetailBLL.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="Organ_DetailBLL.cs" />
+    <Compile Include="Organ_StudyRegionBLL.cs" />
+    <Compile Include="Partition_DetailBLL.cs" />
+    <Compile Include="PeriodBLL.cs" />
+    <Compile Include="PlanExemptionBLL.cs" />
+    <Compile Include="PlatformManager_DetailBLL.cs" />
+    <Compile Include="PlatformManager_GroupsBLL.cs" />
+    <Compile Include="PlatformManager_RoleBLL.cs" />
+    <Compile Include="PracticalCourse_AttachmentBLL.cs" />
+    <Compile Include="PracticalCourse_DetailBLL.cs" />
+    <Compile Include="PracticalCourse_RoleBLL.cs" />
+    <Compile Include="PracticalCourse_RoleCreditsBLL.cs" />
+    <Compile Include="PrepareTrainingApplyBLL.cs" />
+    <Compile Include="PrepareTrainingCheckBLL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="recommendBLL.cs" />
+    <Compile Include="scoreBLL.cs" />
+    <Compile Include="Sys_MessageBLL.cs" />
+    <Compile Include="Sys_ParametersBLL.cs" />
+    <Compile Include="Training_CreditsBLL.cs" />
+    <Compile Include="Traning_ApplyApplicationBLL.cs" />
+    <Compile Include="Training_PlanBLL.cs" />
+    <Compile Include="Traning_AttachmentBLL.cs" />
+    <Compile Include="Traning_CategoryBLL.cs" />
+    <Compile Include="Traning_DetailBLL.cs" />
+    <Compile Include="Traning_FieldBLL.cs" />
+    <Compile Include="Traning_InfoFkBLL.cs" />
+    <Compile Include="Traning_OutCourseTypeBLL.cs" />
+    <Compile Include="Traning_TeacherBLL.cs" />
+    <Compile Include="Traning_TopicBLL.cs" />
+    <Compile Include="UserBLL.cs" />
+    <Compile Include="UtilsBLL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dianda.AP.DAL\Dianda.AP.DAL.csproj">
+      <Project>{7521e120-f6d5-4b76-a30c-177d58f3b8e9}</Project>
+      <Name>Dianda.AP.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dianda.AP.Model\Dianda.AP.Model.csproj">
+      <Project>{e86c34d1-3382-4252-948b-e882cf515e72}</Project>
+      <Name>Dianda.AP.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\Dianda.AP.BLL.csprojResolveAssemblyReference.cache" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\Dianda.AP.BLL.dll" />
+    <Content Include="bin\Debug\Dianda.AP.BLL.pdb" />
+    <Content Include="bin\Debug\Dianda.AP.DAL.dll" />
+    <Content Include="bin\Debug\Dianda.AP.DAL.pdb" />
+    <Content Include="bin\Debug\Dianda.AP.Model.dll" />
+    <Content Include="bin\Debug\Dianda.AP.Model.pdb" />
+    <Content Include="bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll" />
+    <Content Include="bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll" />
+    <Content Include="obj\Debug\Dianda.AP.BLL.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\Dianda.AP.BLL.dll" />
+    <Content Include="obj\Debug\Dianda.AP.BLL.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Release\" />
+    <Folder Include="obj\Debug\TempPE\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

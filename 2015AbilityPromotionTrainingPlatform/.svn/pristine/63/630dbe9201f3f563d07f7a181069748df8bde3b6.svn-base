@@ -1,0 +1,228 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 课程评价";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-11">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+
+                <div id="blk_ln_course_evaluate" class="blk_ln_course_evaluate" data-km-htm="blk_ln_course_evaluate.html">
+                    <h3>课程评价</h3>
+                    <p class="text-danger">请如实填写您对于本次课程的评价内容，包括课程内容、安排、讲师、辅导员等课程教学的评价，完成评价作为课程可结业的必要条件。</p>
+                    <hr>
+
+                    <div id="commItems">
+
+                        @if (ViewBag.List_Class_TraningCommentQuestion != null && ViewBag.List_Class_TraningCommentQuestion.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Class_TraningCommentQuestion> List_TraningCommentQuestion = ViewBag.List_Class_TraningCommentQuestion;
+                            for (int i = 1; i <= List_TraningCommentQuestion.Count; i++)
+                            {
+                                Dianda.AP.Model.Class_TraningCommentQuestion CommentModel = List_TraningCommentQuestion[i - 1];
+                                var Qtype = "";
+                                switch (CommentModel.QTtype)
+                                {
+                                    case 1:
+                                        Qtype = "【单选题】";
+                                        break;
+                                    case 2:
+                                        Qtype = "【多选题】";
+                                        break;
+                                    case 3:
+                                        Qtype = "【判断题】";
+                                        break;
+                                }
+
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var CommentQuestion = jr.Deserialize<List<Dianda.AP.Model.Class_TraningCommentQuestionOther>>(CommentModel.Question);
+
+                            <div class="item">
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Qtype @Html.Raw(CommentModel.Content) </div>
+                                <div class="ques" id="comm_@CommentModel.Id">
+                                    <input type="hidden" value="@CommentModel.Id" itemid="@CommentModel.Verson"/>
+                                    @if (CommentModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in CommentQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@CommentModel.Id" itemid="@Quitem.Id" value="@Quitem.Credits" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (CommentModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in CommentQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@CommentModel.Id" itemid="@Quitem.Id" value="@Quitem.Credits" class="chk" type="checkbox" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (CommentModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in CommentQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@CommentModel.Id" itemid="@Quitem.Id" value="@Quitem.Credits" class="chk" type="radio" />@Html.Raw(Quitem.Content == "1" ? '对' : '错')</label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            }
+                        }
+                    </div>
+                    <div>
+                        <hr>
+                        <button class="btn btn-success" id="btnSubmit" style="width: 150px;">提交</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:" id="refash">重新做题</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-1">
+                <div class="d-section-menu">
+                    <a href="/Prepare/ClassAddressList/Index?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">班级通讯录</a>
+                    <a href="/Prepare/ClassMessage/List?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">班级通知</a>
+                    <a href="/Learn/LearnOnLine/LearnNoteView?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">笔记本</a>
+                    <a href="/Learn/LearnOnLine/LearnOnLineEvaluateView?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">课程评价</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            /****************************************************** 提交 开始 ******************************************************/
+            /* 页面加载后立即执行的代码写在这里 */
+            $("#btnSubmit").click(function () {
+                if (false == window.confirm("提交课程评价.确定继续吗?", "友情提示")) {
+                    return;
+                }
+
+                var UnfinishedCount = 0;
+                //得到用户的考题答案
+                var arrExamResult = new Array();
+                var jsonData = "";
+                var parent = $("#commItems");
+                if (parent != null) {
+                    var inputs = parent.find('input');
+                    var iLen = inputs.length;
+
+                    for (i = 0; i < iLen; i++) {
+
+                        if ($("input:hidden")[i] == null) break;
+
+                        var Id = $("input:hidden")[i].value;
+
+                        var Verson = $($("input:hidden")[i]).attr("itemid");//获取题目版本号
+                        var quesChosenItems = $("#comm_" + Id).find('input');//获取题目的选项
+                        var itemAnswer = "";//用户答案集合
+                        var itemCerdit = "";//此题选项的分数集合
+
+                        if (quesChosenItems.length <= 0) continue;
+
+                        for (var j = 0; j < quesChosenItems.length; j++) {
+                            var item = quesChosenItems[j];
+
+                            if (item.tagName == "INPUT" && item.type == "radio") {
+                                if (item.checked) {
+                                    itemAnswer = $(item).attr("itemid"); //选中答案
+                                    itemCerdit = $(item).attr("value"); //选中答案的分值
+                                }
+                            }
+                            else if (item.tagName == "INPUT" && item.type == "checkbox") {
+                                if (item.checked) {
+                                    if (itemAnswer == "") {
+                                        itemAnswer = $(item).attr("itemid");
+                                        itemCerdit = $(item).attr("value");
+                                    }
+                                    else {
+                                        itemAnswer += "," + $(item).attr("itemid");
+                                        itemCerdit += "," + $(item).attr("value");
+                                    }
+                                }
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "text") {
+                                if (item.checked) {
+                                    itemAnswer = $(item).attr("itemid");
+                                    itemCerdit = $(item).attr("value");
+                                }
+                            }
+                        }
+                        UnfinishedCount = itemAnswer == "" ? UnfinishedCount + 1 : UnfinishedCount;
+                        itemAnswer = itemAnswer == "" ? "-1" : itemAnswer;
+                        itemCerdit = itemCerdit == "" ? "0" : itemCerdit;
+
+                        if (jsonData == "")
+                            jsonData = "{Id:" + Id + ",Answer:'" + itemAnswer + "',Credits:'" + itemCerdit + "',Verson:'" + Verson + "',ClassId:" +@ViewBag.ClassId +",TrainingId:" +@ViewBag.TrainingId +"}";
+                        else
+                            jsonData += "," + "{Id:" + Id + ",Answer:'" + itemAnswer + "',Credits:'" + itemCerdit + "',Verson:'" + Verson + "',ClassId:" +@ViewBag.ClassId +",TrainingId:" +@ViewBag.TrainingId +"}";
+                    }
+                }
+
+                jsonData = "[" + jsonData + "]";
+
+                if (UnfinishedCount > 0) {
+                    if (false == window.confirm("当前测试中您有 " + UnfinishedCount + " 道题目未完成答题,确定继续吗?")) {
+                        return;
+                    }
+                }
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/LearnOnLineEvaluateEdit',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        var pagePath = window.location.protocol + "//" + window.location.host + "/" + 'Course/CourseCreate/CourseLearn?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId';
+                        Alert(data.Msg, 'window.location = \'' + pagePath + '\'');
+                    },
+                    error: function () {
+                    }
+                });
+            });
+            /****************************************************** 提交 结束 ******************************************************/
+
+            /****************************************************** 重新做题 开始 ******************************************************/
+            //重新做题
+            $("#refash").click(function () {
+                if (confirm("重新做题将清空当前页面,确定继续么?")) {
+
+                    var parent = $("#commItems");
+                    if (parent != null) {
+                        var inputs = parent.find('input');
+                        for (var iLen = inputs.length, i = 0; i < iLen; i++) {
+                            if (inputs[i].tagName == "INPUT" && inputs[i].type == "text") {
+                                inputs[i].value = "";
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "radio") {
+
+                                $("input:radio").attr("checked", false);
+                                //$("input:radio[name='a1']").attr("checked", false);
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "checkbox") {
+                                $("input:checkbox").attr("checked", false);
+                            }
+                        }
+                    }
+
+                }
+            });
+            /******************************************************重新做题 结束******************************************************/
+
+        });
+    });
+</script>

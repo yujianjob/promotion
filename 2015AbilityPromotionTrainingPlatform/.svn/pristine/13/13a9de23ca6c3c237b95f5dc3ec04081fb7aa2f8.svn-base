@@ -1,0 +1,640 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using Dianda.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using Web.Code;
+
+namespace Web.Areas.Market.Controllers
+{
+    public class CoursemarketController : Controller
+    {
+        #region 教师/学校--课程超市列表
+        /// <summary>
+        /// 教师--课程超市列表
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="organId"></param>
+        /// <param name="field"></param>
+        /// <param name="searchTitle"></param>
+        /// <returns></returns>
+        public ActionResult CoursemarketSingleList(int? pageIndex, int? organId, int? field, string searchTitle)
+        {
+            ViewBag.Title = "课程超市";
+
+            int i = TypeConverter.ObjectToInt(pageIndex, 1);
+            int groupId = Code.SiteCache.Instance.GroupId;//4,学校管理7，普通教师
+            Organ_DetailBLL organ_DetailBLL = new Organ_DetailBLL();
+            int ParentOrganId = (int)organ_DetailBLL.GetModel(Code.SiteCache.Instance.OrganId).ParentId;
+            int oType = (int)organ_DetailBLL.GetModel(Code.SiteCache.Instance.OrganId).OType;
+            ViewBag.OType = oType;
+            int partitionId = Code.SiteCache.Instance.LoginInfo.PartitionId;
+            Member_BaseInfoBLL member_BaseInfoBLL = new Member_BaseInfoBLL();
+            Member_BaseInfo m = member_BaseInfoBLL.GetModelByAccountId(Code.SiteCache.Instance.LoginInfo.UserId);
+            string where = " and td.PartitionId='" + partitionId + "'and cd.PlanId='" + Code.SiteCache.Instance.PlanId + "' and cd.PartitionId='" + partitionId + "'";
+
+            if (oType == 1)
+            {
+                ViewBag.OrganList = organ_DetailBLL.GetListModel(" OType=1 and Delflag='false'");
+                where += " and (td.OrganId='" + Code.SiteCache.Instance.OrganId + "'";
+            }
+            else if (oType == 2)
+            {
+                ViewBag.OrganList = organ_DetailBLL.GetListModel(" OType=5 and Delflag='false'");
+                if (m != null &&m.WorkRank!=null&& m.WorkRank > 0)
+                {
+                    where += " and (css.StudySection in(select StudySection from Member_StudySection where AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and Delflag='false')or cd.StudyLevel=1)";
+                    where += " and (cts.TeachSubject in(select TeachSubject from Member_TeachSubject where AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and Delflag='false')or cd.Subject=1)";
+                    where += " and (ctg.TeachGrade in(select TeachGrade from Member_TeachGrade where AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and Delflag='false')or cd.TeachGrade=1)";
+                    where += " and (CHARINDEX('," + m.WorkRank + ",',','+cd.TeachRank+',')>0 or cd.TeachRank='0')";
+                    where += " and (CHARINDEX('," + Code.SiteCache.Instance.OrganId + ",',','+cd.OrganRange+',')>0 or cd.OrganRange='0')";
+                    where += " and (td.OrganId='" + ParentOrganId + "' or td.Range=2)";
+                }
+                else
+                {
+                    where += "and 1=2";
+                }
+            }
+            if (organId != null && organId > 0)
+            {
+                where += " and td.OrganId='" + organId + "' ";
+            }
+            else { organId = -1; }
+            if (field != null && field > 0)
+            { where += " and td.TraingField='" + field + "' "; }
+            if (!string.IsNullOrEmpty(searchTitle))
+            { where += " and td.Title like'%" + searchTitle + "%' "; }
+            //organ_DetailBLL.GetModel(3).PartitionId;
+            Traning_DetailBLL traning_DetailBLL = new Traning_DetailBLL();
+            int total = 0;
+            List<Traning_Detail> tdlist = traning_DetailBLL.GetListHasClass(10, i, where, "Id", out total);
+
+            ViewData["searchTitle"] = string.IsNullOrEmpty(searchTitle) ? "" : searchTitle;
+            ViewData["organId"] = organId;
+            ViewData["field"] = field;
+            ViewData["partitionId"] = partitionId;
+            ViewData["groupId"] = groupId;
+            ViewBag.pageIndex = i;
+            ViewBag.totalPage = total;
+
+            Traning_FieldBLL traning_FieldBLL = new Traning_FieldBLL();
+
+            List<Traning_Field> traning_FieldList = traning_FieldBLL.GetList(" Delflag='false' and display='1'", " Sort");
+            ViewBag.FieldList = traning_FieldList;
+
+            List<Traning_FieldTrainingCount> list = new List<Traning_FieldTrainingCount>(traning_FieldList.Count);
+            int sum = 0;
+            for (int j = 0; j < traning_FieldList.Count; j++)
+            {
+                string cwhere = " and td.PartitionId='" + partitionId + "'and cd.PlanId='" + Code.SiteCache.Instance.PlanId + "' and cd.PartitionId='" + partitionId + "'";
+                if (oType == 1)
+                {
+                    cwhere += " and (td.OrganId='" + Code.SiteCache.Instance.OrganId + "'";
+                }
+                else if (oType == 2)
+                {
+                    if (m != null && m.WorkRank != null && m.WorkRank > 0)
+                    {
+                        cwhere += " and (css.StudySection in(select StudySection from Member_StudySection where AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and Delflag='false')or cd.StudyLevel=1)";
+                        cwhere += " and (cts.TeachSubject in(select TeachSubject from Member_TeachSubject where AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and Delflag='false')or cd.Subject=1)";
+                        cwhere += " and (ctg.TeachGrade in(select TeachGrade from Member_TeachGrade where AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and Delflag='false')or cd.TeachGrade=1)";
+                        cwhere += " and (CHARINDEX('," + m.WorkRank + ",',','+cd.TeachRank+',')>0 or cd.TeachRank='0')";
+                        cwhere += " and (CHARINDEX('," + Code.SiteCache.Instance.OrganId + ",',','+cd.OrganRange+',')>0 or cd.OrganRange='0')";
+                    }
+                    else
+                    {
+                        cwhere += "and 1=2";
+                    }
+                    cwhere += " and (td.OrganId='" + ParentOrganId + "' or td.Range=2)";
+                }
+                if (organId != null && organId > 0)
+                {
+                    cwhere += " and td.OrganId='" + organId + "' ";
+                }
+                cwhere += " and td.TraingField='" + traning_FieldList[j].Id + "' ";
+                if (!string.IsNullOrEmpty(searchTitle))
+                { where += " and td.Title like'%" + searchTitle + "%' "; }
+                int ctotal = 0;
+                List<Traning_Detail> clist = traning_DetailBLL.GetListHasClass(10, 1, cwhere, "Id", out ctotal);
+                Traning_FieldTrainingCount c = new Traning_FieldTrainingCount();
+                c.Count = ctotal;
+                list.Add(c);
+                sum += ctotal;
+            }
+            ViewBag.Sum = sum;
+            ViewBag.FCount = list;
+            return View(tdlist);
+        }
+        #endregion
+
+        #region 教师/学校--课程详细
+        /// <summary>
+        /// 教师--课程详细
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult CoursemarketSingleEnrollC(int Id)
+        {
+            int groupId = Code.SiteCache.Instance.GroupId;//4,学校管理7，普通教师
+            //int groupId = 7;
+            ViewData["groupId"] = groupId;
+            Traning_DetailBLL traning_DetailBLL = new Traning_DetailBLL();
+            Traning_Detail traning_Detail = new Traning_Detail();
+            traning_Detail = traning_DetailBLL.GetModel(Id, "");
+            return View(traning_Detail);
+        }
+        #endregion
+
+        #region 教师/学校--课程详细-班级列表
+        /// <summary>
+        /// 教师--课程详细-班级列表
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="Type"></param>
+        /// <returns></returns>
+        public ActionResult CoursemarketTCList(int? pageIndex, int Id, int Type)
+        {
+            //int usertype = 2;
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            int groupId = cache.GroupId;//4,学校管理7，普通教师
+            //int groupId = 7;
+            ViewData["groupId"] = groupId;
+            int i = TypeConverter.ObjectToInt(pageIndex, 1);
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            IList<Class_Detail> clist = new List<Class_Detail>();
+            int total = 0;
+            int partitionId = 1;
+            string where = " display=1 and delflag='false' and TraningId='" + Id + "' and PartitionId='" + partitionId + "' and status in (3,4)";
+            switch (Type)
+            {
+                case 1: where += " and GETDATE()>SignUpStartTime and GETDATE()<SignUpEndTime"; break;
+                case 2: where += " and GETDATE()>OpenClassFrom and GETDATE()<OpenClassTo"; break;
+                case 3: where += " and GETDATE()>OpenClassTo  "; break;
+            }
+            clist = DataTableToListHelper<Dianda.AP.Model.Class_Detail>.ConvertToModel(PagingQueryBll.GetPagingDataTable(@"Class_Detail", where, "Id", i, out total, "*", 5));
+            ViewBag.pageIndex = i;
+            ViewBag.totalPage = total;
+            ViewBag.type = Type;
+            return View(clist);
+        }
+        #endregion
+
+        #region 教师--班级详细
+        /// <summary>
+        /// 教师--班级详细
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CoursemarketSingleEnroll(int Id)
+        {
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            Class_Detail class_Detail = new Class_Detail();
+            class_Detail = class_DetailBLL.GetModel(Id);
+            return View(class_Detail);
+        }
+        #endregion
+
+        #region 教师--报名申请
+        /// <summary>
+        /// 教师--报名申请
+        /// </summary>
+        /// <param name="ClassId"></param>
+        /// <returns></returns>
+        public JsonResult ClassRegister(int ClassId)
+        {
+            Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+            Member_ClassRegister member_ClassRegister = new Member_ClassRegister();
+            member_ClassRegister.ClassId = ClassId;
+            member_ClassRegister.PlanId = Code.SiteCache.Instance.PlanId;
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            member_ClassRegister.TrainingId = class_DetailBLL.GetModel(ClassId).TraningId;
+            member_ClassRegister.AccountId = Code.SiteCache.Instance.LoginInfo.UserId;
+            member_ClassRegister.Status = 1;
+            member_ClassRegister.ManagerId = Code.SiteCache.Instance.LoginInfo.UserId;
+            member_ClassRegister.Delflag = false;
+            member_ClassRegister.CreateDate = DateTime.Now;
+
+            List<Member_ClassRegister> listno = member_ClassRegisterBLL.GetList(" ClassId='" + ClassId + "' and AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and delflag='false' and Status in (1,2,4)", "");
+            if (listno.Count > 0)
+            {
+                return Json(new { Code = -1, Msg = "您已经提交了报名申请" }, JsonRequestBehavior.AllowGet);
+            }
+            List<Member_ClassRegister> listup = member_ClassRegisterBLL.GetList(" ClassId='" + ClassId + "' and AccountId='" + Code.SiteCache.Instance.LoginInfo.UserId + "' and delflag='false' and Status in (3,5)", "");
+            if (listup.Count > 0)
+            {
+                member_ClassRegister.Id = listup[0].Id;
+                member_ClassRegister.Status = 1;
+                member_ClassRegisterBLL.Update(member_ClassRegister);
+                if (member_ClassRegister.Id > 0)
+                {
+                    Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+                    Member_ClassRegisterApplication member_ClassRegisterApplication = new Member_ClassRegisterApplication();
+                    member_ClassRegisterApplication.ClassRegisterId = member_ClassRegister.Id;
+                    member_ClassRegisterApplication.Status = 1;
+                    member_ClassRegisterApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                    member_ClassRegisterApplication.CreateDate = DateTime.Now;
+                    member_ClassRegisterApplication.Delflag = false;
+                    member_ClassRegisterApplicationBLL.Add(member_ClassRegisterApplication);
+                    return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+                }
+                else { return Json(new { Code = -1, Msg = "提交失败" }, JsonRequestBehavior.AllowGet); }
+            }
+            else
+            {
+                int RegisterId = member_ClassRegisterBLL.Add(member_ClassRegister);
+                if (RegisterId > 0)
+                {
+                    Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+                    Member_ClassRegisterApplication member_ClassRegisterApplication = new Member_ClassRegisterApplication();
+                    member_ClassRegisterApplication.ClassRegisterId = RegisterId;
+                    member_ClassRegisterApplication.Status = 1;
+                    member_ClassRegisterApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                    member_ClassRegisterApplication.CreateDate = DateTime.Now;
+                    member_ClassRegisterApplication.Delflag = false;
+                    member_ClassRegisterApplicationBLL.Add(member_ClassRegisterApplication);
+                    return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+                }
+                else { return Json(new { Code = -1, Msg = "提交失败" }, JsonRequestBehavior.AllowGet); }
+            }
+        }
+        #endregion
+
+        #region 学校--课程详细
+        /// <summary>
+        /// 学校--课程详细
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult CoursemarketEnroll(int Id)
+        {
+            ViewBag.Title = "课程批量报名";
+            ViewBag.OrganId = 1;
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            Class_Detail class_Detail = new Class_Detail();
+            class_Detail = class_DetailBLL.GetModel(Id);
+            return View(class_Detail);
+        }
+        #endregion
+
+        #region 学校--教师选择list
+        /// <summary>
+        /// 学校--教师选择list
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="OrganId"></param>
+        /// <returns></returns>
+        public ActionResult ChooseTeachersList(int? pageIndex,int ClassId)
+        {
+            int i = TypeConverter.ObjectToInt(pageIndex, 1);
+            Member_AccountBLL member_AccountBLL = new Member_AccountBLL();
+            List<Member_AccountBaseInfo> member_AccBaseInfoList = new List<Member_AccountBaseInfo>();
+            int total = 0;
+            string where = " and ma.status=2 and ma.delflag='false' and (mpc.delflag='false' or mpc.Delflag is null) and ma.OrganId='" + Code.SiteCache.Instance.ManageOrganId + "'";
+            member_AccBaseInfoList = member_AccountBLL.GetMABList(12, i, where, ClassId,"Id", out total);
+            ViewBag.pageIndex = i;
+            ViewBag.totalPage = total;
+            return View(member_AccBaseInfoList);
+        }
+        #endregion
+
+        #region 学校--批量报名申请
+        /// <summary>
+        /// 学校--批量报名申请
+        /// </summary>
+        /// <param name="ClassId"></param>
+        /// <param name="Members"></param>
+        /// <returns></returns>
+        public JsonResult ClassRegisterAll(int ClassId, string Members, string MembersNames)
+        {
+            string[] members = Members.Trim().Substring(1, Members.Length - 2).Split(',');
+            string[] membersNames = MembersNames.Trim().Substring(1, MembersNames.Length - 2).Split(',');
+            string names = "";
+            for (int i = 0; i < members.Length; i++)
+            {
+                Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                Member_ClassRegister member_ClassRegister = new Member_ClassRegister();
+
+                member_ClassRegister.ClassId = ClassId;
+                member_ClassRegister.PlanId = Code.SiteCache.Instance.PlanId;
+                Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+                member_ClassRegister.TrainingId = class_DetailBLL.GetModel(ClassId).TraningId;
+                member_ClassRegister.AccountId = Convert.ToInt32(members[i]);
+                member_ClassRegister.Status = 2;
+                member_ClassRegister.BatchCode = Guid.NewGuid();
+                member_ClassRegister.ManagerId = Code.SiteCache.Instance.LoginInfo.UserId;
+                member_ClassRegister.Delflag = false;
+                member_ClassRegister.CreateDate = DateTime.Now;
+
+
+                List<Member_ClassRegister> listno = member_ClassRegisterBLL.GetList(" ClassId='" + ClassId + "' and AccountId='" + members[i] + "' and delflag='false' and Status in (1,2,4)", "");
+                if (listno.Count > 0)
+                {
+                    names += membersNames[i] + ",";
+                    //return Json(new { Code = -1, Msg = "该用户已报名审核" }, JsonRequestBehavior.AllowGet);
+                    continue;
+                }
+                List<Member_ClassRegister> listup = member_ClassRegisterBLL.GetList(" ClassId='" + ClassId + "' and AccountId='" + members[i] + "' and delflag='false' and Status in (3,5)", "");
+                if (listup.Count > 0)
+                {
+                    member_ClassRegister.Id = listup[0].Id;
+                    member_ClassRegister.Status = 1;
+                    member_ClassRegisterBLL.Update(member_ClassRegister);
+                    if (member_ClassRegister.Id > 0)
+                    {
+                        Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+                        Member_ClassRegisterApplication member_ClassRegisterApplication = new Member_ClassRegisterApplication();
+                        member_ClassRegisterApplication.ClassRegisterId = member_ClassRegister.Id;
+                        member_ClassRegisterApplication.Status = 1;
+                        member_ClassRegisterApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                        member_ClassRegisterApplication.CreateDate = DateTime.Now;
+                        member_ClassRegisterApplication.Delflag = false;
+                        member_ClassRegisterApplicationBLL.Add(member_ClassRegisterApplication);
+                    }
+                    else { return Json(new { Code = -1, Msg = "提交失败" }, JsonRequestBehavior.AllowGet); }
+                }
+                else
+                {
+                    int RegisterId = member_ClassRegisterBLL.Add(member_ClassRegister);
+                    if (RegisterId > 0)
+                    {
+                        Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+                        Member_ClassRegisterApplication member_ClassRegisterApplication = new Member_ClassRegisterApplication();
+                        member_ClassRegisterApplication.ClassRegisterId = RegisterId;
+                        member_ClassRegisterApplication.Status = 2;
+                        member_ClassRegisterApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                        member_ClassRegisterApplication.CreateDate = DateTime.Now;
+                        member_ClassRegisterApplication.Delflag = false;
+                        member_ClassRegisterApplicationBLL.Add(member_ClassRegisterApplication);
+                    }
+                    else { return Json(new { Code = -1, Msg = "提交失败" }, JsonRequestBehavior.AllowGet); }
+                }
+            }
+            if (names != "")
+            {
+                return Json(new { Code = -1, Msg = names.Trim(',') + "已报名该课程" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region 学校--审核列表
+        /// <summary>
+        /// 学校--审核列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CoursemarketVerify(int? pageIndex, int? planId, int? status, int? trainingId, int? myclassId, string searchTitle)
+        {
+            ViewBag.Title = "教师报名管理";
+            int i = TypeConverter.ObjectToInt(pageIndex, 1);
+            int groupId = Code.SiteCache.Instance.GroupId;//4,学校管理7，普通教师
+            //int groupId = 4;
+            Organ_DetailBLL organ_DetailBLL = new Organ_DetailBLL();
+            string where = "";
+            if (groupId == 4)
+            {
+                ViewBag.Yes = 2;
+                ViewBag.No = 3;
+                where += " and ma.OrganId='" + Code.SiteCache.Instance.ManageOrganId + "'";
+                where += " and mcr.Status<=3";
+            }
+            else if (groupId == 3)
+            {
+                ViewBag.Yes = 4;
+                ViewBag.No = 5;
+                where += " and cd.OrganId='" + Code.SiteCache.Instance.ManageOrganId + "'";
+                where += " and mcr.Status in(2,4,5)";
+            }
+            else
+            {
+                where += " and 1=2";
+            }
+            if (planId != null && planId > 0)
+            {
+                where += " and mcr.PlanId='" + planId + "' ";
+            }
+            else { planId = -1; }
+            if (status != null && status > 0)
+            {
+                where += " and mcr.Status='" + status + "' ";
+            }
+            else { status = -1; }
+            if (trainingId != null && trainingId > 0)
+            {
+                where += " and mcr.TrainingId='" + trainingId + "' ";
+            }
+            else { trainingId = -1; }
+            if (myclassId != null && myclassId > 0)
+            {
+                where += " and mcr.ClassId='" + myclassId + "' ";
+            }
+            else { myclassId = -1; }
+
+            if (!string.IsNullOrEmpty(searchTitle))
+            { where += " and (mbi.RealName like'%" + searchTitle + "%' or ma.Nickname like '%" + searchTitle + "%' or ma.UserName like '%" + searchTitle + "%' or mbi.TeacherNo like '%" + searchTitle + "%' or mbi.CredentialsNumber like '%" + searchTitle + "%' or cd.Title like '%" + searchTitle + "%')"; }
+
+
+            int total = 0;
+            Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+            List<ClassRegisterManage> tdlist = member_ClassRegisterBLL.GetListManage(10, i, where, "Id desc", out total);
+
+            ViewData["searchTitle"] = string.IsNullOrEmpty(searchTitle) ? "" : searchTitle;
+            ViewData["planId"] = planId;
+            ViewData["status"] = status;
+            ViewData["trainingId"] = trainingId;
+            ViewData["myclassId"] = myclassId;
+            ViewData["groupId"] = groupId;
+            ViewBag.pageIndex = i;
+            ViewBag.totalPage = total;
+
+            Training_PlanBLL training_PlanBLL = new Training_PlanBLL();
+            ViewBag.PlanList = training_PlanBLL.GetListModel(" Display=1 and Delflag='false'");
+
+            Traning_FieldBLL traning_FieldBLL = new Traning_FieldBLL();
+            ViewBag.FieldList = traning_FieldBLL.GetList(" Display=1 and Delflag='false' and IsSpec=0", " Sort");
+
+            Traning_DetailBLL traning_DetailBLL = new Traning_DetailBLL();
+            ViewBag.TraningList = traning_DetailBLL.GetList(" Display=1 and Delflag='false' ", " Id");
+
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            ViewBag.ClassList = class_DetailBLL.GetListModel(" Display=1 and Delflag='false' ");
+
+            return View(tdlist);
+        }
+        #endregion
+
+        #region 学校--审核--查看功能
+
+        [ValidateInput(false)]
+        public ActionResult DetailInformation(int Id)
+        {
+            Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+            Member_ClassRegister member_ClassRegister = new Member_ClassRegister();
+            member_ClassRegister = member_ClassRegisterBLL.GetModel(Id, "");
+
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            Class_Detail class_Detail = new Class_Detail();
+            class_Detail = class_DetailBLL.GetModel(member_ClassRegister.ClassId);
+
+            Member_AccountBLL member_AccountBLL = new Member_AccountBLL();
+            ViewBag.AcountInfo = member_AccountBLL.GetModel(member_ClassRegister.AccountId, "");
+
+            Member_BaseInfoBLL member_BaseInfoBLL = new Member_BaseInfoBLL();
+            ViewBag.BaseInfo = member_BaseInfoBLL.GetModelByAccountId(member_ClassRegister.AccountId);
+
+            Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+            ViewBag.CApplicationList = member_ClassRegisterApplicationBLL.GetList(" Delflag='false' and ClassRegisterId='" + member_ClassRegister.Id + "'", "CreateDate");
+            return View(class_Detail);
+        }
+
+
+        #endregion
+
+        #region 学校/培训机构--审核弹跳页面
+        /// <summary>
+        /// 学校--审核弹跳页面
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public ActionResult Verify(int Id)
+        {
+            //int groupid = 4;
+            int groupid = Code.SiteCache.Instance.GroupId;
+            if (groupid == 4)
+            {
+                ViewBag.Yes = 2;
+                ViewBag.No = 3;
+            }
+            else if (groupid == 3)
+            {
+                ViewBag.Yes = 4;
+                ViewBag.No = 5;
+            }
+            ViewBag.Id = Id;
+            return View();
+        }
+        #endregion
+
+        #region 学校/培训机构--审核
+        /// <summary>
+        /// 学校/培训机构--审核
+        /// </summary>
+        /// <param name="Statue"></param>
+        /// <param name="Id"></param>
+        /// <param name="Content"></param>
+        /// <returns></returns>
+        public JsonResult MyVerify(int Status, int Id, string Content)
+        {
+            try
+            {
+                Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                Member_ClassRegister member_ClassRegister = new Member_ClassRegister();
+                member_ClassRegister = member_ClassRegisterBLL.GetModel(Id, "");
+                if ((member_ClassRegister.Status == 5 && Status == 4) || (member_ClassRegister.Status == 2 && Status == 4))
+                {
+                    Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+                    Class_Detail class_Detail = new Class_Detail();
+                    class_Detail = class_DetailBLL.GetModel(member_ClassRegister.ClassId);
+                    class_Detail.People += 1;
+                    class_DetailBLL.Update(class_Detail);
+                }
+                else if (member_ClassRegister.Status == 4 && Status == 5)
+                {
+                    Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+                    Class_Detail class_Detail = new Class_Detail();
+                    class_Detail = class_DetailBLL.GetModel(member_ClassRegister.ClassId);
+                    class_Detail.People -= 1;
+                    class_DetailBLL.Update(class_Detail);
+                }
+                member_ClassRegister.Status = Status;
+                member_ClassRegister.ApplyRemark = Content;
+                member_ClassRegisterBLL.Update(member_ClassRegister);
+
+                Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+                Member_ClassRegisterApplication member_ClassRegisterApplication = new Member_ClassRegisterApplication();
+                member_ClassRegisterApplication.ClassRegisterId = Id;
+                member_ClassRegisterApplication.Status = Status;
+                member_ClassRegisterApplication.Remark = Content;
+                member_ClassRegisterApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                member_ClassRegisterApplication.Delflag = false;
+                member_ClassRegisterApplication.CreateDate = DateTime.Now;
+                member_ClassRegisterApplicationBLL.Add(member_ClassRegisterApplication);
+                return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Code = -1, Msg = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        #endregion
+
+        #region 学校/培训机构--批量审核
+        public JsonResult MyVerifyAll(int Status, string Ids)
+        {
+            try
+            {
+                string[] myIds = Ids.Trim(',').Split(',');
+                foreach (string Id in myIds)
+                {
+                    Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                    Member_ClassRegister member_ClassRegister = new Member_ClassRegister();
+                    member_ClassRegister = member_ClassRegisterBLL.GetModel(Convert.ToInt32(Id), "");
+
+                    if ((member_ClassRegister.Status == 5 && Status == 4) || (member_ClassRegister.Status == 2 && Status == 4))
+                    {
+                        Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+                        Class_Detail class_Detail = new Class_Detail();
+                        class_Detail = class_DetailBLL.GetModel(member_ClassRegister.ClassId);
+                        class_Detail.People += 1;
+                        class_DetailBLL.Update(class_Detail);
+                    }
+                    else if (member_ClassRegister.Status == 4 && Status == 5)
+                    {
+                        Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+                        Class_Detail class_Detail = new Class_Detail();
+                        class_Detail = class_DetailBLL.GetModel(member_ClassRegister.ClassId);
+                        class_Detail.People -= 1;
+                        class_DetailBLL.Update(class_Detail);
+                    }
+                    member_ClassRegister.Status = Status;
+                    member_ClassRegisterBLL.Update(member_ClassRegister);
+
+                    Member_ClassRegisterApplicationBLL member_ClassRegisterApplicationBLL = new Member_ClassRegisterApplicationBLL();
+                    Member_ClassRegisterApplication member_ClassRegisterApplication = new Member_ClassRegisterApplication();
+                    member_ClassRegisterApplication.ClassRegisterId = Convert.ToInt32(Id);
+                    member_ClassRegisterApplication.Status = Status;
+                    member_ClassRegisterApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                    member_ClassRegisterApplication.Delflag = false;
+                    member_ClassRegisterApplication.CreateDate = DateTime.Now;
+                    member_ClassRegisterApplicationBLL.Add(member_ClassRegisterApplication);
+                }
+                return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Code = -1, Msg = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
+        #region 根据课程查询班级
+        /// <summary>
+        /// 根据课程查询班级
+        /// </summary>
+        /// <param name="Course"></param>
+        /// <returns></returns>
+        public string GetClassListBytCourse(int Course)
+        {
+            //主题
+            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+            List<Class_Detail> list = class_DetailBLL.GetListModel(" TraningId=" + Course + " and  Delflag='false' and Display='true'");
+
+            return (new JavaScriptSerializer()).Serialize(list);
+        }
+        #endregion
+    }
+}

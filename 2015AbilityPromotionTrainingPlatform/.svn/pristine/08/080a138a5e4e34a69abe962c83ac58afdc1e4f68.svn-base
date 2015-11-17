@@ -1,0 +1,2 @@
+-------------------------------2015/08/18-------------------------------
+alter table Traning_Detail add CanEdit bit not null default 0

@@ -1,0 +1,303 @@
+﻿@{
+    ViewBag.Title = "在线学习 - 主题讨论";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-9">
+                <div class="d-discuss-left">
+                    <div class="d-discuss-subject">
+                        @if (ViewBag.Model_Course_UnitContent != null)
+                        {
+                            Dianda.AP.Model.Course_UnitContent Theme_Model = ViewBag.Model_Course_UnitContent;
+                            <div class="title" style="word-break: break-all; word-wrap: break-word;">讨论主题：@Theme_Model.Title</div>
+                            <div class="desc" style="word-break: break-all; word-wrap: break-word;">@Html.Raw(Theme_Model.Content.Length > 1000 ? Theme_Model.Content.Substring(0, 1000) + "..." : Theme_Model.Content)</div>
+                        }
+                        <div class="action">
+                            <a href="javascript:;" onclick="$('#txtDisContent').focus();Reply('','');">我要发言</a>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="blk_ln_course_discuss" class="blk_ln_course_discuss" data-km-htm="blk_ln_course_discuss.html">
+                        <div class="course-d">
+                            <div class="h">学习讨论</div>
+
+                            @foreach (KeyValuePair<Dianda.AP.Model.Course_UnitReplyDetailOther, List<Dianda.AP.Model.Course_UnitReplyDetailOther>> TopicItem in ViewBag.Topic_Reply_Dictry)
+                            {
+                                Dianda.AP.Model.Course_UnitReplyDetailOther TopicOtherModel = TopicItem.Key;
+                                List<Dianda.AP.Model.Course_UnitReplyDetailOther> List_Reply = TopicItem.Value;
+                                <!-- 话题 -->
+                                <div class="i">
+                                    <a href="#" class="thumb">
+                                        <img src="@TopicOtherModel.Pic" style="width:50px;height:50px;"></a>
+                                    <div class="u">
+                                        <span class="name">@TopicOtherModel.NickName</span>
+                                        <span class="school" style="word-break: break-all; word-wrap: break-word;">@TopicOtherModel.OrganDetailTitle</span>
+                                        <span class="action">
+                                            <a href="javascript:;" onclick="DelDiscuss('@TopicOtherModel.CourseUnitReplyDetail.Id','@TopicOtherModel.CourseUnitReplyDetail.ParentReplyId')">删除</a>&nbsp;
+                                            <a href="javascript:;" onclick="Reply('@TopicOtherModel.CourseUnitReplyDetail.Id','@TopicOtherModel.NickName')">回应</a>
+                                        </span>
+                                    </div>
+                                    <div class="d" style="word-break: break-all; word-wrap: break-word;">
+                                        @TopicOtherModel.CourseUnitReplyDetail.Content
+                                    </div>
+                                </div>
+                                <!-- 回复 -->
+                                <div class="reply">
+
+                                    @foreach (Dianda.AP.Model.Course_UnitReplyDetailOther ReplyItem in List_Reply)
+                                    {
+                                        <div class="i">
+                                            <a href="#" class="thumb">
+                                                <img src="@TopicOtherModel.Pic" style="width:50px;height:50px;"></a>
+                                            <div class="u">
+                                                <span class="name">@ReplyItem.NickName</span>
+                                                <span class="school" style="word-break: break-all; word-wrap: break-word;">@ReplyItem.OrganDetailTitle</span>
+                                                <span class="action">
+                                                    <a href="javascript:;" onclick="DelDiscuss('@ReplyItem.CourseUnitReplyDetail.Id','@ReplyItem.CourseUnitReplyDetail.ParentReplyId')">删除</a>&nbsp;
+                                                    <a href="javascript:;" onclick="Reply('@TopicOtherModel.CourseUnitReplyDetail.Id','@ReplyItem.NickName')">回应</a>
+                                                </span>
+                                            </div>
+                                            <div class="d" style="word-break: break-all; word-wrap: break-word;">
+                                                @ReplyItem.CourseUnitReplyDetail.Content
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                            <!-- 学习讨论 分页 -->
+                            <hr />
+                            @if (ViewBag.TopicRecordCount > ViewBag.TopicPageSize)
+                            {
+                                @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = ViewBag.TopicPageIndex, basecount = ViewBag.TopicPageSize, pagecount = ViewBag.TopicRecordCount })
+                            }
+                            <input type="hidden" id="hidReplyId" />
+                            <!-- 我来说两句 -->
+                            <div class="post">
+                                <div class="h">
+                                    我来说两句
+                                    <label style="font-size: initial; font-style: initial;" class="h" id="ReplyContent"></label>
+                                </div>
+                                <div class="editor">
+                                    <textarea id="txtDisContent" class="form-control"></textarea>
+                                </div>
+                                <div class="action">
+                                    <button id="btnSubmit" type="button" class="btn btn-success">提交</button>&nbsp;&nbsp;<a href="javascript:;" onclick="$('#txtDisContent').val('');$('#txtDisContent').focus();">清空内容</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div id="blk_ln_course_group" class="blk_ln_course_group" data-km-htm="blk_ln_course_group.html">
+                    <div class="h">小组成员</div>
+                    <hr>
+                    @foreach (Dianda.AP.Model.Class_GroupAll itemTeacher in ViewBag.List_Class_Group_Teacher)
+                    {
+                        <div class="i">
+                            <span class="name" style="word-break: break-all; word-wrap: break-word;">@Html.Raw(itemTeacher.AccountId == 0 ? itemTeacher.TeacherName : itemTeacher.Model_Member_Account.Nickname)</span>
+                            <span class="title">(@itemTeacher.Identity)</span>
+                            <div class="unit trim">&nbsp;</div>
+                            <div class="thumb">
+                                <img src="@Html.Raw(itemTeacher.AccountId == 0 ? itemTeacher.LecturerForeignPic : itemTeacher.Model_Member_Account.Pic)" style="width:50px;height:50px;">
+                            </div>
+                        </div>
+                    }
+
+                    @foreach (Dianda.AP.Model.Class_GroupAll itemMeb in ViewBag.List_Class_Group_Member)
+                    {
+                        <div class="i">
+                            <span class="name">@itemMeb.Model_Member_Account.Nickname</span>
+                            <span class="title">(@itemMeb.Identity)</span>
+                            <div class="unit trim">@itemMeb.OrganDetailTitle</div>
+                            <div class="thumb">
+                                <img src=">@itemMeb.Model_Member_Account.Pic">
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-center text-center">
+                            <a href="@Url.Action("LearnOnLineDiscussView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, ClassId = ViewBag.ClassId, GroupPageIndex = 1 })">首页</a>
+                            <a href="@Url.Action("LearnOnLineDiscussView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, ClassId = ViewBag.ClassId, GroupPageIndex = ViewBag.GroupPageIndex - 1 })">上一页</a>
+                            <a href="@Url.Action("LearnOnLineDiscussView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, ClassId = ViewBag.ClassId, GroupPageIndex = ViewBag.GroupPageIndex + 1 })">下一页</a>
+                            <a href="@Url.Action("LearnOnLineDiscussView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, ClassId = ViewBag.ClassId, GroupPageIndex = ViewBag.GroupPageCount })">尾页</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav fixed">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<div id="modal-edit-status" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding:0;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-title"></div>
+        </div>
+    
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" onClick="location.href = '/Learn/LearnOnLine/LearnOnLineDiscussView?TrainingId=@ViewBag.TrainingId&UnitContent=@ViewBag.UnitContent&ClassId=@ViewBag.ClassId';">确认</button>
+        </div>
+            
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+            //提交
+            $("#btnSubmit").click(function () {
+                var txtContent = $("#txtDisContent").val();
+
+                if (txtContent == '') {
+                    Alert('请输入讨论内容!');
+                    $("#txtDisContent").focus();
+                    return;
+                }
+
+                if (txtContent.length > 1000) {
+                    Alert('输入的字数不能大于1000!');
+                    $("#txtDisContent").focus();
+                    return;
+                }
+
+                var hidReplyIdVal = Number($("#hidReplyId").val());
+                var ParentReplyId = hidReplyIdVal == '' ? "0" : hidReplyIdVal;
+
+                var jsonData = JSON.stringify({
+                    UnitId: '@ViewBag.UnitId',
+                    ClassId: "@ViewBag.ClassId",
+                    TrainingId: '@ViewBag.TrainingId',
+                    UnitContent: "@ViewBag.UnitContent",
+                    AccountId: "@ViewBag.AccountId",
+                    ParentReplyId: ParentReplyId,
+                    Content: txtContent,
+                    AttList: '@ViewBag.TrainingId'
+                });
+
+                $("#hidReplyId").val('');//清空回复Id
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/EditCourseUnitReply',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        $('#modal-edit-status .modal-title').text(data.Msg);
+                        $('#modal-edit-status').modal({
+                            keyboard: false,
+                            backdrop: 'static'
+                        });
+                    },
+                    error: function () {
+                    }
+                });
+            });
+
+        });
+    });
+
+    //回复
+    function Reply(Id, Content) {
+        if (Content != "") {
+            Content = Content.length > 20 ? Content.substring(0, 20) + "..." : Content;
+            Content = '(回复: ' + Content + ')';
+        }
+        $('#txtDisContent').focus();
+        $('#hidReplyId').val(Id);
+        $('#ReplyContent').text(Content);
+    }
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+        var ClassId = Number(@ViewBag.ClassId);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent,
+            ClassId: ClassId
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+
+    //删除
+    function DelDiscuss(Id, ParentReplyId) {
+        var alertStr = ParentReplyId == "0" ? "删除该话题,所有的回复信息一起删除,确定继续么?" : "你确定要删除该回复么?";
+        if (confirm(alertStr)) {
+
+            var jsonData = JSON.stringify({
+                Id: Id,
+                UnitContent: Number(@ViewBag.UnitContent),
+                ClassId: Number(@ViewBag.ClassId),
+                AccountId: Number(@ViewBag.AccountId),
+                AttList: '@ViewBag.TrainingId',
+                ParentReplyId: ParentReplyId
+            });
+
+            $.ajax({
+                cache: false,
+                async: true,
+                url: '/LearnOnLine/EditCourseUnitReply',
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (data) {
+                    window.location.href = window.location.href;
+                    //var pagePath = window.location.href;
+                    //Alert(data.Msg, 'window.location = \'' + pagePath + '\'');
+                },
+                error: function () {
+                }
+            });
+        }
+    }
+
+</script>

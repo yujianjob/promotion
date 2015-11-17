@@ -1,0 +1,15 @@
+﻿@{
+    List<Dianda.AP.Model.Entrance.Home.PlatformGroups> list = (List<Dianda.AP.Model.Entrance.Home.PlatformGroups>)ViewBag.Groups;  
+}
+<span class="txt">当前身份 : @list.FirstOrDefault(t => t.Id == ViewBag.GroupId).Title</span>
+<span class="i">
+	更换&nbsp;<span class="caret"></span>
+	<div class="menu">
+		<div class="sub">
+            @foreach (var item in list.Where(t => t.Id != ViewBag.GroupId))
+            {
+                <a href="/Entrance/Home/Index?GroupId=@item.Id">@item.Title</a>
+            }
+		</div>
+	</div>
+</span>

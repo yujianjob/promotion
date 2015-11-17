@@ -1,0 +1,203 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using Dianda.AP.Model;
+using Dianda.AP.DAL;
+using Dianda.AP.Model.Course.CourseCreate;
+
+namespace Dianda.AP.BLL
+{
+	public partial class Course_UnitContentBLL
+	{
+		Course_UnitContentDAL dal = new Course_UnitContentDAL();
+
+		/// <summary>
+		/// 新增一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Add(Course_UnitContent model)
+		{
+            //新增默认信息
+            model.Display = true;
+            model.CreateDate = DateTime.Now;
+            model.Delflag = false;
+            model.TimeLimit = 0;
+            model.PassLine = 0;
+
+            return dal.Add(model);
+		}
+
+		/// <summary>
+		/// 更新一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public bool Update(Course_UnitContent model)
+		{
+            //新增默认信息
+            model.CreateDate = DateTime.Now;
+            model.Delflag = false;
+
+			return dal.Update(model) > 0;
+		}
+
+        /// <summary>
+        /// 删除一条记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool Delete(int id)
+        {
+            return dal.Delete(id) > 0;
+        }
+
+		/// <summary>
+		/// 取得一条记录
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="where"></param>
+		/// <returns></returns>
+		public Course_UnitContent GetModel(int id, string where)
+		{
+			return dal.GetModel(id, where);
+		}
+
+		/// <summary>
+		/// 获取数据集
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public List<Course_UnitContent> GetList(string where, string orderBy)
+		{
+			return dal.GetList(where, orderBy);
+		}
+
+        /// <summary>
+        /// 获取数据集
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Course_UnitContent> GetListOther(string where, string orderBy)
+        {
+            return dal.GetListOther(where, orderBy);
+        }
+
+		/// <summary>
+		/// 获取分页数据集
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public List<Course_UnitContent> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			return dal.GetList(pageSize, pageIndex, where, orderBy, out recordCount);
+		}
+
+        /// <summary>
+        /// 获取分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public List<Course_UnitContent> GetListOther(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            return dal.GetListOther(pageSize, pageIndex, where, orderBy, out recordCount);
+        }
+
+		/// <summary>
+		/// 获取DataTable
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public DataTable GetTable(string where, string orderBy)
+		{
+			return dal.GetTable(where, orderBy);
+		}
+
+		/// <summary>
+		/// 获取分页数据集
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			return dal.GetTable(pageSize, pageIndex, where, orderBy, out recordCount);
+		}
+
+        /// <summary>
+        /// 获取指定章节指定内容类型学习活动最大顺序号
+        /// </summary>
+        /// <param name="UnitId"></param>
+        /// <param name="UnitType"></param>
+        /// <returns></returns>
+        public int GetUnitContentMaxOrder(int UnitId, int UnitType)
+        {
+            return dal.GetUnitContentMaxOrder(UnitId, UnitType);
+        }
+
+        /// <summary>
+        /// 获取指定章节的活动信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<Course_ActivityInfo> GetActivityInfo(int id)
+        {
+            return dal.GetActivityInfo(id);
+        }
+
+        /// <summary>
+        /// 获取指定章节的学习活动信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<Course_ActivityLearn> GetActivityLearn(int id,int ClassId,int AccountId)
+        {
+            return dal.GetActivityLearn(id, ClassId,AccountId);
+        }
+
+        /// <summary>
+        /// 获取指定课程ID的结业考试
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<Course_ActivityInfo> GetExamInfo(int id)
+        {
+            return dal.GetExamInfo(id);
+        }
+
+        /// <summary>
+        /// 获取指定课程ID的学习结业考试
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<Course_ActivityLearn> GetLearnExamInfo(int id, int ClassId, int AccountId)
+        {
+            return dal.GetLearnExamInfo(id, ClassId, AccountId);
+        }
+
+        /// <summary>
+        /// 更新结业考试可测试次数(-1)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool UpdateTestCnt(int id)
+        {
+            return dal.UpdateTestCnt(id);
+        }
+	}
+}

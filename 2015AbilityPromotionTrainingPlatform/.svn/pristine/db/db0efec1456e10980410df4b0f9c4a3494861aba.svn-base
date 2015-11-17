@@ -1,0 +1,33 @@
+﻿//学校--审核页面--初始加载
+function initListPage() {
+
+    $('#state').val($("input[data-name='state']").val());
+
+    $('#searchTitle').val($("input[data-name='searchTitle']").val());
+}
+
+
+//学校--审核页面--搜索功能
+function Search() {
+    var urlPath = $('#urlPath').val();
+    var _d = '';
+    $('.parameter').map(function () {
+        if (_d == '')
+        { _d += this.name + "=" + encodeURIComponent(this.value); }
+        else { _d += "&" + this.name + "=" + encodeURIComponent(this.value); }
+    });
+    var a = urlPath + "?" + _d;
+    window.location = a;
+}
+
+
+//学校--审核--弹出审核
+function verify(id) {
+    $('#verify').modal({
+        keyboard: false,
+        backdrop: 'static'
+    });
+
+    $('#iframe-practice-verify').attr('src', '../PracticalCourse/Verify?id=' + id);
+
+}

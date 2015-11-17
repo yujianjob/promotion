@@ -1,0 +1,512 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using Dianda.AP.Model;
+
+namespace Dianda.AP.DAL
+{
+    public class Class_GroupDAL
+    {
+        /// <summary>
+        /// 新增一条记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int Add(Class_Group model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("insert into [dbo].[Class_Group] ([ClassId],[Title],[Display],[Delflag],[CreateDate])");
+            sql.Append(" values (@ClassId,@Title,@Display,@Delflag,@CreateDate)");
+            sql.Append(" set @Id=@@IDENTITY");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@ClassId", SqlDbType.Int, 4) { Value = model.ClassId },
+				new SqlParameter("@Title", SqlDbType.VarChar, 200) { Value = model.Title },
+				new SqlParameter("@Display", SqlDbType.Bit, 1) { Value = model.Display },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate }
+			};
+            int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+            model.Id = Convert.ToInt32(cmdParams[0].Value);
+            return result;
+        }
+
+        /// <summary>
+        /// 更新一条记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int Update(Class_Group model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Class_Group] set ");
+            sql.Append("[ClassId]=@ClassId,[Title]=@Title,[Display]=@Display,[Delflag]=@Delflag,[CreateDate]=@CreateDate");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@ClassId", SqlDbType.Int, 4) { Value = model.ClassId },
+				new SqlParameter("@Title", SqlDbType.VarChar, 200) { Value = model.Title },
+				new SqlParameter("@Display", SqlDbType.Bit, 1) { Value = model.Display },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        /// <summary>
+        /// 取得一条记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public Class_Group GetModel(int id, string where)
+        {
+            string sql = "select * from [dbo].[Class_Group] where [Id]=@Id";
+            if (!string.IsNullOrEmpty(where))
+                sql += " and " + where;
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                if (reader.Read())
+                {
+                    Class_Group model = new Class_Group();
+                    ConvertToModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取数据集
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Class_Group> GetList(string where, string orderBy)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from [dbo].[Class_Group]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            if (!string.IsNullOrEmpty(orderBy))
+                sql.Append(" order by " + orderBy);
+            List<Class_Group> list = new List<Class_Group>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Class_Group model = new Class_Group();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        #region 获取右边 [小组成员] 信息
+
+        /// <summary>
+        /// 根据用户获取其所在的班级和组
+        /// </summary>
+        /// <param name="iAccountId"></param>
+        /// <returns></returns>
+        public Class_Group GetClassAndGroup(int iAccountId)
+        {
+            string sql = @"select * from Class_Group 
+                        where Class_Group.Id = (select Class_GroupMember.GroupId from Class_GroupMember where Class_GroupMember.AccountId = @AccountId and Class_GroupMember.Delflag = 0) 
+                        and Class_Group.Delflag = 0";
+
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = iAccountId }
+			};
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                if (reader.Read())
+                {
+                    Class_Group model = new Class_Group();
+                    ConvertToModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取 [小组成员-讲师,辅导员]
+        /// </summary>
+        /// <param name="iAccountId"></param>
+        /// <param name="iClassId"></param>
+        /// <returns></returns>
+        public List<Class_GroupAll> GetGroupList(int iAccountId, int iClassId)
+        {
+            var List_Class_GroupAll = new List<Class_GroupAll>();
+            //获取讲师
+            List_Class_GroupAll.AddRange(this.GetGroupList_Lecturer(iAccountId, iClassId));
+            //获取辅导员
+            List_Class_GroupAll.AddRange(this.GetGroupList_Counselor(iAccountId, iClassId));
+
+            return List_Class_GroupAll;
+        }
+
+        /// <summary>
+        /// 获取[小组成员-组员]总数
+        /// </summary>
+        /// <param name="iClassId"></param>
+        /// <returns></returns>
+        public int GetGroupList_MemberCount(int iClassId)
+        {
+            var List_Class_GroupAll = new List<Class_GroupAll>();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(@" Select count(1)
+                            from Member_Account 
+                            inner join Class_GroupMember on Member_Account.Id = Class_GroupMember.AccountId and Member_Account.Delflag = 0 
+                            and Class_GroupMember.Delflag = 0 and Class_GroupMember.GroupId = Class_GroupMember.GroupId
+                            left join Class_Group on Class_Group.Id = Class_GroupMember.GroupId
+                            left join Organ_Detail on Member_Account.OrganId = Organ_Detail.Id
+                            where Class_Group.ClassId={0}"
+                , iClassId);
+
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+        }
+
+        /// <summary>
+        /// 获取分页数据集[组员]
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="iClassId"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public List<Class_GroupAll> GetGroupList_Member(int pageSize, int pageIndex, int iClassId, out int recordCount)
+        {
+            var List_Class_GroupAll = new List<Class_GroupAll>();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(@" Select count(1)
+                            from Member_Account 
+                            inner join Class_GroupMember on Member_Account.Id = Class_GroupMember.AccountId and Member_Account.Delflag = 0 
+                            and Class_GroupMember.Delflag = 0 and Class_GroupMember.GroupId = Class_GroupMember.GroupId
+                            left join Class_Group on Class_Group.Id = Class_GroupMember.GroupId
+                            left join Organ_Detail on Member_Account.OrganId = Organ_Detail.Id
+                            where Class_Group.ClassId={0}"
+                , iClassId);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from ( select *,ROW_NUMBER() over (order by AccountId) as [RowNum] from (");
+            sql.AppendFormat(@" Select Member_Account.Id as AccountId, Organ_Detail.Id as OrganDetailId,Organ_Detail.Title as OrganDetailTitle
+                            from Member_Account 
+                            inner join Class_GroupMember on Member_Account.Id = Class_GroupMember.AccountId and Member_Account.Delflag = 0 
+                            and Class_GroupMember.Delflag = 0 and Class_GroupMember.GroupId = Class_GroupMember.GroupId
+                            left join Class_Group on Class_Group.Id = Class_GroupMember.GroupId
+                            left join Organ_Detail on Member_Account.OrganId = Organ_Detail.Id
+                            where Class_Group.ClassId={0}) as T"
+                , iClassId);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Class_GroupAll model = new Class_GroupAll();
+                    ConvertToModel(reader, model, 4);
+                    List_Class_GroupAll.Add(model);
+                }
+            }
+
+            return List_Class_GroupAll;
+        }
+
+        /// <summary>
+        /// 获取讲师
+        /// 如果 Traning_Detail.TeacherName 不为NULL,该讲师不是系统内部用户,属于外聘讲师
+        /// 否则讲师系统内部用户: Traning_Teacher.PlatformManagerId
+        /// </summary>
+        /// <param name="iAccountId"></param>
+        /// <param name="iClassId"></param>
+        /// <returns></returns>
+        private List<Class_GroupAll> GetGroupList_Lecturer(int iAccountId, int iClassId)
+        {
+            var List_Class_GroupAll = new List<Class_GroupAll>();
+
+            //[获取讲师]外聘
+            var sql_LecturerForeign = new StringBuilder();
+            sql_LecturerForeign.AppendFormat(@" Select Traning_Detail.* 
+                                            from Traning_Detail 
+                                            where Traning_Detail.Id = (select top 1 Member_ClassRegister.TrainingId from Member_ClassRegister where AccountId = {0} and ClassId = {1} and Delflag = 0)"
+                , iAccountId, iClassId);
+
+            //[获取讲师]内部用户
+            var sql_LecturerInternal = new StringBuilder();
+            sql_LecturerInternal.AppendFormat(@" select Member_Account.Id as AccountId, Organ_Detail.Id as OrganDetailId,Organ_Detail.Title as OrganDetailTitle,Traning_Teacher.PlatformManagerId
+                                            from Traning_Teacher 
+                                            left join Member_Account on Traning_Teacher.PlatformManagerId = Member_Account.Id
+                                            left join Organ_Detail on Member_Account.OrganId = Organ_Detail.Id
+                                            where Traning_Teacher.TraningId = (select top 1 Member_ClassRegister.TrainingId from Member_ClassRegister where AccountId = {0} and ClassId={1} and Delflag = 0)
+                                            and Traning_Teacher.Delflag=0 and Traning_Teacher.Status = 1"
+                , iAccountId, iClassId);
+
+            using (IDataReader reader_LecturerForeign = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql_LecturerForeign.ToString()))
+            {
+                //若取值为NULL,则从Traning_Teacher.PlatformManagerId入手,即查询内部用户入手
+                if (reader_LecturerForeign != null)
+                {
+                    while (reader_LecturerForeign.Read())
+                    {
+                        var Model_Class_GroupAll = new Class_GroupAll();
+                        ConvertToModel(reader_LecturerForeign, Model_Class_GroupAll, 1);
+                        List_Class_GroupAll.Add(Model_Class_GroupAll);
+                    }
+                }
+                else
+                {
+                    using (IDataReader reader_LecturerInternal = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql_LecturerInternal.ToString()))
+                    {
+                        while (reader_LecturerInternal.Read())
+                        {
+                            var Model_Class_GroupAll = new Class_GroupAll();
+                            ConvertToModel(reader_LecturerInternal, Model_Class_GroupAll, 2);
+                            List_Class_GroupAll.Add(Model_Class_GroupAll);
+                        }
+                    }
+                }
+            }
+
+            return List_Class_GroupAll;
+        }
+
+        /// <summary>
+        /// 获取辅导员
+        /// </summary>
+        /// <param name="iAccountId"></param>
+        /// <param name="iClassId"></param>
+        /// <returns></returns>
+        private List<Class_GroupAll> GetGroupList_Counselor(int iAccountId, int iClassId)
+        {
+            var List_Class_GroupAll = new List<Class_GroupAll>();
+
+            //[获取辅导员]
+            var sql_LecturerCounselor = new StringBuilder();
+            sql_LecturerCounselor.AppendFormat(@" Select Member_Account.Id as AccountId, Organ_Detail.Id as OrganDetailId, Organ_Detail.Title as OrganDetailTitle, Class_Detail.Instructor
+                                            from Class_Detail 
+                                            left join PlatformManager_Detail on Class_Detail.Instructor = PlatformManager_Detail.Id and PlatformManager_Detail.Delflag = 0
+                                            left join Member_Account on PlatformManager_Detail.AccountId = Member_Account.Id
+                                            left join Organ_Detail on Member_Account.OrganId = Organ_Detail.Id
+                                            where Class_Detail.Id = ( select top 1 Member_ClassRegister.ClassId from Member_ClassRegister where AccountId={0} and ClassId={1} and Delflag = 0)"
+                , iAccountId, iClassId);
+
+
+            using (IDataReader reader_LecturerCounselor = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql_LecturerCounselor.ToString()))
+            {
+                while (reader_LecturerCounselor.Read())
+                {
+                    var Model_Class_GroupAll = new Class_GroupAll();
+                    ConvertToModel(reader_LecturerCounselor, Model_Class_GroupAll, 3);
+                    List_Class_GroupAll.Add(Model_Class_GroupAll);
+                }
+            }
+
+            return List_Class_GroupAll;
+        }
+
+        /// <summary>
+        /// 转换成Model [Class_GroupAll]
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="model"></param>
+        private void ConvertToModel(IDataReader reader, Class_GroupAll model, int iType)
+        {
+            Member_AccountDAL mebAccDal = new Member_AccountDAL();
+
+            if (iType == 1)//讲师-外聘
+            {
+                if (reader["TeacherName"] != DBNull.Value)
+                    model.TeacherName = Convert.ToString(reader["TeacherName"]);
+                model.Identity = "讲师";
+                if (reader["TeacherPic"] != DBNull.Value)
+                    model.LecturerForeignPic = Convert.ToString(reader["TeacherPic"]);
+            }
+            else if (iType == 2)//讲师-内部
+            {
+                var iAccountId = 0;
+
+                if (reader["AccountId"] != DBNull.Value)
+                    iAccountId = Convert.ToInt32(reader["AccountId"]);
+
+                if (iAccountId > 0)
+                    model.Model_Member_Account = mebAccDal.GetModel(iAccountId, string.Empty);
+
+                model.AccountId = iAccountId;
+                if (reader["PlatformManagerId"] != DBNull.Value)
+                    model.IdentityId = Convert.ToInt32(reader["PlatformManagerId"]);
+                model.Identity = "讲师";
+
+                if (reader["OrganDetailId"] != DBNull.Value)
+                    model.OrganDetailId = Convert.ToInt32(reader["OrganDetailId"]);
+                if (reader["OrganDetailTitle"] != DBNull.Value)
+                    model.OrganDetailTitle = Convert.ToString(reader["OrganDetailTitle"]);
+
+                model.TeacherName = model.Model_Member_Account != null ? model.Model_Member_Account.Nickname : string.Empty;
+            }
+            else if (iType == 3)//辅导员
+            {
+                var iAccountId = 0;
+
+                if (reader["AccountId"] != DBNull.Value)
+                    iAccountId = Convert.ToInt32(reader["AccountId"]);
+
+                if (iAccountId > 0)
+                    model.Model_Member_Account = mebAccDal.GetModel(iAccountId, string.Empty);
+
+                model.AccountId = iAccountId;
+                if (reader["Instructor"] != DBNull.Value)
+                    model.IdentityId = Convert.ToInt32(reader["Instructor"]);
+                model.Identity = "辅导员";
+
+                if (reader["OrganDetailId"] != DBNull.Value)
+                    model.OrganDetailId = Convert.ToInt32(reader["OrganDetailId"]);
+                if (reader["OrganDetailTitle"] != DBNull.Value)
+                    model.OrganDetailTitle = Convert.ToString(reader["OrganDetailTitle"]);
+
+                model.TeacherName = model.Model_Member_Account != null ? model.Model_Member_Account.Nickname : string.Empty;
+            }
+            else if (iType == 4)//组员
+            {
+                var iAccountId = 0;
+
+                if (reader["AccountId"] != DBNull.Value)
+                    iAccountId = Convert.ToInt32(reader["AccountId"]);
+
+                if (iAccountId > 0)
+                    model.Model_Member_Account = mebAccDal.GetModel(iAccountId, string.Empty);
+
+                model.AccountId = iAccountId;
+
+                model.IdentityId = iAccountId;
+                model.Identity = "组员";
+
+                if (reader["OrganDetailId"] != DBNull.Value)
+                    model.OrganDetailId = Convert.ToInt32(reader["OrganDetailId"]);
+                if (reader["OrganDetailTitle"] != DBNull.Value)
+                    model.OrganDetailTitle = Convert.ToString(reader["OrganDetailTitle"]);
+
+                model.TeacherName = model.Model_Member_Account != null ? model.Model_Member_Account.Nickname : string.Empty;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 获取分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public List<Class_Group> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from [dbo].[Class_Group]");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" where " + where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Class_Group]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<Class_Group> list = new List<Class_Group>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Class_Group model = new Class_Group();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取DataTable
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public DataTable GetTable(string where, string orderBy)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select [Id],[ClassId],[Title],[Display],[Delflag],[CreateDate] from [dbo].[Class_Group]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            if (!string.IsNullOrEmpty(orderBy))
+                sql.Append(" order by " + orderBy);
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        /// <summary>
+        /// 获取分页DataTable
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from [dbo].[Class_Group]");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" where " + where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select [Id],[ClassId],[Title],[Display],[Delflag],[CreateDate],ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Class_Group]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        private void ConvertToModel(IDataReader reader, Class_Group model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["ClassId"] != DBNull.Value)
+                model.ClassId = Convert.ToInt32(reader["ClassId"]);
+            if (reader["Title"] != DBNull.Value)
+                model.Title = reader["Title"].ToString();
+            if (reader["Display"] != DBNull.Value)
+                model.Display = Convert.ToBoolean(reader["Display"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+        }
+
+    }
+}

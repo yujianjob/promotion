@@ -1,0 +1,475 @@
+﻿@model IEnumerable<Dianda.AP.Model.Prepare.TrainingCheck.TrainingInfo>
+
+@{
+    ViewBag.Title = "课程审核";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+
+            @using (Html.BeginForm("List", "TrainingCheck", FormMethod.Get))
+            {
+        <div class="d-page-title">
+            课程管理
+            <div class="search form-inline">
+            <div class="form-group">
+                <select class="form-control" name="SubjectId" id="SubjectId">
+                <option>全部学科</option>
+                    @foreach (var item in ViewBag.Subject)
+                    {
+                        if (item.Id == ViewBag.SubjectId)
+                        {
+                            <option selected="selected" value="@item.Id">@item.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" name="StatusId" id="StatusId">
+                <option>全部状态</option>
+                    @foreach (KeyValuePair<int, string> item in ViewBag.Status)
+                    {
+                        if (item.Key == ViewBag.StatusId)
+                        {
+                            <option selected="selected" value="@item.Key">@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Key">@item.Value</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" value="@ViewBag.KeyWords" class="form-control" placeholder="课程搜索" style="width:300px;display:inline-block;" name="KeyWords" id="KeyWords" maxlength="50">
+                <button type="submit" class="btn btn-default">搜索</button>
+                <button type="button" class="btn btn-success" style="margin-left:20px;" id="BatchPass">批量通过</button>
+                <button type="button" class="btn btn-success" style="margin-left:20px;" id="BatchUnPass">批量不通过</button>
+            </div>
+            </div>
+        </div>
+            }
+
+
+        <hr>
+        <div id="blk_ac_audit_course_list" class="d-coursereport-list blk_ac_audit_course_list">
+        @Html.Hidden("CheckList")
+        @if (Model.Count() == 0)
+        {
+            <h4>暂无数据！</h4>
+        }
+        @foreach (var item in Model)
+        {
+            <div class="i">
+                <a href="Details?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="thumb">
+		            <img src="@item.Pic"  width="200" height="125">
+		            <div class="text-muted">累计培训 @item.Trainers 人</div>
+	            </a>
+                <span class="source">@item.OrganName</span><br>
+                <a href="Details?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="title">@item.Title</a>
+                <span class="teacher">@item.TeacherTitleName：@item.TeacherName</span>
+                <div class="desc text-justify" style="overflow-x:hidden;">@item.Content</div>
+                <div class="subject">学科：
+                    @foreach (var subject in ViewBag.SubjectData)
+                    {
+                        string[] array = item.Subject.Split(',');
+                        foreach (string s in array)
+                        {
+                            if (s == subject.Id.ToString())
+                            {
+                                <span>@subject.Title</span><span>&nbsp;</span>
+                            }
+                        }
+                    }
+                </div>
+
+                
+                <div class="action">
+                    @if (item.Status == 2)
+                    {
+                        <div class="form-group status" style="width:100px;">
+			                <label class="groupType">
+				                <input type="checkbox" value="@item.Id" name="a1" class="training-check">&nbsp;&nbsp;选择
+			                </label>
+		                </div>
+                    }
+                     
+                    @if (item.Status == 4)
+                    {
+                        <span class="status danger">原因：@item.ApplyRemark</span>
+                    }
+
+                    @if (item.Status == 2)
+                    {
+                        <span class="status bg-info">待审核&nbsp;<span class="glyphicon glyphicon-time"></span></span>
+                    }
+
+                    @if (item.Status == 3)
+                    {
+                        <span class="status bg-success">已通过&nbsp;<span class="glyphicon glyphicon-ok"></span></span>
+                    }
+
+                    @if (item.Status == 4)
+                    {
+                        <span class="status bg-danger">不通过&nbsp;<span class="glyphicon glyphicon-remove"></span></span>
+                    }
+
+                    @if (item.Status == 6)
+                    {
+                        <span class="status bg-warning">已下架&nbsp;<span class="glyphicon glyphicon-minus"></span></span>
+                    }
+
+                    @if (item.Status == 2)
+                    {
+                        @*<a class="btn btn-primary do-check" key="@item.Id" href="javascript:;">审核</a>*@
+                        <a class="btn btn-primary" href="Check?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)">审核</a>
+                    }
+
+                    @if (item.Status == 4)
+                    {
+                        @*<a class="btn btn-primary do-check" key="@item.Id" href="javascript:;">重新审核</a>*@
+                        <a class="btn btn-primary" href="Check?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)">重新审核</a>
+                    }
+
+                    @if (item.Status == 3 || item.Status == 5 || item.Status == 6)
+                    {
+                        if (item.CanEdit)
+                        {
+                            <a class="btn btn-primary close-edit" onclick="EditStatus(@item.Id, 0);" href="javascript:;">关闭编辑</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary open-edit" onclick="EditStatus(@item.Id, 1);" href="javascript:;">开放编辑</a>
+                        }
+                    }
+                    <a class="btn btn-primary" href="Edit?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)">编辑</a>
+                </div>
+
+
+                @if (item.TraingField == 1)
+                {
+                    <span class="sign bg-sign orange">通识<span class="hour">@item.TotalTime 课时</span></span>
+                }
+                @if (item.TraingField == 2)
+                {
+                    <span class="sign bg-sign blue">专业<span class="hour">@item.TotalTime 课时</span></span>
+                }
+            </div>
+        }
+
+<hr>
+
+@if (ViewBag.RecordCount > ViewBag.PageSize)
+{
+    @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+        new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+}
+
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+@Html.Hidden("DoCheckId")
+
+<div class="modal fade" id="modal-training-check">
+    <div class="modal-dialog">
+  <div class="modal-content d-form" style="padding:0;">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">课程审核</h4>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+
+        <div class="col-xs-8">
+          <div class="form-group">
+            <label class="control-label">审核结果 <span class="text-danger">*</span></label>
+            <label class="chk">
+              <input type="radio" name="a1" value="1">
+              通过 </label>
+            <label class="chk">
+              <input type="radio" name="a1" value="2">
+              不通过 </label>
+          </div>
+        </div>
+
+        <div class="col-xs-8" id="UnpassRemark" style="display:none;">
+          <div class="form-group">
+            <label class="control-label">原因 <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" maxlength="30">
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" onClick="CheckSubmit();">提交</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+      <script/ type="text/javascript">
+          function CheckSubmit() {
+              var obj = $('#modal-training-check input[type=radio]:checked');
+              if (obj.length > 0) {
+                  if (obj.val() == '1' || (obj.val() == '2' && $('#UnpassRemark input[type=text]').val() != '')) {
+                      $.ajax({
+                          url: 'AjaxTrainingCheck',
+                          type: 'get',
+                          data: { Id: $('#DoCheckId').val(), Value: obj.val(), Remark: $('#UnpassRemark input[type=text]').val() },
+                          content: 'application/json',
+                          dataType: 'text',
+                          success: function (data) {
+                              var myData = $.parseJSON(data);
+                              if (myData.Result) {
+                                  AfterDoCheckSubmit();
+                                  window.location.href = '@Url.Action("List")';
+                              }
+                              else {
+                                  Alert(myData.Msg);
+                              }
+                          },
+                          error: function (XMLHttpRequest, textStatus, errorThrown) {
+                              if (XMLHttpRequest.status == 302) {
+                                  eval(XMLHttpRequest.responseText);
+                              }
+                          }
+                      });
+                      
+                  }
+              }
+          }
+
+          $(function () {
+              $('#modal-training-check input[type=radio]').click(function () {
+                  if ($(this).val() == '2') {
+                      $('#UnpassRemark').css('display', 'block');
+                  }
+                  else {
+                      $('#UnpassRemark').css('display', 'none');
+                  }
+              });
+          });
+
+      </script>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="modal-batch-pass">
+    <div class="modal-dialog">
+  <div class="modal-content d-form" style="padding:0;">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">确认批量通过吗？</h4>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" onClick="BatchPassSubmit();">确认</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+      <script type="text/javascript">
+          function BatchPassSubmit() {
+              $.ajax({
+                  url: 'AjaxTrainingCheckBatch',
+                  type: 'get',
+                  data: { Ids: $('#CheckList').val(), Value: 1, Remark: '' },
+                  content: 'application/json',
+                  dataType: 'text',
+                  success: function (data) {
+                      var myData = $.parseJSON(data);
+                      if (myData.Result) {
+                          AfterBatchPassSubmit();
+                          window.location.href = '@Url.Action("List")';
+                      }
+                      else {
+                          Alert(myData.Msg);
+                      }
+                  },
+                  error: function (XMLHttpRequest, textStatus, errorThrown) {
+                      if (XMLHttpRequest.status == 302) {
+                          eval(XMLHttpRequest.responseText);
+                      }
+                  }
+              });
+          }
+      </script>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="modal-batch-unpass">
+    <div class="modal-dialog">
+  <div class="modal-content d-form" style="padding:0;">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">确认批量不通过吗？</h4>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" onClick="BatchUnPassSubmit();">确认</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+      <script type="text/javascript">
+          function BatchUnPassSubmit() {
+              $.ajax({
+                  url: 'AjaxTrainingCheckBatch',
+                  type: 'get',
+                  data: { Ids: $('#CheckList').val(), Value: 2, Remark: '批量不通过' },
+                  content: 'application/json',
+                  dataType: 'text',
+                  success: function (data) {
+                      var myData = $.parseJSON(data);
+                      if (myData.Result) {
+                          AfterBatchUnPassSubmit();
+                          window.location.href = '@Url.Action("List")';
+                      }
+                      else {
+                          Alert(myData.Msg);
+                      }
+                  },
+                  error: function (XMLHttpRequest, textStatus, errorThrown) {
+                      if (XMLHttpRequest.status == 302) {
+                          eval(XMLHttpRequest.responseText);
+                      }
+                  }
+              });
+          }
+      </script>
+  </div>
+</div>
+</div>
+
+
+<div class="modal fade" id="modal-edit-status-confirm">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding:0;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-title"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" onClick="EditStatusSubmit();">确认</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    function AfterDoCheckSubmit() {
+        $('#modal-training-check').modal('hide');
+    }
+
+    function AfterBatchPassSubmit() {
+        $('#modal-batch-pass').modal('hide');
+    }
+
+    function AfterBatchUnPassSubmit() {
+        $('#modal-batch-unpass').modal('hide');
+    }
+
+    var trainingId = 0;
+    var statusValue = 0;
+    function EditStatus(id, value) {
+        trainingId = id;
+        statusValue = value;
+        if (value == 0) {
+            $('#modal-edit-status-confirm .modal-title').text('确认关闭编辑？')
+        }
+        else {
+            $('#modal-edit-status-confirm .modal-title').text('确认开放编辑？')
+        }
+        $('#modal-edit-status-confirm').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+
+    function EditStatusSubmit() {
+        $.ajax({
+            url: 'AjaxEditStatus',
+            type: 'get',
+            data: { Id: trainingId, Value: statusValue },
+            content: 'application/json',
+            dataType: 'text',
+            success: function (data) {
+                var myData = $.parseJSON(data);
+                if (myData.Result) {
+                    AfterEditStatusSubmit();
+                    window.location.href = '@Url.Action("List")';
+                }
+                else {
+                    Alert(myData.Msg);
+                    AfterEditStatusSubmit();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 302) {
+                    eval(XMLHttpRequest.responseText);
+                }
+            }
+        });
+    }
+
+    function AfterEditStatusSubmit() {
+        $('#modal-edit-status-confirm').modal('hide');
+    }
+
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $('.training-check').click(function () {
+                $('#CheckList').val('');
+                var temp = '';
+                $('.training-check:checked').each(function () {
+                    temp += $(this).val() + ',';
+                });
+                if (temp != '')
+                    temp = temp.substr(0, temp.length - 1);
+                $('#CheckList').val(temp);
+            });
+
+            $('.do-check').click(function () {
+                $('#DoCheckId').val($(this).attr('key'));
+                $('#modal-training-check').modal({
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+            });
+
+            $('#BatchPass').click(function () {
+                if ($('#CheckList').val() == '') {
+                    Alert('请选择待审核的课程！');
+                    return;
+                }
+
+                $('#modal-batch-pass').modal({
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+            });
+
+            $('#BatchUnPass').click(function () {
+                if ($('#CheckList').val() == '') {
+                    Alert('请选择待审核的课程！');
+                    return;
+                }
+
+                $('#modal-batch-unpass').modal({
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+            });
+        });
+    });
+</script>

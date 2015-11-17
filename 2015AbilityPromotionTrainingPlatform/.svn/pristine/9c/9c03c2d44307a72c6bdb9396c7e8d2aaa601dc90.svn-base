@@ -1,0 +1,276 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using Dianda.AP.Model;
+using System.Security.Cryptography;
+
+namespace Dianda.AP.DAL
+{
+    public class UserDAL
+    {
+        public List<UserModel> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from dbo.Member_Account a left join dbo.Member_BaseInfo b on a.Id=b.AccountId left join Organ_Type c on a.OrganId = c.Id where a.Delflag = 0 ");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select a.Id as UserId,a.UserName,a.Password,a.NickName,a.Status,c.Title as OrganTitle,ROW_NUMBER() over (order by " + orderBy + ") as RowNum from dbo.Member_Account a left join Organ_Detail c on a.OrganId = c.Id where a.Delflag = 0 ");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(where);
+            sql.Append(") as T where RowNum between " + start + " and " + end);
+            List<UserModel> list = new List<UserModel>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    UserModel model = new UserModel();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+
+        public bool UserAddXJ(string UserName, string PassWord, string ConfirmPass, string NickName, string Email, int Status, int OrganId)
+        {
+            StringBuilder Accsql = new StringBuilder();
+            Accsql.Append(" insert into dbo.Member_Account (UserName,Password,Email,Status,NickName,IsRealName,OrganId) output inserted.Id ");
+            Accsql.Append(" values (@UserName,@Password,@Email,@Status,@NickName,@IsRealName,@OrganId) ");
+            SqlParameter[] para ={
+                                    new SqlParameter("@UserName",SqlDbType.VarChar),
+                                    new SqlParameter("@Password",SqlDbType.VarChar),
+                                    new SqlParameter("@Email",SqlDbType.VarChar),
+                                    new SqlParameter("@Status",SqlDbType.Int),
+                                    new SqlParameter("@NickName",SqlDbType.VarChar),
+                                    new SqlParameter("@IsRealName",SqlDbType.Bit),
+                                    new SqlParameter("@OrganId",SqlDbType.Int)
+                                 };
+            para[0].Value = UserName;
+            para[1].Value = PassWord;
+            para[2].Value = Email;
+            para[3].Value = Status;
+            para[4].Value = NickName;
+            para[5].Value = false;
+            para[6].Value = OrganId;
+            int id = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(Accsql.ToString(), para));
+            if (id > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public bool UserAdd(string UserName, string PassWord, string ConfirmPass, string NickName, string Email, int Status, int OrganId, int PartitionId, int UserGroup)
+        {
+            StringBuilder Accsql = new StringBuilder();
+            Accsql.Append(" insert into dbo.Member_Account (UserName,Password,Email,Status,NickName,IsRealName,OrganId) output inserted.Id ");
+            Accsql.Append(" values (@UserName,@Password,@Email,@Status,@NickName,@IsRealName,@OrganId) ");
+            SqlParameter[] para ={
+                                    new SqlParameter("@UserName",SqlDbType.VarChar),
+                                    new SqlParameter("@Password",SqlDbType.VarChar),
+                                    new SqlParameter("@Email",SqlDbType.VarChar),
+                                    new SqlParameter("@Status",SqlDbType.Int),
+                                    new SqlParameter("@NickName",SqlDbType.VarChar),
+                                    new SqlParameter("@IsRealName",SqlDbType.Bit),
+                                    new SqlParameter("@OrganId",SqlDbType.Int)
+                                 };
+            para[0].Value = UserName;
+            para[1].Value = PassWord;
+            para[2].Value = Email;
+            para[3].Value = Status;
+            para[4].Value = NickName;
+            para[5].Value = false;
+            para[6].Value = OrganId;
+            int id = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(Accsql.ToString(), para));
+
+            if (UpdGroup(id, PartitionId, OrganId, UserGroup))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public string GetModel(int id)
+        {
+            string listsplit = "";
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,UserName,NickName,Status,Email from dbo.Member_Account where id='" + id + "' ");
+            List<UserModel> list = new List<UserModel>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                if (reader.Read())
+                {
+                    listsplit = reader["Id"].ToString() + "||" + reader["UserName"].ToString() + "||" + reader["NickName"].ToString() + "||" + reader["Status"].ToString() + "||" + reader["Email"].ToString();
+                }
+            }
+            return listsplit;
+        }
+
+
+        public bool UserEdit(int id, string UserName, string NickName, string Email, int Status)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" update Member_Account set UserName=@UserName,NickName=@NickName,Email=@Email,Status=@Status ");
+            sql.Append("where id=@id");
+            SqlParameter[] para ={
+                                    new SqlParameter("@UserName",SqlDbType.VarChar),
+                                    new SqlParameter("@NickName",SqlDbType.VarChar),
+                                    new SqlParameter("@Email",SqlDbType.VarChar),
+                                    new SqlParameter("@Status",SqlDbType.Int),
+                                    new SqlParameter("@id",SqlDbType.Int)
+                                 };
+            para[0].Value = UserName;
+            para[1].Value = NickName;
+            para[2].Value = Email;
+            para[3].Value = Status;
+            para[4].Value = id;
+            int i = MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(),para);
+            if (i > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public bool UpdPass(int id, string PassWord)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" update Member_Account set PassWord='" + PassWord + "' where id='" + id + "' ");
+            int i = MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString());
+            if (i > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdUserStatus(int id,string UpdString)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" update dbo.Member_Account set " + UpdString + " where id='" + id + "' ");
+            int i = MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString());
+            if (i > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public string GetPassWord(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select PassWord from Member_Account where id=" + AccountId + " ");
+            return MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()).ToString();
+        }
+
+        public bool UpdGroup(int AccountId, int PartitionId, int OrganId, int GroupId)
+        {
+            int k = 0;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" select count(*) from PlatformManager_Detail where AccountId = '" + AccountId + "' and PartitionId = '" + PartitionId + "' and Delflag = 0 ");
+            int i = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            if (i > 0)     //修改
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append(" update PlatformManager_Detail set GroupId = '" + GroupId + "' where AccountId = '" + AccountId + "'  and PartitionId='" + PartitionId + "' and Delflag = 0 ");
+                k = MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString());
+            }
+            else           //新增
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append(" insert into PlatformManager_Detail (AccountId,PartitionId,Status,OrganId,Level,GroupId,Delflag,CreateDate) ");
+                sql.Append(" values (@AccountId,@PartitionId,@Status,@OrganId,@Level,@GroupId,@Delflag,@CreateDate) ");
+                SqlParameter[] para ={
+                                        new SqlParameter("@AccountId",SqlDbType.Int),
+                                        new SqlParameter("@PartitionId",SqlDbType.Int),
+                                        new SqlParameter("@Status",SqlDbType.Int),
+                                        new SqlParameter("@OrganId",SqlDbType.Int),
+                                        new SqlParameter("@Level",SqlDbType.Int),
+                                        new SqlParameter("@GroupId",SqlDbType.Int),
+                                        new SqlParameter("@Delflag",SqlDbType.Bit),
+                                        new SqlParameter("@CreateDate",SqlDbType.Date)
+                                     };
+                para[0].Value = AccountId;
+                para[1].Value = PartitionId;
+                para[2].Value = 1;
+                para[3].Value = OrganId;
+                para[4].Value = 0;
+                para[5].Value = 6;
+                para[6].Value = false;
+                para[7].Value = DateTime.Now;
+                k = MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), para);
+            }
+            if (k > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void ConvertToModel(IDataReader reader, UserModel model)
+        {
+            if (reader["UserId"] != DBNull.Value)
+                model.UserId = Convert.ToInt32(reader["UserId"]);
+
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+
+            if (reader["PassWord"] != DBNull.Value)
+                model.PassWord = reader["PassWord"].ToString();
+
+            if (reader["NickName"] != DBNull.Value)
+                model.NickName = reader["NickName"].ToString();
+
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["OrganTitle"] != DBNull.Value)
+                model.OrganTitle = reader["OrganTitle"].ToString();
+        }
+
+        public int GetGroup(int AccountId, int PartitionId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select GroupId from PlatformManager_Detail where AccountId = '" + AccountId + "' and PartitionId = '" + PartitionId + "' ");
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()));
+        }
+
+        public int CountUser(string UserName)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select count(1) from dbo.Member_Account where UserName = '"+UserName+"' ");
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()));
+        }
+
+    }
+}

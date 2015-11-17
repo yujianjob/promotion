@@ -1,0 +1,13 @@
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\XXW.CommonDAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\XXW.CommonDAL.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\Dianda.DALSqlServer.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\XXW.CommonModels.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\XXW.Enum.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\Dianda.DALSqlServer.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\XXW.CommonModels.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\bin\Debug\XXW.Enum.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\obj\Debug\XXW.CommonDAL.csprojResolveAssemblyReference.cache
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\obj\Debug\XXW.CommonDAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.CommonDAL\obj\Debug\XXW.CommonDAL.pdb

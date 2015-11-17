@@ -1,0 +1,432 @@
+﻿@using Dianda.AP.Model;
+@using System.Data;
+@{
+    ViewBag.Title = "个人信息详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DataTable dt = ViewBag.GetModel as DataTable;
+    string UserName = ViewData["UserName"].ToString();
+    string Email = ViewData["Email"].ToString();
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                @if(dt.Rows.Count!=0)
+                {
+                    <h4>@dt.Rows[0]["UserName"].ToString()</h4>
+                
+                <hr>
+                <div class="row">
+                    <div class="col-xs-2 text-center">
+                        <img src="@dt.Rows[0]["Pic"].ToString().Replace("\\","/")" style="margin-bottom: 20px;" width="150" height="150">
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="row">
+
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">用户名</label>
+                                    <br />
+                                    @dt.Rows[0]["RealName"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">师训编号</label>
+                                    <br />
+                                    @dt.Rows[0]["TeacherNo"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">邮箱地址</label>
+                                    <br />
+                                    @dt.Rows[0]["Email"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">性别</label>
+                                    <br />
+                                    @if (dt.Rows[0]["Sex"].ToString() == "1")
+                                    {
+                                        <span>男</span>
+                                    }
+                                    else if (dt.Rows[0]["Sex"].ToString() == "2")
+                                    { 
+                                        <span>女</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">出生日期</label>
+                                    <br />
+                                    @if (dt.Rows[0]["Birthday"].ToString() != "" && dt.Rows[0]["Birthday"].ToString() != null)
+                                    { 
+                                         @Convert.ToDateTime(dt.Rows[0]["Birthday"].ToString()).ToString("yyyy-MM-dd")
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">身份证号</label>
+                                    <br />
+                                    @dt.Rows[0]["CredentialsNumber"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">手机号码</label>
+                                    <br />
+                                    @dt.Rows[0]["Mobile"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                    <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">民族</label>
+                                        <br />
+                                    @dt.Rows[0]["Nation"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">政治面貌</label>
+                                    <br />
+                                    @dt.Rows[0]["PoliticalStatus"].ToString()
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">区县</label>
+                                    <br />
+                                    @dt.Rows[0]["Region"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学校</label>
+                                    <br />
+                                    @dt.Rows[0]["Organ"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">职务</label>
+                                    <br />
+                                    @dt.Rows[0]["Job"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                 <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">职称</label>
+                                     <br />
+                                    @dt.Rows[0]["WorkRank"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教日期</label>
+                                    <br />
+                                    @if (dt.Rows[0]["TeachDate"].ToString() != "" && dt.Rows[0]["TeachDate"].ToString() != null)
+                                    { 
+                                         @Convert.ToDateTime(dt.Rows[0]["TeachDate"].ToString()).ToString("yyyy-MM-dd")
+                                    }
+                                   
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教学段</label>
+                                    <br />
+                                    @dt.Rows[0]["TeachStudySection"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教学科</label>
+                                    <br />
+                                    @dt.Rows[0]["TeachSubject"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                 <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教年级</label>
+                                     <br />
+                                    @dt.Rows[0]["TeachGrade"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">培训类型</label>
+                                    <br />
+                                    @dt.Rows[0]["TraningType"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">培训对象</label>
+                                    <br />
+                                    @dt.Rows[0]["TraningObject"].ToString()
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学历</label>
+                                    <br />
+                                    @dt.Rows[0]["EduLevel"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学位</label>
+                                    <br />
+                                    @dt.Rows[0]["EduDegree"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">专业</label>
+                                    <br />
+                                    @dt.Rows[0]["EduMajor"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">毕业院校</label>
+                                    <br />
+                                    @dt.Rows[0]["GraduateSchool"].ToString()
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">毕业时间</label>
+                                    <br />
+                                    @if (dt.Rows[0]["GraduateTime"].ToString() != "" && dt.Rows[0]["GraduateTime"].ToString() != null)
+                                    { 
+                                        @Convert.ToDateTime(dt.Rows[0]["GraduateTime"].ToString()).ToString("yyyy-MM-dd")
+                                    }
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <hr>
+                                <a href="/Prepare/AccountEdit/Index" class="btn btn-success">修改个人信息</a>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Prepare/PassWordEdit/Index" class="btn btn-success">修改密码</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 }else
+                {
+                    <h4>@UserName</h4>
+                    <hr>
+                <div class="row">
+                    <div class="col-xs-2 text-center">
+                        <img src="" style="margin-bottom: 20px;" width="150" height="150">
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="row">
+
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">用户名</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">师训编号</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">邮箱地址</label>
+                                    <br />
+                                    @Email
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">性别</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">出生日期</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">身份证号</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">手机号码</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                    <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">民族</label>
+                                        <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">政治面貌</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学区</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学段</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">所属机构</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">职务</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                 <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">职称</label>
+                                     <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教日期</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教学段</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教学科</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                 <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">任教年纪</label>
+                                     <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">培训类型</label>
+                                    <br />
+                                   暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">培训对象</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学历</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">学位</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">专业</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">毕业院校</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group"  style="height:50px;">
+                                    <label class="control-label">毕业时间</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <hr>
+                                <a href="/Prepare/AccountEdit/Index" class="btn btn-success">修改个人信息</a>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Prepare/PassWordEdit/Index" class="btn btn-success">修改密码</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<form id="fileFrom" style="display: none;" action="@Url.Action("PicUpdate")" method="post" enctype="multipart/form-data">
+    <input name="file" type="file" id="file" />
+    <input type="submit" value="提交" />
+</form>

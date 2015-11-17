@@ -1,0 +1,277 @@
+﻿@using Dianda.AP.Model;
+@using Dianda.AP.Model.Course.CourseCreate;
+
+@{
+    ViewBag.Title = "课程学习";
+    IHtmlString Loading = @Html.Raw("<div style='left:400px;position:relative;font-size:15px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='left:400px;top:-7px;position:relative;font-size:15px'>没有课程信息……</div>");
+
+    Layout = "../Shared/_Layout.cshtml";
+    Course_CourseInfo Model = ViewBag.TrainingInfo as Course_CourseInfo;
+    Member_ClassRegister Model_Reg = ViewBag.Model_Member_ClassRegister as Member_ClassRegister;
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseLearn.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-11">
+                <div id="blk_ln_course_info" class="d-course-info blk_ln_course_info">
+                    <div class="course-i" style="min-height: 195px;">
+                        <span class="thumb">
+                            <img src="@Model.Pic" width="200" height="125"></span>
+                        <span class="source">@Model.OrganName</span>
+                        <span class="title">@Model.Title</span>
+                        <div class="desc text-justify">
+                            @Model.Content
+                        </div>
+                    </div>
+
+                    <div class="course-p clearfix">
+                        <div class="pull-left h">我的进度</div>
+                        @if (Model_Reg != null && Model_Reg.TotalSchedule != null)
+                        {
+                            var IsPass = Model_Reg.IsPass ? 1 : 0;//是否已通过结业考试
+                            var Result = Convert.ToInt32(Model_Reg.Result) == 1 ? 1 : 0;//结果 1合格 2不合格
+                            var widthTmp = "";
+                            
+                            <div id="divProgress" class="pull-left b">
+                                <div class="bb">
+                                    <div class="line"></div>
+                                    @if (Model_Reg.TotalSchedule <= 6)
+                                    {
+                                        for (int i = 1; i <= Model_Reg.TotalSchedule; i++)
+                                        {
+                                        <span class="cp">@i</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Model_Reg.TotalSchedule <= 0)
+                                        {
+                                        <span class="cp">0</span>
+                                        }
+                                        else
+                                        {
+                                            if (Model_Reg.CurrentSchedule <= 1)
+                                            {
+                                        <span class="cp">1</span>
+                                        <span class="cp">@Model_Reg.TotalSchedule</span>
+                                            }
+                                            else
+                                            {
+                                                if (Model_Reg.CurrentSchedule == Model_Reg.TotalSchedule)
+                                                {
+                                        <span class="cp">1</span>
+                                        <span class="cp">@Model_Reg.CurrentSchedule</span>
+                                                }
+                                                else
+                                                {
+                                        <span class="cp">1</span>
+                                        <span class="cp">@Model_Reg.CurrentSchedule</span>
+                                        <span class="cp">@Model_Reg.TotalSchedule</span>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    <span class="cp">T</span>
+                                    <span class="cp pass">通过</span>
+                                </div>
+
+                                @if (Model_Reg.TotalSchedule <= 6)
+                                {
+                                    if (Result == 1)
+                                    {
+                                        widthTmp = 78 * (Model_Reg.TotalSchedule + 2) + "px";
+                                    }
+                                    else if (Result != 1 && IsPass == 1)
+                                    {
+                                        widthTmp = 78 * (Model_Reg.TotalSchedule + 1) + "px";
+                                    }
+                                    else
+                                    {
+                                        widthTmp = 78 * (Model_Reg.CurrentSchedule + IsPass + Result) + "px";
+                                    }
+                                    <div class="ba" style="width: @widthTmp;">
+                                        <div class="line"></div>
+                                        @for (int j = 1; j <= Model_Reg.TotalSchedule; j++)
+                                        {
+                                            <span class="cp">@j</span>
+                                        }
+                                        <span class="cp">T</span>
+                                        <span class="cp pass">通过</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    if (Result == 1)
+                                    {
+                                        if (Model_Reg.TotalSchedule == Model_Reg.CurrentSchedule)
+                                        {
+                                            widthTmp = 78 * (2 + 2) + "px";
+                                        }
+                                        else
+                                        {
+                                            widthTmp = 78 * (3 + 2) + "px";
+                                        }
+                                    }
+                                    else if (Result != 1 && IsPass == 1)
+                                    {
+                                        widthTmp = 78 * (2 + 1) + "px";
+                                    }
+                                    else
+                                    {
+                                        if (Model_Reg.TotalSchedule <= 0 || Model_Reg.CurrentSchedule <= 0)
+                                        {
+                                            widthTmp = "0px";
+                                        }
+                                        else
+                                        {
+                                            if (Model_Reg.CurrentSchedule == Model_Reg.TotalSchedule)
+                                            {
+                                                widthTmp = 78 * (2 + IsPass + Result) + "px";
+                                            }
+                                            else
+                                            {
+                                                if (Model_Reg.CurrentSchedule <= 1)
+                                                {
+                                                    widthTmp = 78 * (1 + IsPass + Result) + "px";
+                                                }
+                                                else
+                                                {
+                                                    widthTmp = 78 * (2 + IsPass + Result) + "px";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    <div class="ba" style="width: @widthTmp;">
+                                        <div class="line"></div>
+                                        <span class="cp">1</span>
+                                        @if (Model_Reg.CurrentSchedule != Model_Reg.TotalSchedule && Model_Reg.CurrentSchedule > 0)
+                                        {
+                                            <span class="cp">@Model_Reg.CurrentSchedule</span>
+                                            <span class="cp">@Model_Reg.TotalSchedule</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cp">@Model_Reg.CurrentSchedule</span>
+                                        }
+                                        <span class="cp">T</span>
+                                        <span class="cp pass">通过</span>
+                                    </div>
+                                }
+
+                            </div>
+                        }
+
+                        <div class="pull-right text-right c">
+                            <a href="javascript:;" onclick="ProgressShowHidden(this);"><span class="glyphicon glyphicon-eye-close"></span>&nbsp;隐藏</a>
+                        </div>
+                    </div>
+
+                    <div id="CourseInfo" class="course-t"></div>
+                </div>
+            </div>
+            <div class="col-xs-1">
+                <div class="d-section-menu">
+                    <a href="/Prepare/ClassAddressList/Index?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">班级通讯录</a>
+                    <a href="/Prepare/ClassMessage/List?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">班级通知</a>
+                    <a href="/Learn/LearnOnLine/LearnNoteView?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">笔记本</a>
+                    <a href="/Learn/LearnOnLine/LearnOnLineEvaluateView?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">课程评价</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ActivityModel" style="display: none;">
+    <div class="topic">
+        <span class="status"><span id="Complete" class="dot"></span></span>
+        <a id="AcTitle" class="title"></a>
+        <span id="AcType" class="type"></span></span>
+	    <span class="duration"><span id="AcTimeLength"></span>分钟</span>
+    </div>
+</div>
+
+<div id="SectionModel" style="display: none;">
+    <div id="SecLecture" class="lecture">
+        <div class="title">
+            <span id="SecTitle"></span>
+        </div>
+        <div class="duration"></div>
+        <div class="topiclist">
+            <div class="line"></div>
+            <div id="SectionActivity"></div>
+        </div>
+    </div>
+</div>
+
+<div id="ChapterModel" style="display: none;">
+    <div class="course-t">
+        <div class="chapter">
+            <div class="title">
+                <span id="ChapTitle"></span>
+            </div>
+            <div class="desc text-justify">
+                <pre id="ChapContent"></pre>
+            </div>
+            <div class="duration">预计<span id="TotalTimeLength"></span>分钟</div>
+        </div>
+        <div id="ChapLecture" class="lecture">
+            <div class="topiclist">
+                <div class="line"></div>
+                <div id="ChapterActivity"></div>
+            </div>
+        </div>
+        <div id="SectionContent" class="title">
+        </div>
+        <div class="action">
+            <a href="javascript:void(0);" onclick="doHideLecture()"><span class="glyphicon glyphicon-chevron-up"></span>&nbsp;隐藏</a>
+        </div>
+    </div>
+</div>
+
+<div id="ExamModel" style="display: none;">
+    <div class="course-t">
+        <div class="lecture">
+            <div id="ExamTitle1" class="title">
+            </div>
+            <div class="duration">预计<span id="ExamTimeLength"></span>分钟</div>
+            <div class="topiclist">
+                <div class="line"></div>
+                <div class="topic">
+                    <span class="status"><span id="Complete" class="dot"></span></span>
+                    <a id="ExamTitle2" class="title" href="javascript:void(0);"></a>
+                    <span class="desc"><span id="ExamQuesCnt"></span>道题目</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-edit-status" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btnConfirm" type="button" class="btn btn-success">确认</button>
+                <button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var Loading = "@Loading";
+    var noDataTip = "@noDataTip";
+    var TrainingId = "@ViewBag.TrainingId";
+    var ExamQuesCnt = "@ViewBag.ExamQuesCnt";
+    var ClassId = "@ViewBag.ClassId";
+</script>

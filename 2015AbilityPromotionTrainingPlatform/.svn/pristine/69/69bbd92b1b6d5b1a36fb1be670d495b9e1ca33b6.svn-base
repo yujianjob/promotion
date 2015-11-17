@@ -1,0 +1,137 @@
+﻿
+//初始加载 课程班级联动
+function initVerifyPage() {
+    $('#trainingId').change(function () {
+        var trainingId = $(this).val();
+        getClassListBytCourse(trainingId);
+    });
+
+    var trainingId = $("#trainingId").val();
+    if (trainingId > 0) {
+        getClassListBytCourse(trainingId);
+    }
+}
+
+//根据课程获取班级
+function getClassListBytCourse(_course) {
+    var _data = {
+        Course: _course
+    };
+    $.ajax({
+        url: '/Coursemarket/GetClassListBytCourse',
+        type: 'GET',
+        data: _data,
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        error: function (m) {
+            var z = m;
+        },
+        success: function (a) {
+            $('#myclassId option:gt(0)').remove();
+            var classss = $("#hidclassid").val();
+            if (a.length > 0) {
+                for (var i = 0; i < a.length; i++) {
+                    $("<option value='" + a[i].Id + "'>" + a[i].Title + "</option>").appendTo($("#myclassId"));
+                }
+                $('#myclassId').val(classss);
+            }
+        }
+    });
+}
+
+//全选
+function chooseall() {
+    if (document.getElementById("chkItemAll").checked) {
+        $("[name = chkItem]:checkbox").prop("checked", true);
+    }
+    else {
+        $("[name = chkItem]:checkbox").prop("checked", false);
+    }
+}
+
+//审核
+function marketverify(id) {
+    $.layer({
+        type: 2,
+        title: "审核",
+        maxmin: true,
+        shadeClose: true, //开启点击遮罩关闭层
+        area: ['700px', '500px'],
+        offset: ['100px', ''],
+        iframe: { src: '../Coursemarket/Verify?id=' + id }
+    });
+}
+
+
+//检查人数
+function checkpeople(classids, maxpeoples, ctitles, status) {
+    if (status == 2 || status == 4) {
+        var myclassids = classids.substring(0, classids.length - 1).split(',');
+        var maxpeoples = maxpeoples.substring(0, maxpeoples.length - 1).split(',');
+        for (var i = 0; i < myclassids.length; i++) {
+            var count = 1;
+            for (var j = 0; j < i; j++) {
+                if (myclassids[i] = myclassids[j]) {
+                    count++;
+                }
+            }
+            if (Number(maxpeoples[i]) < count) {
+                alert(ctitles[i] + "报名人数超出招收人数");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+//批量审核
+function saveallVerify(status) {
+    ids = "";
+    classids = "";
+    maxpeoples = "";
+    ctitles = "";
+    $("input[name=chkItem]").each(function () {
+        if ($(this).prop("checked")) {
+            ids += $(this).val() + ",";
+            classids += $(this).parent().parent().find(".cid").val() + ",";
+            maxpeoples += $(this).parent().parent().find(".maxpeople").val() + ",";
+            ctitles += $(this).parent().parent().find(".ctitle").text() + ",";
+        }
+    });
+    if ($.trim(ids).length <= 0) {
+        alert("请选择审核通过的申请!")
+    }
+    else {
+        if (checkpeople(classids, maxpeoples, ctitles, status)) {
+            $.ajax({
+                type: 'get',
+                url: '/Market/Coursemarket/MyVerifyAll',
+                data: {
+                    Status: status, Ids: ids
+                },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        alert(result.Msg);
+                    }
+                    else {
+                        alert(result.Msg);
+                    }
+                    window.parent.location.reload();
+                },
+                error: function () {
+                    alert('服务器错误！');
+                }
+            });
+        }
+    }
+}
+
+//搜索
+function verifySearch() {
+    var url = $('#url').val();
+    window.location.href = url + "searchTitle=" + $('#searchTitle').val() + "&planId=" + $('#planId').val() + "&status=" + $('#status').val() + "&trainingId=" + $('#trainingId').val() + "&myclassId=" + $('#myclassId').val();
+}
+

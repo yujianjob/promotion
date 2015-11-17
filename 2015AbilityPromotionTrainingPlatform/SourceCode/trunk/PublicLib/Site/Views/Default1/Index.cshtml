@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<h2>Index</h2>
+
+
+  @{
+                  foreach (XXW.CommonModels.Manage.Menu menu in XXW.SiteUtils.ManageMenu.Instance.GetMenus(1))
+                  {
+                       <a href="@menu.MenuPath" class="item">@menu.MenuText *</a>
+                  }
+                  }

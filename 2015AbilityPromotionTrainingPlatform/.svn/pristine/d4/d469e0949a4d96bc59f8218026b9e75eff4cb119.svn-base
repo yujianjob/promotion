@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <title></title>
+    <link href="/jnpx/dist/common/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/jnpx/dist/common/css/app.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="/jnpx/dist/common/js/vendor/html5shiv_3.7.2.min.js"></script>
+      <script src="/jnpx/dist/common/js/vendor/respond_1.4.2.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <div class="d-h d-h-top">
+      <div id="blk_ln_top" class="d-top blk_ln_top" data-km-htm="blk_ln_top.html"></div>
+    </div>
+    <div class="d-h d-h-header">
+      <div id="blk_ln_header" class="d-header blk_ln_header" data-km-htm="blk_ln_header.html"></div>
+    </div>
+
+    <div class="d-h">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+						<div class="course-bar">
+							<span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+							<a href="/jnpx/dist/learner/learn-course.html" class="title">云服务在课堂教育中的应用</a>
+							<span class="action">
+								<a href="javascript:;" onclick="showNote(this)">隐藏笔记</a>
+							</span>
+						</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-h">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-8">
+      			<div id="blk_ln_course_reading" class="blk_ln_course_reading" data-km-htm="blk_ln_course_reading.html"></div>
+      		</div>
+          <div id="d_note" class="col-xs-4">
+            <div class="d-note">
+      				<div id="blk_ln_course_note" class="blk_ln_course_note" data-km-htm="blk_ln_course_note.html"></div>
+      			</div>
+          </div>
+        </div>
+      </div>
+			<div class="d-course-nav fixed">
+				<a href="learn-reading.html" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+				<a href="learn-reading.html" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			</div>
+    </div>
+
+    <div class="d-h">
+      <div id="blk_footer" class="blk_footer" data-km-htm="/jnpx/dist/blk_footer.html"></div>
+    </div>
+
+    <script src="/jnpx/dist/common/js/vendor/jquery-1.11.2.min.js"></script>
+    <script src="/jnpx/dist/common/js/bootstrap.min.js"></script>
+    <script src="/jnpx/dist/common/js/vendor/ie10-viewport-bug-workaround.js"></script>
+    <script src="/jnpx/dist/common/js/km.js"></script>
+    <script src="/jnpx/dist/common/js/proto.js"></script>
+    <script>
+    $(function() {
+      $proto.init(function (){
+          /* 页面加载后立即执行的代码写在这里 */
+
+      });
+    });
+
+    function showNote(eo){
+    	if($('#d_note').css('display')=='none'){
+    		$(eo).text('隐藏笔记');
+    		$('#d_note').show();
+    		$('#blk_ln_course_reading').parent().attr('class','col-xs-8');
+    	}else{
+    		$(eo).text('显示笔记');
+    		$('#d_note').hide();
+    		$('#blk_ln_course_reading').parent().attr('class','col-xs-12');
+    	}
+    }
+    </script>
+  </body>
+</html>

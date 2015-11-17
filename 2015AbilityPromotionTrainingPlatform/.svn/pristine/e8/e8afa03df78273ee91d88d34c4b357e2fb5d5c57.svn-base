@@ -1,0 +1,113 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Web.Code
+{
+    public class ScoreSetHelper
+    {
+
+        public static void ScoreSet(int? objectId, int objectType, int classId, int planId, int accountId, double score, int createrId)
+        {
+            dynamic objectBll;
+            dynamic model;
+            Member_ClassRegister memberModel;
+            int total = 1;
+            var member_classBll = new Member_ClassRegisterBLL();
+            var member_class = member_classBll.GetList(" ClassId=" + classId + " and PlanId=" + planId + " and AccountId=" + accountId, "");
+            if (member_class == null || member_class.Count == 0) return;
+            memberModel = member_class.FirstOrDefault();
+
+            var traningBll = new Traning_DetailBLL();
+            var traning_detail = traningBll.GetModel(memberModel.TrainingId.Value, "");
+            if (traning_detail == null) return;
+
+            var courseBll = new Course_DetailBLL();
+            var cousre_detail = courseBll.GetList(" TrainingId=" + traning_detail.Id, "");
+            if (cousre_detail == null || cousre_detail.Count == 0) return;
+
+            var unitContentBll = new Course_UnitContentBLL();
+
+            switch (objectType)
+            {
+                case 1://read
+
+                    break;
+                case 2://discuss
+
+                    break;
+                case 3://homework
+                    #region
+                    total = unitContentBll.GetList(" UnitType=4", "").Count;
+                    objectBll = new Course_UnitHomeWorkBLL();
+                    model = objectBll.GetModel(objectId.Value, "");
+                    model.Score = score;
+                    model.ScoreCreater = SiteCache.Instance.LoginInfo.UserId;
+                    objectBll.Update(model);//更新结果表
+
+                    if (total > 1)
+                    {
+                        memberModel.HomeWorkScore += score * (cousre_detail[0].HomeWorkRate / 100) / total;
+                    }
+                    else
+                    {
+                        memberModel.HomeWorkScore = score * (cousre_detail[0].HomeWorkRate / 100);
+                    }
+                    member_classBll.Update(memberModel);//更新班级成员作业分数总值
+                    #endregion
+                    break;
+                case 4://question
+                    #region
+
+                    objectBll = new Member_ContentAnswerResultBLL();
+                    model = objectBll.GetModel(objectId.Value);
+                    model.Score = score;
+                    objectBll.Update(model);//更新班级成员测试分数总值
+                    total = unitContentBll.GetList(" UnitType=5", "").Count;
+
+                    if (total > 1)
+                    {
+                        memberModel.TestingScore += score * (cousre_detail[0].QuestionRate / 100) / total;
+                    }
+                    else
+                    {
+                        memberModel.TestingScore = score * (cousre_detail[0].QuestionRate / 100);
+                    }
+                    member_classBll.Update(memberModel);//更新班级成员测试分数总值
+                    #endregion
+                    break;
+                case 5://examnation
+                    #region
+
+                    objectBll = new Member_Course_UnitContentTestAnswerResultBLL();
+                    model = objectBll.GetModel(objectId.Value);
+                    model.Score = score;
+                    objectBll.Update(model);//更新班级成员考试分数总值
+
+                    if (total > 1)
+                    {
+                        memberModel.ExaminationScore += score * (cousre_detail[0].TestingRate / 100) / total;
+                    }
+                    else
+                    {
+                        memberModel.ExaminationScore = score * (cousre_detail[0].TestingRate / 100);
+                    }
+                    member_classBll.Update(memberModel);//更新班级成员考试分数总值
+                    #endregion
+                    break;
+                case 6://comment
+                    #region
+                    objectBll = new Member_ClassRegisterBLL();
+                    model = objectBll.GetList(" ClassId=" + classId + " and PlanId=" + planId + " and AccountId=" + accountId, "").FirstOrDefault();
+                    model.CommentScore = score;
+                    objectBll.Update(model);//更新班级成员评价分数总值
+                    #endregion
+                    break;
+                default: break;
+            }
+        }
+    }
+}

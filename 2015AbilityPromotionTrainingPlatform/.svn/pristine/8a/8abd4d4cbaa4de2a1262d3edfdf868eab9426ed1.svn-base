@@ -1,0 +1,172 @@
+﻿@model Dianda.AP.Model.MyTestRound
+@{
+    ViewBag.Title = "我的测评";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+    ViewBag.MenuId = "d_learner_assessment";
+}
+
+<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/Statistics/jquery.jqplot.css")">
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jquery-1.5.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jquery.jqplot.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jqplot.barRenderer.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jqplot.categoryAxisRenderer.js")"></script>
+
+<script type="text/javascript">
+    function doHideLecture() {
+        var eo = $d.elem($d.evt());
+        if (eo.tagName.toLowerCase() != 'a') {
+            eo = eo.parentNode;
+        }
+        var e1 = $(eo);
+        var e2 = e1.parent().parent().find('.lecture');
+        if (e2.css('display') == 'block') {
+            e1.html('<span class="glyphicon glyphicon-chevron-down"></span>&nbsp;显示');
+            e2.hide();
+        } else {
+            e1.html('<span class="glyphicon glyphicon-chevron-up"></span>&nbsp;隐藏');
+            e2.show();
+        }
+    }
+
+    $(function () {
+        $('#RoundId').change(function () {
+            if ($(this).val() != '') {
+                window.location.href = 'Index?Id=' + $(this).val();
+            }
+        });
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            var s1 = [@ViewBag.Score1];
+            var ticks1 = [@Html.Raw(ViewBag.Tick1)];
+            var plot1 = $.jqplot('chart1', [s1], {
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks1
+                    }
+                    //yaxis: {
+                    //    min: 0
+                    //}
+                },
+                highlighter: { show: false }
+            });
+
+            //$('#chart1').bind('jqplotDataClick',
+            //    function (ev, seriesIndex, pointIndex, data) {
+            //        $('#info1').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data);
+            //    }
+            //);
+
+            var s2 = [@ViewBag.Score2];
+            var ticks2 = [@Html.Raw(ViewBag.Tick2)];
+            var plot2 = $.jqplot('chart2', [s2], {
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks2
+                    }
+                    //yaxis: {
+                    //    min: 0
+                    //}
+                },
+                highlighter: { show: false }
+            });
+
+            //$('#chart2').bind('jqplotDataClick',
+            //    function (ev, seriesIndex, pointIndex, data) {
+            //        $('#info2').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data);
+            //    }
+            //);
+        });
+    });
+
+</script>
+
+<div class="col-xs-9">
+    <div class="d-page-title">我的测评</div>
+    <hr>
+
+    <div class="d-course-info blk_ct_course_info" id="blk_ct_course_info">
+    @if (ViewBag.OutId != 0)
+    {
+        <div class="course-t">
+            <div class="course-t">
+	            <div class="chapter">
+		            <div class="title">
+                        <a href="javascript:void(0);">诊断性测评</a>&nbsp;
+                        <span style="font-size:14px;">
+                            @if(Model!=null)
+                            {
+                            <span>@Convert.ToDateTime(Model.UploadDate).ToString("yyyy-MM-dd HH:mm")</span>
+                            }
+                        </span>
+		            </div>
+
+		            <div class="duration form-inline">
+                        <div class="form-group">
+                            @Html.DropDownList("RoundId", new SelectList(ViewBag.RoundData, "Id", "UploadDate", ViewBag.Id), 
+                            "请选择测试时间", new { @class = "form-control"})
+                        </div>
+                        <div class="form-group">
+                            &nbsp;
+                            <a class="btn btn-success" href="@string.Format(Web.Code.SiteCache.Instance.GetSysValue("NLPC"), ViewBag.OutId)" target="_blank">
+                                @if (ViewBag.RoundData.Count > 0)
+                                {
+                                    <span>重新测试</span>
+                                }
+                                else
+                                {
+                                    <span>测试</span>
+                                }
+                            </a>
+                        </div>
+		            </div>
+	            </div>
+        
+                @{
+                    string viewLink = string.Format(Web.Code.SiteCache.Instance.GetSysValue("NLPCView"), ViewBag.OutId);
+                }
+	            <div class="lecture" id="SecLecture">
+		            <div class="row" style="padding:5px 30px;min-height:200px;">
+                        <div class="col-xs-6">
+                            @if (ViewBag.Score1 != "")
+                            {
+                            <a href="@viewLink" target="_blank">
+                                <div id="chart1" style ="height:280px;">
+                                </div>
+                            </a>
+                            <br />
+                            <center><a href="@viewLink" target="_blank">应用信息技术优化课堂教学</a></center>
+                            }
+                        </div>
+                        <div class="col-xs-6">
+                            @if (ViewBag.Score2 != "")
+                            {
+                            <a href="@viewLink" target="_blank">
+                                <div id="chart2" style ="height:280px;"></div>
+                            </a>
+                            <br />
+                            <center><a href="@viewLink" target="_blank">应用信息技术转变学习方式</a></center>
+                            }
+                        </div>
+                    </div>
+	            </div>
+
+	            <div class="action">
+		            <a onclick="doHideLecture()" href="javascript:void(0);"><span onclick="doHideLecture()" class="glyphicon glyphicon-chevron-up"></span>&nbsp;隐藏</a>
+	            </div>
+            </div>
+        </div>
+    }
+    </div>
+</div>

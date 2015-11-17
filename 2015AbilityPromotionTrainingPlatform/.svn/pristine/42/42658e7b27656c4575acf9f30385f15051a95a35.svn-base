@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "添加学习活动";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseActivityAdd.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div class="d-form">
+                    <ol class="breadcrumb">
+                        <li><a href="CourseDetail?TrainingId=@ViewBag.TrainingId">课程制作</a></li>
+                        <li class="active">添加学习单元</li>
+                    </ol>
+                    <div id="blk_ct_course_activity_add" class="blk_ct_course_activity_add">
+                        <h4 class="text-center">添加学习活动（@ViewBag.TrainingInfo.Title）</h4>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <a href="/Course/CourseCreate/CourseActivityReading?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-book"></span>阅读文本</a>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <a href="/Course/CourseCreate/CourseActivityVideo?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-film"></span>影音教材</a>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <a href="/Course/CourseCreate/CourseActivityDiscuss?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-bullhorn"></span>讨论</a>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <a href="/Course/CourseCreate/CourseActivityTask?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-pencil"></span>作业</a>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <a href="/Course/CourseCreate/CourseActivityQuiz?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-list-alt"></span>测试</a>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <a id="CourseActivityExam" href="javascript:void(0);"><span class="glyphicon glyphicon-file"></span>结业考试</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var TrainingId = "@ViewBag.TrainingId";   
+</script>

@@ -1,0 +1,307 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    int groupid = (int)ViewData["groupId"];
+    int mpId = (int)ViewData["mId"];
+}
+
+@model Class_Detail
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div id="blk_as_course_apply" class="d-course-apply blk_as_course_apply" data-km-htm="blk_as_course_apply.html">
+                    <h3 class="text-center">报名详细信息</h3>
+
+                    <span class="classname">@Model.Title</span>
+                    @{Organ_DetailBLL organ_DetailBLL = new Organ_DetailBLL();}
+                    <span class="source">@organ_DetailBLL.GetModel((int)Model.OrganId).Title</span><br>
+                    @{Traning_DetailBLL traning_DetailBLL = new Traning_DetailBLL();
+                      Traning_Detail traning_Detail = new Traning_Detail();
+                      traning_Detail = traning_DetailBLL.GetModel(Model.TraningId, "");
+                    }
+                    @*<a href="CoursemarketSingleEnrollC?Id=@Model.TraningId" class="coursename">@traning_Detail.Title</a>*@
+                    <div class="coursename">@traning_Detail.Title</div>
+                    <hr>
+                    @{Traning_FieldBLL traning_FieldBLL = new Traning_FieldBLL();}
+                    <div class="info"><span class="t">课程类别:</span>@traning_FieldBLL.GetModel((int)traning_Detail.TraingField, "").Title</div>
+                    <div class="info"><span class="t">课程课时:</span>@traning_Detail.TotalTime</div>
+                    @{Traning_InfoFkBLL traning_InfoFkBLL = new Traning_InfoFkBLL();
+                      string SubjectTitle = "";
+                      if (!string.IsNullOrEmpty(traning_Detail.Subject))
+                      {
+                          if (traning_Detail.Subject.IndexOf(',') > 0)
+                          {
+                              string[] Subjects = traning_Detail.Subject.Split(',');
+
+                              foreach (string s in Subjects)
+                              {
+                                  SubjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title+",";
+                              }
+                          }
+                          else
+                          {
+                              SubjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(traning_Detail.Subject), "").Title;
+                          }
+                      }
+
+
+                      string StudyLevelTitle = "";
+                      if (!string.IsNullOrEmpty(traning_Detail.StudyLevel))
+                      {
+                          if (traning_Detail.StudyLevel.IndexOf(',') > 0)
+                          {
+                              string[] StudyLevels = traning_Detail.StudyLevel.Split(',');
+
+                              foreach (string s in StudyLevels)
+                              {
+                                  StudyLevelTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title + ",";
+                              }
+                          }
+                          else
+                          {
+                              StudyLevelTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(traning_Detail.StudyLevel), "").Title;
+                          }
+                      }
+
+
+                      string TraningObjectTitle = "";
+                      if (!string.IsNullOrEmpty(traning_Detail.TraningObject))
+                      {
+                          if (traning_Detail.TraningObject.IndexOf(',') > 0)
+                          {
+                              string[] TraningObjects = traning_Detail.TraningObject.Split(',');
+
+                              foreach (string s in TraningObjects)
+                              {
+                                  TraningObjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title + ",";
+                              }
+                          }
+                          else
+                          {
+                              TraningObjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(traning_Detail.TraningObject), "").Title;
+                          }
+                      }
+                                
+                    }
+                    <div class="info"><span class="t">适用学科:</span>@SubjectTitle.TrimEnd(',')</div>
+                    <div class="info"><span class="t">适用学段:</span>@StudyLevelTitle.TrimEnd(',')</div>
+                    <div class="info"><span class="t">适用对象:</span>@TraningObjectTitle.TrimEnd(',')</div>
+                    @{
+                        Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                        System.Data.DataTable dt = member_ClassRegisterBLL.GetTable(" ClassId='" + traning_Detail.Id + "' and IsPass=1 and Delflag='false'", "");
+                        int people = 0;
+                        if (dt != null && dt.Rows.Count > 0)
+                        {
+                            people = dt.Rows.Count;
+                        }
+                    }
+                    <div class="info"><span class="t">累计培训:</span>@people 人</div>
+                    <div class="info"><span class="t">招收人数:</span>@Model.LimitPeopleCnt</div>
+                    <div class="info"><span class="t">报名人数:</span>@Model.People</div>
+                    <div class="info"><span class="t">报名日期:</span>@Model.SignUpStartTime.ToString("yyyy-MM-dd") 至 @Model.SignUpEndTime.ToString("yyyy-MM-dd")</div>
+                    <div class="info"><span class="t">开班日期:</span>@Model.OpenClassFrom.ToString("yyyy-MM-dd") 至 @Model.OpenClassTo.ToString("yyyy-MM-dd")</div>
+                    <div class="info" style="  float: left;"><span class="t">班级形式:</span>@traning_InfoFkBLL.GetModel(Model.ClassForm, "").Title</div>
+                    <div class="info"><span class="t">上课地点:</span>@Model.Address</div>
+
+                    <div class="h">报名条件</div>
+                    @{
+                        string CSubjectTitle = "";
+                        if (Model.Subject == false)
+                        {
+                            Class_TeachSubjectBLL class_TeachSubjectBLL = new Class_TeachSubjectBLL();
+                            List<Class_TeachSubject> tslist = class_TeachSubjectBLL.GetList("ClassId='" + Model.Id + "' and Delflag='false'", "");
+                            foreach (Class_TeachSubject s in tslist)
+                            {
+                                CSubjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s.TeachSubject), "").Title + ",";
+                            }
+                        }
+                        else
+                        {
+                            List<Traning_InfoFk> traning_InfoFkList = traning_InfoFkBLL.GetList("CategoryType='3' and Delflag='false' and Display=1 ", "");
+                            foreach (Traning_InfoFk s in traning_InfoFkList)
+                            {
+                                CSubjectTitle += s.Title + ",";
+                            }
+                        }
+
+
+                        string CStudyLevelTitle = "";
+                        Class_StudySectionBLL class_StudySectionBLL = new Class_StudySectionBLL();
+                        if (Model.StudyLevel == false)
+                        {
+                            List<Class_StudySection> sslist = class_StudySectionBLL.GetList("ClassId='" + Model.Id + "' and Delflag='false'", "");
+                            foreach (Class_StudySection s in sslist)
+                            {
+                                CStudyLevelTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s.StudySection), "").Title + ",";
+                            }
+                        }
+                        else
+                        {
+                            List<Traning_InfoFk> traning_InfoFkList = traning_InfoFkBLL.GetList("CategoryType='4' and Delflag='false' and Display=1 ", "");
+                            foreach (Traning_InfoFk s in traning_InfoFkList)
+                            {
+                                CStudyLevelTitle += s.Title + ",";
+                            }
+                        }
+
+                        string CTeachGradeTitle = "";
+                        if (Model.TeachGrade == false)
+                        {
+                            Class_TeachGradeBLL class_TeachGradeBLL = new Class_TeachGradeBLL();
+                            List<Class_TeachGrade> tglist = class_TeachGradeBLL.GetList("ClassId='" + Model.Id + "' and Delflag='false'", "");
+                            foreach (Class_TeachGrade s in tglist)
+                            {
+                                CTeachGradeTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s.TeachGrade), "").Title + ",";
+                            }
+                        }
+                        else
+                        {
+                            List<Traning_InfoFk> traning_InfoFkList = traning_InfoFkBLL.GetList("CategoryType='7' and Delflag='false' and Display=1 ", "");
+                            foreach (Traning_InfoFk s in traning_InfoFkList)
+                            {
+                                CTeachGradeTitle += s.Title + ",";
+                            }
+                        }
+
+                        Member_InfoFKBLL member_InfoFKBLL = new Member_InfoFKBLL();
+                        string teachRank = "";
+                        if (Model.TeachRank == false)
+                        {
+                            Class_TeachRankBLL class_TeachRankBLL = new Class_TeachRankBLL();
+                            List<Class_TeachRank> trlist = class_TeachRankBLL.GetList("ClassId='" + Model.Id + "' and Delflag='false'", "");
+                            foreach (Class_TeachRank s in trlist)
+                            {
+                                teachRank += traning_InfoFkBLL.GetModel(Convert.ToInt32(s.TeachRank), "").Title + ",";
+                            }
+                        }
+                        else
+                        {
+                            List<Traning_InfoFk> traning_InfoFkList = traning_InfoFkBLL.GetList("CategoryType='8' and Delflag='false' and Display=1 ", "");
+                            foreach (Traning_InfoFk s in traning_InfoFkList)
+                            {
+                                teachRank += s.Title + ",";
+                            }
+                        }
+
+                        string organRange = "";
+                        if (Model.OrganRange == "0")
+                        {
+                            if (traning_DetailBLL.GetModel(Model.TraningId, "").Range == 2)
+                            {
+                                List<Organ_Detail> organ_DetailList = organ_DetailBLL.GetListModel(" Delflag='false' and OType in(1,2,3)");
+                                foreach (Organ_Detail s in organ_DetailList)
+                                {
+                                    organRange += s.Title + ",";
+                                }
+                            }
+                            else
+                            {
+                                List<Organ_Detail> organ_DetailList = organ_DetailBLL.GetListModel(" Delflag='false' and ParentId='" + Model.OrganId + "' and OType in(1,2,3)");
+                                foreach (Organ_Detail s in organ_DetailList)
+                                {
+                                    organRange += s.Title + ",";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Model.OrganRange.IndexOf(',') > 0)
+                            {
+                                string[] organRanges = Model.OrganRange.Split(',');
+                                foreach (string t in organRanges)
+                                {
+                                    organRange += organ_DetailBLL.GetModel(Convert.ToInt32(t)).Title + ",";
+                                }
+                            }
+                            else
+                            {
+                                organRange += organ_DetailBLL.GetModel(Convert.ToInt32(Model.OrganRange)).Title + ",";
+                            }
+                        }
+                            
+                            
+                    }
+                    <div class="info2">
+                        <span class="t">任教学科:</span>
+                        @CSubjectTitle.Trim(',')
+                    </div>
+                    <div class="info2">
+                        <span class="t">任教学段:</span>
+                        @CStudyLevelTitle.Trim(',')
+                    </div>
+                    <div class="info2">
+                        <span class="t">任教年级:</span>
+                        @CTeachGradeTitle.Trim(',')
+                    </div>
+                    <div class="info2">
+                        <span class="t">教师职称:</span>
+                        @teachRank.Trim(',')
+                    </div>
+                    <div class="info2">
+                        <span class="t">学校范围:</span>
+                        @organRange.Trim(',')
+                    </div>
+
+
+                         @using (Html.BeginForm("MyVerify", "Coursemarket", null, FormMethod.Post, new { id = "Check" }))
+                            {
+                                @Html.Hidden("mpId",mpId)
+                                <div class="info2" id="training-check" style="padding-left:0px;">
+                                    <hr>
+                                    <div class="form-group form-inline">
+                                        <label class="control-label">审核结果 <span class="text-danger">*</span></label>
+                                         @{
+                int yes = 2;
+                int no = 3;
+                if (groupid == 2 || groupid == 3)
+                {
+                    yes = 4;
+                    no = 5;
+                }
+                                }
+                                <label class="chk">
+                                    <input id="r1" onclick="chk('r1');" type="radio" name="status" value="@yes">
+                                    通过
+                                </label>
+                                <label class="chk" id="checkshow">
+                                    <input id="r2" onclick="chk('r2');" type="radio" name="status" value="@no">
+                                    不通过
+                                </label>
+                                <span style="color: red;"></span>
+                                        <label  id="contt" class="control-label" style="display: none;">审核内容 <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" maxlength="250" id="content" name="content" style="width: 570px; height: 200px; display: none;"></textarea>
+                                        <span style="color: red;"></span>
+                                    </div>
+                                    <button name="submit" class="btn btn-success" >提交审核结果</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<a href="@Url.Action("CoursemarketVerify")">取消</a>
+                                </div>
+                            }
+
+                          
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input id="hidteachers" type="hidden" value="" />
+<script src="/Resources/Scripts/Coursemarket/coursemarketEnroll.js"></script>
+<script src="/Resources/Scripts/Coursemarket/verify.js"></script>
+<script src="/Resources/Scripts/Coursemarket/coursemarketVerify.js"></script>
+<style>
+    .info3 {
+        width: 250px;
+    }
+</style>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+        });
+    });
+</script>

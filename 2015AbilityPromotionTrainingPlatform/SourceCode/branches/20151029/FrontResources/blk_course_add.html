@@ -1,0 +1,138 @@
+<h4 class="text-center">上报新课程</h4>
+<div class="row">
+	<div class="col-xs-6">
+		<div class="form-group">
+			<label class="control-label">课程名称 <span class="text-danger">*</span></label>
+			<input type="text" class="form-control" maxlength="30">
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="form-group">
+			<label class="control-label">外部平台关联标识</label>
+			<input type="text" class="form-control" maxlength="30">
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="form-group">
+			<label class="control-label">课程类别 <span class="text-danger">*</span></label>
+			<label class="chk">
+				<input type="radio" name="a1" value="1" checked> 通识课程
+			</label>
+			<label class="chk">
+				<input type="radio" name="a1" value="2"> 专业课程
+			</label>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="form-group">
+			<label class="control-label">适用培训对象 <span class="text-danger">*</span></label>
+			<label class="chk">
+				<input type="radio" name="a2" value="1" checked> 全部教师
+			</label>
+			<label class="chk">
+				<input type="radio" name="a2" value="2"> 新教师
+			</label>
+		<label class="chk">
+			<input type="radio" name="a2" value="3"> 骨干教师
+		</label>
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group">
+			<label class="control-label">任教学科 <span class="text-danger">*</span></label>
+			<label class="chk">
+				<input type="checkbox" name="a3" value="1" checked> 语文
+			</label>
+			<label class="chk">
+				<input type="checkbox" name="a3" value="2"> 数学
+			</label>
+			<label class="chk">
+				<input type="checkbox" name="a3" value="2"> 英语
+			</label>
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group">
+			<label class="control-label">任教学段 <span class="text-danger">*</span></label>
+			<label class="chk">
+				<input type="checkbox" name="a4" value="1" checked> 全部
+			</label>
+			<label class="chk">
+				<input type="checkbox" name="a4" value="1" checked> 幼儿园
+			</label>
+			<label class="chk">
+				<input type="checkbox" name="a4" value="2"> 小学
+			</label>
+			<label class="chk">
+				<input type="checkbox" name="a4" value="2"> 初中
+			</label>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="form-group">
+			<label class="control-label">课程课时 <span class="text-danger">*</span></label>
+			<input type="text" class="form-control" maxlength="30">
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group form-inline">
+			<label class="control-label">课程图标 <span class="text-danger">*</span></label>
+			<button class="btn btn-default" type="button" style="margin-bottom:10px;" onclick="doSelectPicture()">选择提供的图片</button>&nbsp;
+			<input type="file" class="form-control" maxlength="30">
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group">
+			<label class="control-label">培训形式 <span class="text-danger">*</span></label>
+			<label class="chk" style="width:160px;">
+				<input type="radio" name="a3" value="1" checked> 在线培训
+			</label>
+			<label class="chk" style="width:160px;">
+				<input type="radio" name="a3" value="2"> 在线培训（外部）
+			</label>
+			<label class="chk" style="width:160px;">
+				<input type="radio" name="a3" value="2"> 面授培训
+			</label>
+			<label class="chk" style="width:160px;">
+				<input type="radio" name="a3" value="2"> 混合式培训
+			</label>
+			<label class="chk" style="width:170px;">
+				<input type="radio" name="a3" value="2"> 混合式培训（外部）
+			</label>
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group form-inline">
+			<label class="control-label">课程讲师 <span class="text-danger">*</span></label>
+			<select class="form-control">
+				<option>选择称谓</option>
+			</select>&nbsp;
+			<input type="text" class="form-control" placeholder="讲师名称">&nbsp;
+			<input type="text" class="form-control" placeholder="来自...">&nbsp;
+			<input type="file" class="form-control">
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group">
+			<label class="control-label">课程简介 <span class="text-danger">*</span></label>
+			<textarea class="form-control" style="height:200px;"></textarea>
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group">
+			<label class="control-label">课程大纲 <span class="text-danger">*</span></label>
+			<textarea class="form-control" style="height:200px;"></textarea>
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<div class="form-group">
+			<label class="control-label">相关申请材料附件 <span class="text-danger">*</span></label>
+			<input type="file" class="form-control" maxlength="30">
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<hr>
+		<button class="btn btn-success" style="width:150px;">提交</button>
+		&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">取消</a>
+	</div>
+</div>

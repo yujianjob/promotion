@@ -1,0 +1,232 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Web.Mvc;
+using Dianda.AP.Model;
+using Dianda.AP.BLL;
+using System.Reflection;
+using System.IO;
+
+namespace Web.Areas.Prepare.Controllers
+{
+    public class PeriodController : Controller
+    {
+        //
+        // GET: /Prepare/Period/
+
+        PlanExemptionBLL planbll = new PlanExemptionBLL();
+        PeriodBLL bll = new PeriodBLL();
+        CertificateBLL cbll = new CertificateBLL();
+        public ActionResult Index()
+        {
+            int pageIndex = 1, pageSize = 10, pageCount, recordCount;
+            if (!String.IsNullOrEmpty(Request["PageIndex"]))
+                int.TryParse(Request["PageIndex"], out pageIndex);
+
+            int GroupId = Code.SiteCache.Instance.GroupId;    //权限组ID
+            int PlanId = Code.SiteCache.Instance.PlanId;    //本学期ID
+            int PartitionId = Code.SiteCache.Instance.LoginInfo.PartitionId;     //本区ID
+            int OrganId = Code.SiteCache.Instance.ManageOrganId;    //机构ID
+            string where = " and a.PlanId = " + PlanId + "";
+            if (GroupId == 1)
+            {
+                
+            }
+            else if (GroupId == 2)
+            {
+                where += " and c.OrganId = " + OrganId + " or c.OrganId in (select Id from Organ_Detail where ParentId = " + OrganId + " ) ";
+            }
+            else
+            {
+                where += " and c.OrganId = " + OrganId + " ";
+            }
+
+            if (string.IsNullOrEmpty(Request["whereOrganTo"]))
+            {
+                if (!string.IsNullOrEmpty(Request["whereOrgan"]))
+                {
+                    if (Request["whereOrgan"].ToString() != "请选择")
+                    {
+                        where += " and (c.OrganId = '" + Request["whereOrgan"] + "' or c.OrganId in (select Id from Organ_Detail where ParentId = '" + Request["whereOrgan"] + "')) ";
+                    }
+                }
+            }
+            else
+            {
+                if (Request["whereOrganTo"].ToString() == "请选择")
+                {
+                    if (!string.IsNullOrEmpty(Request["whereOrgan"]))
+                    {
+                        if (Request["whereOrgan"].ToString() != "请选择")
+                        {
+                            where += " and (c.OrganId = '" + Request["whereOrgan"] + "' or c.OrganId in (select Id from Organ_Detail where ParentId = '" + Request["whereOrgan"] + "')) ";
+                        }
+                    }
+                }
+                else
+                {
+                    where += "and c.OrganId = '" + Request["whereOrganTo"] + "' ";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(Request["whereName"]))
+            {
+                where += " and (d.RealName like '%" + Request["whereName"].ToString().Replace("'", "%").Replace("\\", "%").Replace("[]", "[\\]") + "%' or d.TeacherNo like '%" + Request["whereName"].ToString().Replace("'", "%").Replace("\\", "%").Replace("[]", "[\\]") + "%' or d.CredentialsNumber like '%" + Request["whereName"].ToString().Replace("'", "%").Replace("\\", "%").Replace("[]", "[\\]") + "%') ";
+            }
+
+
+            DataTable ColumnDt = bll.GetTrainingFie();
+            ViewBag.ColumnDt = ColumnDt;
+            DataTable table = bll.List(pageSize, pageIndex, where, "AccountId desc", out recordCount, PlanId);
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                bool flag = true;
+                for (int k = 0; k < ColumnDt.Rows.Count; k++)
+                {
+
+                    string[] item = table.Rows[i][ColumnDt.Rows[k][1].ToString()].ToString().Split('/');
+                    if (item.Length == 2)
+                    {
+                        if (double.Parse(item[0].ToString()) < double.Parse(item[1].ToString()))
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+                cbll.ResultAdd(Convert.ToInt32(table.Rows[i]["AccountId"].ToString()), PlanId, flag);
+            }
+            table = bll.GetListTo(pageSize, pageIndex, where, "AccountId desc", out recordCount, PlanId);
+            ViewBag.GetList = table;
+            pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            ViewData["pageSize"] = pageSize;
+            ViewData["pageIndex"] = pageIndex;
+            ViewData["pageCount"] = pageCount;
+            ViewData["recordCount"] = recordCount;
+
+            ViewData["whereOrgan"] = Request["whereOrgan"];
+            ViewData["whereOrganTo"] = Request["whereOrganTo"];
+            ViewData["whereName"] = Request["whereName"] == null ? "" : Request["whereName"];
+            ViewData["GroupId"] = GroupId;
+            ViewData["OrganId"] = OrganId;
+            DataTable dt = new DataTable();
+            if (GroupId == 1)
+            {
+                dt = planbll.GetOrgan(1);
+            }
+            else
+            {
+                dt = planbll.GetOrganqu(OrganId);
+            }
+            List<SelectListItem> selectlist = new List<SelectListItem>();
+            List<SelectListItem> tolist = new List<SelectListItem>();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                SelectListItem item = new SelectListItem()
+                {
+                    Text = dt.Rows[i][1].ToString(),
+                    Value = dt.Rows[i][0].ToString()
+                };
+                selectlist.Add(item);
+            }
+            ViewData["Organ"] = selectlist;
+            ViewData["OrganTo"] = tolist;
+            return View();
+        }
+
+
+        public ActionResult GetOrganTo(int id)
+        {
+            DataTable dt = planbll.GetOrgan(id);
+            List<SelectListItem> list = new List<SelectListItem>();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                SelectListItem item = new SelectListItem
+                {
+                    Text = dt.Rows[i][1].ToString(),
+                    Value = dt.Rows[i][0].ToString()
+                };
+                list.Add(item);
+            }
+
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetSearch(int AccountId)
+        {
+            int PlanId = Code.SiteCache.Instance.PlanId;
+            List<SearchModel> list = new List<SearchModel>();
+            DataTable SearchDt = bll.GetSearch(AccountId,PlanId);
+            for (int i = 0; i < SearchDt.Rows.Count; i++)
+            {
+                SearchModel model = new SearchModel();
+                model.FidTitle = SearchDt.Rows[i]["FidTitle"].ToString();
+                model.DetailTitle = SearchDt.Rows[i]["DetailTitle"].ToString();
+                if (SearchDt.Rows[i]["Credits"] != DBNull.Value)
+                {
+                    model.Credits = Convert.ToDouble(SearchDt.Rows[i]["Credits"]);
+                }
+                else
+                {
+                    model.Credits = 0;
+                }
+                if (SearchDt.Rows[i]["CreateDate"] != DBNull.Value)
+                {
+                    model.CreateDate = Convert.ToDateTime(SearchDt.Rows[i]["CreateDate"]);
+                }
+                else
+                {
+                    model.CreateDate = DateTime.Now;
+                }
+                list.Add(model);
+            }
+
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public ActionResult Export(int AccountId, string RealNameTo)
+        {
+            DataTable dt = bll.GetSearch(AccountId, Code.SiteCache.Instance.PlanId);
+
+            if (dt.Rows.Count == 0)
+            {
+                return Content("<script>alert('无导出数据！！！');location.href = '/Prepare/Period/Index';</script>");
+            }
+            else
+            {
+                string path = Server.MapPath("/Upload/Execl/Period/");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                string fileName = RealNameTo + "用户学分记录" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xls";
+                string filePath = path + fileName;
+
+
+                FileStream fs = new FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+                string data = "类型\t课程名称\t学时\t获得日期";
+
+                sw.WriteLine(data);
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    data = "";
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        data += dt.Rows[i][j].ToString().Replace("\n", "").Replace("\r", "");
+                        if (j < dt.Columns.Count - 1)
+                        {
+                            data += "\t";
+                        }
+                    }
+                    sw.WriteLine(data);
+                }
+
+                sw.Close();
+                fs.Close();
+
+                return File(new FileStream(Server.MapPath("/Upload/Execl/Period/" + fileName), FileMode.Open), "application/octet-stream", fileName);
+            }
+        }
+    }
+}

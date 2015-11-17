@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <title></title>
+    <link href="/jnpx/dist/common/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/jnpx/dist/common/css/app.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="/jnpx/dist/common/js/vendor/html5shiv_3.7.2.min.js"></script>
+      <script src="/jnpx/dist/common/js/vendor/respond_1.4.2.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <div class="d-h d-h-top">
+      <div id="blk_ct_top" class="d-top blk_ct_top" data-km-htm="blk_ct_top.html"></div>
+    </div>
+    <div class="d-h d-h-header">
+      <div id="blk_ct_header" class="d-header blk_ct_header" data-km-htm="blk_ct_header.html"></div>
+    </div>
+    <div class="d-h">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="d-page-title">2015秋季D班&nbsp;&nbsp;<span class="text-muted">初中化学</span></div>
+            <div id="blk_ct_menu_class" class="blk_ct_menu_class" data-km-htm="blk_ct_menu_class.html"></div>
+            <div class="row">
+              <div class="col-xs-9">
+                <div class="d-discuss-left">
+                  <div class="d-discuss-subject">
+                    <div class="title">讨论主题</div>
+                    <div style="padding:10px 0;">
+                      <select class="form-control">
+                        <option>图灵模型与计算在实际情况中的应用</option>
+                      </select>
+                    </div>
+                    <div class="desc">图灵在科学、特别在数理逻辑和计算机科学方面，取得了举世瞩目的成就，他的一些科学成果，构成了现代计算机技术的基础，请试讨论可在实际情况中的应用。</div>
+                    <div class="action">
+                      <a href="javascript:;">我要发言</a>
+                    </div>
+                  </div>
+                  <hr>
+                  <div id="blk_ct_class_discuss" class="blk_ct_class_discuss" data-km-htm="blk_ct_class_discuss.html"></div>
+                </div>
+              </div>
+              <div class="col-xs-3">
+                <div id="blk_ct_class_group" class="blk_ct_class_group" data-km-htm="blk_ct_class_group.html"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-h">
+      <div id="blk_footer" class="blk_footer" data-km-htm="/jnpx/dist/blk_footer.html"></div>
+    </div>
+
+    <script src="/jnpx/dist/common/js/vendor/jquery-1.11.2.min.js"></script>
+    <script src="/jnpx/dist/common/js/bootstrap.min.js"></script>
+    <script src="/jnpx/dist/common/js/vendor/ie10-viewport-bug-workaround.js"></script>
+    <script src="/jnpx/dist/common/js/km.js"></script>
+    <script src="/jnpx/dist/common/js/proto.js"></script>
+    <script>
+    $(function() {
+      $proto.init(function (){
+          /* 页面加载后立即执行的代码写在这里 */
+
+          $('#d_courseteacher_class_discuss').addClass('active');
+      });
+    });
+    </script>
+  </body>
+</html>

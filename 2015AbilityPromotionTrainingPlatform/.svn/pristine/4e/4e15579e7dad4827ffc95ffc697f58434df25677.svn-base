@@ -1,0 +1,30 @@
+﻿using Dianda.AP.BLL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Areas.Learn.Controllers
+{
+    public class MyCreditController : Controller
+    {
+        // 我的学分
+        // GET: /Learn/MyCredit/
+
+        public ActionResult Index()
+        {
+            LearnMyCreditBLL bll = new LearnMyCreditBLL();
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            int accountId = cache.LoginInfo.UserId;
+            int partitionId = cache.LoginInfo.PartitionId;
+            int planId = cache.PlanId;
+            ViewBag.BaseCredit = bll.GetBaseCredit(planId);//标准学分
+            ViewBag.ReceivedCredit = bll.GetReceivedCredit(accountId, planId);//已获得学分
+            ViewBag.TrainingCredit = bll.GetTrainingCredit(accountId, planId, partitionId);//正在培训的学分
+            ViewBag.PracticeCredit = bll.GetPracticeCredit(accountId, planId);//正在实践的学分
+            return View(bll.GetTrainingField());
+        }
+
+    }
+}

@@ -1,0 +1,126 @@
+﻿@model Dianda.AP.Model.MyTestRound
+@{
+    ViewBag.Title = "统计详细";
+    IHtmlString Loading = @Html.Raw("<div style='left:400px;position:relative;font-size:15px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='left:400px;top:-7px;position:relative;font-size:15px'>没有分数信息……</div>");
+
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/Statistics/jquery.jqplot.css")">
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jquery-1.5.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jquery.jqplot.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jqplot.barRenderer.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/jqplot.categoryAxisRenderer.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-course-info blk_ct_course_info" id="blk_ct_course_info">
+                
+                    <div class="course-t">
+                        <div class="course-t">
+	                        <div class="chapter">
+		                        <div class="title">
+                                    <a href="javascript:void(0);">诊断性测评</a>&nbsp;
+                                    <span style="font-size:14px;">
+                                        @if (Model != null)
+                                        {
+                                        <span>@Convert.ToDateTime(Model.UploadDate).ToString("yyyy-MM-dd HH:mm")</span>
+                                        }
+                                    </span>
+		                        </div>
+
+		                        <div class="duration form-inline">
+                                    <div class="form-group">
+                                        @Html.DropDownList("RoundId", new SelectList(ViewBag.RoundData, "id", "UploadDate", ViewBag.Id),
+                                        "请选择测试时间", new { @class = "form-control" })
+                                    </div>
+		                        </div>
+	                        </div>
+                            @if (ViewBag.OutId != 0)
+                            {
+		                    <div class="row" style="padding:5px 30px;">
+                                <div class="col-xs-6">
+                                    <div id="chart1" style ="height:280px;"></div>
+                                    <br />
+                                    <center>应用信息技术优化课堂教学</center>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div id="chart2" style ="height:280px;"></div>
+                                    <br />
+                                    <center>应用信息技术转变学习方式</center>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                
+                </div>    
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var Loading = "@Loading";
+    var noDataTip = "@noDataTip";
+    var UserId = "@ViewBag.UserId";
+
+    $(function () {
+        $('#RoundId').change(function () {
+            window.location.href = 'StatisticsDetailView?UserId=' + UserId + "&Id=" + $(this).val();
+        });
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            var s1 = [@ViewBag.Score1];
+            var ticks1 = [@Html.Raw(ViewBag.Tick1)];
+            //加载Chart1
+            plot1 = $.jqplot('chart1', [s1], {
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks1
+                    }
+                },
+                highlighter: { show: false }
+            });
+
+            $('#chart1').bind('jqplotDataClick',
+                function (ev, seriesIndex, pointIndex, data) {
+                    $('#info1').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data);
+                }
+            );
+
+            var s2 = [@ViewBag.Score2];
+            var ticks2 = [@Html.Raw(ViewBag.Tick2)];
+            //加载Chart2
+            plot1 = $.jqplot('chart2', [s2], {
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks2
+                    }
+                },
+                highlighter: { show: false }
+            });
+
+            $('#chart2').bind('jqplotDataClick',
+                function (ev, seriesIndex, pointIndex, data) {
+                    $('#info2').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data);
+                }
+            );
+        });
+    });
+</script>

@@ -1,0 +1,416 @@
+﻿@model IList<Dianda.AP.Model.Member_ClassRegister>
+@{
+    ViewBag.Title = "班级分组";
+    Layout = Url.Content("~/Views/Shared/LinkLayout.cshtml");
+    var accountBll = new Dianda.AP.BLL.Member_AccountBLL();
+    var baseBll = new Dianda.AP.BLL.Member_BaseInfoBLL();
+    var organBll = new Dianda.AP.BLL.Organ_DetailBLL();
+    var groupBll = new Dianda.AP.BLL.Class_GroupMemberBLL();
+    var classObj = new Dianda.AP.BLL.Class_DetailBLL().GetModel(ViewBag.classId);
+}
+
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">@ViewBag.ClassName&nbsp;&nbsp;<span class="text-muted">@ViewBag.CourseName</span></div>
+                <div data-km-htm="blk_ct_menu_class.html" class="blk_ct_menu_class" id="blk_ct_menu_class">
+                    
+                       @RenderPage(@Url.Content("~/Views/Shared/ClassTeacherLink.cshtml"), new { classId = @ViewBag.classId})
+                   
+                </div>
+                <div data-km-htm="blk_ct_class_member.html" class="blk_ct_class_member" id="blk_ct_class_member">
+                    <h3>班级通讯录</h3>
+                    <hr>
+
+                    <div style="margin-bottom: 20px;" class="clearfix">
+                        <div class="pull-left">
+                            <div class="form-group form-inline">
+                                <select id="group" class="form-control" onchange="search();">
+                                    <option value="">全部分组</option>
+                                    <option value="-1">未分组</option>
+                                    @if (ViewBag.GroupList != null && ViewBag.GroupList.Count > 0)
+                                    {
+                                        foreach (var item in ViewBag.GroupList)
+                                        {
+                                        <option value="@item.Id">@item.Title</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pull-right text-right">
+                            <button onclick="doManageGroup()" class="btn btn-success" type="button">管理分组</button>
+                            <button onclick="doAddGroup()" class="btn btn-success" type="button">添加分组</button>
+                        </div>
+                    </div>
+
+                    <div class="clearfix">
+                        @foreach (var item in Model)
+                        {
+
+                            var workRank = "";
+
+                            if (Web.Code.SiteCache.Instance.ManagerId == classObj.Instructor
+                                                && Web.Code.SiteCache.Instance.LoginInfo.UserId == item.AccountId)
+                            {
+                                workRank = "(辅导员)";
+                            }
+
+                            if (ViewBag.TraningTeacher == item.AccountId)
+                            {
+                                workRank = "(讲师)";
+                            }
+
+                            var accout = accountBll.GetModel(item.AccountId, "");
+                            var baseInfo = baseBll.GetListModel(" Delflag=0 and AccountId=" + item.AccountId);
+                            var organModel = organBll.GetModel(accout.OrganId.Value);
+                            if (accout != null && organModel != null)
+                            {
+                            <div class="i">
+
+                                <span class="name">
+                                    @if(baseInfo.Count > 0)
+                                    {
+                                        @baseInfo.First().RealName
+                                    }
+                                    else
+                                    {
+                                        @accout.Nickname
+                                    }
+
+                                </span>
+                                <span class="title">@workRank</span>
+                                <div class="unit">@organModel.Title</div>
+                                <div class="tel">
+                                    @if(baseInfo.Count > 0)
+                                    {
+                                        @baseInfo.First().Phone
+                                    }
+                                    else
+                                    {
+                                        
+                                    }
+
+                                </div>
+                                <div class="emial">@accout.Email</div>
+                                <div class="thumb">
+                                    <img style="height:80px;width:80px;" src="@accout.Pic">
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.ClassId_GroupId))
+                                {
+                                    <div class="action">
+                                        <a onclick="doAction2('@item.ClassId_GroupId',@item.AccountId)" href="javascript:;">删除</a>
+                                    </div>
+                                }
+                            </div>
+                            }
+                        }
+                    </div>
+
+                    <hr>
+                    @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, pagecount = @ViewBag.totalPage , basecount = @ViewBag.basecount})
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        function getParamValue(paramName) {
+            var url = window.location.href;
+            var paramIndex = url.indexOf('?');
+            var param = url.substring(paramIndex + 1, url.length);
+            var paraArr = param.split('&');
+            for (var i = 0; i < paraArr.length; i++) {
+                if (paraArr[i].indexOf(paramName) > -1) {
+                    return paraArr[i].split('=')[1];
+                }
+            }
+            return -10;
+        }
+        $(document).ready(function () {
+
+            if (getParamValue('groupId') > -10) {
+                $('#group').val(getParamValue('groupId'));
+            }
+        });
+        function search() {
+            var param_groupid = $("#group").val();
+            var param_classId = $('#classId').val();
+            var index = $("#pageIndex").val();
+            var param_pageIndex = '';
+            if (index != '')
+                param_pageIndex = "&pageIndex=" + index;
+            window.location.href = "?classId=" + param_classId + "&groupId=" + param_groupid;//+ param_pageIndex
+        }
+        function doAction2(gid, aid) {
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/DeleteClassGroupMember',
+                data: { groupId: gid, accountId: aid },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        $('#modal-edit-status .modal-title').text(result.Msg);
+                        $('#modal-edit-status').modal({
+                            keyboard: false,
+                            backdrop: 'static'
+                        });
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+
+        function doAction(id) {
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/DeleteClassGroup',
+                data: { classId: $('#classId').val(), groupId: id },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        $('#modal-edit-status .modal-title').text(result.Msg);
+                        $('#modal-edit-status').modal({
+                            keyboard: false,
+                            backdrop: 'static'
+                        });
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $proto.init(function () {
+                /* 页面加载后立即执行的代码写在这里 */
+
+              
+            });
+        });
+
+        function doManageGroup() {
+            $('#blk_modal_manage_group').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function doManageGroupSubmit() {
+
+            $('#blk_modal_manage_group').modal('hide');
+        }
+        $('#blk_modal_manage_group').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_modal_manage_group').on('hidden.bs.modal', function (e) {
+
+        });
+
+        function doAddGroup() {
+            $('#blk_modal_add_group').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function doAddGroupSubmit() {
+            var ids = '';
+            $("input[name='a10']:checked").each(function () {
+                ids += $(this).val() + ',';
+
+            });
+            if (ids == '') {
+                Alert('请选择小组成员!');
+                return;
+            }
+            if ($('#gtitle').val() == '') {
+                Alert('请填写小组名称!');
+                return;
+            }
+
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/AddClassGroupMember',
+                data: { classId: $('#classId').val(), groupTitle: $('#gtitle').val(), accountIds: ids },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+
+                        $('#modal-edit-status .modal-title').text(result.Msg);
+                        $('#modal-edit-status').modal({
+                            keyboard: false,
+                            backdrop: 'static'
+                        });
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+
+            $('#blk_modal_add_group').modal('hide');
+        }
+        $('#blk_modal_add_group').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_modal_add_group').on('hidden.bs.modal', function (e) {
+
+        });
+    </script>
+</div>
+<div class="modal fade blk_modal_manage_group" id="blk_modal_manage_group" style="display: none;">
+    <input id="pageIndex" type="hidden" value="@ViewBag.pageIndex" />
+    <input id="classId" type="hidden" value="@ViewBag.classId" />
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">管理分组</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    @if (ViewBag.GroupList != null && ViewBag.GroupList.Count > 0)
+                    {
+                        foreach (var item in ViewBag.GroupList)
+                        {
+                        <div class="col-xs-3">
+                            <div class="g">
+                                <div class="name">@item.Title</div>
+                                <div class="num">成员 @groupBll.GetList(" GroupId=" + item.Id + " and Delflag=0").Tables[0].Rows.Count</div>
+                                <div class="action">
+                                    <a onclick="doAction('@item.Id')" href="javascript:;">删除</a>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    }
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button style="width: 150px;" onclick="doManageGroupSubmit()" class="btn btn-success" type="button">提交</button>
+                <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade blk_modal_add_group" id="blk_modal_add_group" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">添加分组</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label">小组名称</label>
+                            <input id="gtitle" type="text" class="form-control" maxlength="20">
+                        </div>
+                    </div>
+
+                    @foreach (var item in ViewBag.noGrouper)
+                    {
+                        var workRank = "";
+                         
+                        if (Web.Code.SiteCache.Instance.ManagerId == classObj.Instructor
+                                            && Web.Code.SiteCache.Instance.LoginInfo.UserId == item.AccountId)
+                        {
+                            workRank = "(辅导员)";
+                        }
+
+                        if (ViewBag.TraningTeacher == item.AccountId)
+                        {
+                            workRank = "(讲师)";
+                        }
+                        var accout = accountBll.GetModel(item.AccountId, "");
+                        var baseInfo = baseBll.GetListModel(" Delflag=0 and AccountId=" + item.AccountId);
+                        var organModel = organBll.GetModel(accout.OrganId);
+                        if (accout != null && organModel != null)
+                        {
+                        <div class="col-xs-4">
+                            <label class="i">
+                                <span class="name">
+                                     @if (baseInfo.Count > 0)
+                                    {
+                                        @baseInfo[0].RealName
+                                    }
+                                    else
+                                    {
+                                        @accout.Nickname
+                                    }
+                                </span>
+                                <span class="title">@workRank</span>
+                                <div class="unit trim">@organModel.Title</div>
+                                <div class="tel">
+
+                                    @if (baseInfo.Count > 0)
+                                    {
+                                        @baseInfo[0].Phone
+                                    }
+                                </div>
+                                <div class="emial">@accout.Email</div>
+                                <div class="thumb">
+                                    <img style="width:80px;height:80px;" src="@accout.Pic">
+                                </div>
+                                <div class="int">
+                                    <input type="checkbox" name="a10" value="@item.AccountId">
+                                </div>
+                            </label>
+                        </div>
+                            
+                        }
+                    }
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="doAddGroupSubmit()" class="btn btn-success" type="button">提交</button>
+                <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="modal-edit-status">
+    <div class="modal-dialog">
+        <div style="padding: 0;" class="modal-content d-form">
+            <div class="modal-header">
+                <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                <div class="modal-title"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="location.href = location.href;" class="btn btn-success" type="button">确认</button>
+            </div>
+
+        </div>
+    </div>
+</div>

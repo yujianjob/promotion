@@ -1,0 +1,216 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+@{
+    object organid=ViewBag.OrganId;
+    }
+
+@model Class_Detail
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div id="blk_as_course_apply" class="d-course-apply blk_as_course_apply" data-km-htm="blk_as_course_apply.html">
+                    <h3 class="text-center">课程批量报名</h3>
+
+                    <span class="classname">@Model.Title</span>
+                     @{Organ_DetailBLL organ_DetailBLL = new Organ_DetailBLL();}
+                    <span class="source">@organ_DetailBLL.GetModel((int)Model.OrganId).Title</span><br>
+                     @{Traning_DetailBLL traning_DetailBLL = new Traning_DetailBLL();
+                              Traning_Detail traning_Detail = new Traning_Detail();
+                              traning_Detail = traning_DetailBLL.GetModel(Model.TraningId, "");
+                              }
+                    <a href="CoursemarketSingleEnrollC?Id=@Model.TraningId" class="coursename">@traning_Detail.Title</a>
+                    <hr>
+                    @{Traning_FieldBLL traning_FieldBLL = new Traning_FieldBLL();}
+                    <div class="info"><span class="t">课程类别:</span>@traning_FieldBLL.GetModel((int)Model.OrganId, "").Title</div>
+                    <div class="info"><span class="t">课程课时:</span>@traning_Detail.TotalTime</div>
+                    @{Traning_InfoFkBLL traning_InfoFkBLL = new Traning_InfoFkBLL();
+                              string SubjectTitle = "";
+                              if (!string.IsNullOrEmpty(traning_Detail.Subject))
+                              {
+                                  if (traning_Detail.Subject.IndexOf(',') > 0)
+                                  {
+                                      string[] Subjects = traning_Detail.Subject.Split(',');
+
+                                      foreach (string s in Subjects)
+                                      {
+                                          SubjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title;
+                                      }
+                                  }
+                                  else
+                                  {
+                                      SubjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(traning_Detail.Subject), "").Title;
+                                  }
+                              }
+
+
+                              string StudyLevelTitle = "";
+                              if (!string.IsNullOrEmpty(traning_Detail.StudyLevel))
+                              {
+                                  if (Model.StudyLevel.IndexOf(',') > 0)
+                                  {
+                                      string[] StudyLevels = traning_Detail.StudyLevel.Split(',');
+
+                                      foreach (string s in StudyLevels)
+                                      {
+                                          StudyLevelTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title;
+                                      }
+                                  }
+                                  else
+                                  {
+                                      StudyLevelTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(traning_Detail.StudyLevel), "").Title;
+                                  }
+                              }
+
+
+                              string TraningObjectTitle = "";
+                              if (!string.IsNullOrEmpty(traning_Detail.TraningObject))
+                              {
+                                  if (traning_Detail.TraningObject.IndexOf(',') > 0)
+                                  {
+                                      string[] TraningObjects = traning_Detail.TraningObject.Split(',');
+
+                                      foreach (string s in TraningObjects)
+                                      {
+                                          TraningObjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title;
+                                      }
+                                  }
+                                  else
+                                  {
+                                      TraningObjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(traning_Detail.TraningObject), "").Title;
+                                  }
+                              }
+                                
+                            }
+                    <div class="info"><span class="t">适用学科:</span>@SubjectTitle</div>
+                    <div class="info"><span class="t">适用学段:</span>@StudyLevelTitle</div>
+                    <div class="info"><span class="t">适用对象:</span>@TraningObjectTitle</div>
+                     @{
+                                Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                                System.Data.DataTable dt = member_ClassRegisterBLL.GetTable(" ClassId='" + traning_Detail.Id + "' and IsPass=1 and Delflag='false'", "");
+                                int people = 0;
+                                if (dt != null && dt.Rows.Count > 0)
+                                {
+                                    people = dt.Rows.Count;
+                                }
+                            }
+                    <div class="info"><span class="t">累计培训:</span>@people 人</div>
+                    <div class="info"><span class="t">招收人数:</span>@Model.LimitPeopleCnt</div>
+                    <div class="info"><span class="t">报名人数:</span>@Model.People</div>
+                    <div class="info"><span class="t">报名日期:</span>@Model.SignUpStartTime.ToString("yyyy-MM-dd") 至 @Model.SignUpEndTime.ToString("yyyy-MM-dd")</div>
+                    <div class="info"><span class="t">开班日期:</span>@Model.OpenClassFrom.ToString("yyyy-MM-dd") 至 @Model.OpenClassTo.ToString("yyyy-MM-dd")</div>
+                    <div class="info"><span class="t">班级形式:</span>@traning_InfoFkBLL.GetModel(Model.ClassForm,"").Title</div>
+                    <div class="info"><span class="t">上课地点:</span>@Model.Address</div>
+
+                    <div class="h">报名条件</div>
+                     @{
+                              string CSubjectTitle = "";
+                              if (!string.IsNullOrEmpty(Model.Subject))
+                              {
+                                  if (Model.Subject.IndexOf(',') > 0)
+                                  {
+                                      string[] Subjects = Model.Subject.Split(',');
+
+                                      foreach (string s in Subjects)
+                                      {
+                                          CSubjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title;
+                                      }
+                                  }
+                                  else
+                                  {
+                                      CSubjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(Model.Subject), "").Title;
+                                  }
+                              }
+
+
+                              string CStudyLevelTitle = "";
+                              if (!string.IsNullOrEmpty(Model.StudyLevel))
+                              {
+                                  if (Model.StudyLevel.IndexOf(',') > 0)
+                                  {
+                                      string[] StudyLevels = Model.StudyLevel.Split(',');
+
+                                      foreach (string s in StudyLevels)
+                                      {
+                                          CStudyLevelTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title+" ";
+                                      }
+                                  }
+                                  else
+                                  {
+                                      CStudyLevelTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(Model.StudyLevel), "").Title;
+                                  }
+                              }
+
+                              string CTeachGradeTitle = "";
+                              if (!string.IsNullOrEmpty(Model.TeachGrade))
+                              {
+                                  if (Model.TeachGrade.IndexOf(',') > 0)
+                                  {
+                                      string[] TeachGrades = Model.TeachGrade.Split(',');
+
+                                      foreach (string s in TeachGrades)
+                                      {
+                                          CTeachGradeTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title;
+                                      }
+                                  }
+                                  else
+                                  {
+                                      CTeachGradeTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(Model.TeachGrade), "").Title;
+                                  }
+                              }
+                                
+                            }
+                    <div class="info2">
+                        <span class="t">任教学科:</span>
+                         @CSubjectTitle
+                    </div>
+                    <div class="info2">
+                        <span class="t">任教学段:</span>
+                        @CStudyLevelTitle
+                    </div>
+                    <div class="info2">
+                        <span class="t">任教年级:</span>
+                       @CTeachGradeTitle
+                    </div>
+                    <div class="info2">
+                        <span class="t">教师职称:</span>
+                        @Model.TeachRank
+                    </div>
+                    <div class="info2">
+                        <span class="t">学校范围:</span>
+                         @Model.OrganRange
+                    </div>
+
+                    <div class="h" id="chooseTeachers">
+                        批量报名
+                    </div><span style="color: red;"></span>
+
+                    <div class="filter">
+                        <label>
+                            <input class="chk" name="a1" type="radio" checked="">可报名教师</label>
+                        <label>
+                            <input class="chk" name="a1" type="radio">全部教师</label>
+                    </div>
+
+                    <iframe id="showlist" name="showlist" src="ChooseTeachersList?OrganId=@organid" width="100%" height='100%' frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling="no"></iframe>
+
+                    <hr>
+                    <div>
+                        <button type="button" class="btn btn-success" style="width: 150px;" onclick="classRegisterAll(@Model.Id,'@Model.SignUpStartTime.ToString("yyyy/MM/dd")','@Model.SignUpEndTime.ToString("yyyy/MM/dd")',@Model.People,@Model.LimitPeopleCnt)">提交</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<a href="#">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input id="hidteachers" type="hidden" value="" />
+<script src="/Resources/Scripts/Coursemarket/coursemarketEnroll.js"></script>

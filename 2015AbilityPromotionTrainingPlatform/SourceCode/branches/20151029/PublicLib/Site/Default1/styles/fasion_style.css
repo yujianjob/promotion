@@ -1,0 +1,202 @@
+﻿Application
+{
+	backgroundImage: "";/*播放器背景图片，暂不支持*/
+	playbackEdge: 0;/*回放条与舞台两边间距*/
+	seekbarEdge: 1;/*进度条与舞台两边间距*/
+	playbackBottom: 0;/*回放条与底部间距*/
+	barDis: 0;/*回放条与进度条间距 */
+	float:false;/*进度条与控制面板是否浮动 */
+	controlBarMaxWidth:1200;/*进度条与控制面板最大宽度 */
+	borderColor:0xFF0000;/*播放器外边框颜色 */
+	borderAlpha:0;/*播放器外边框透明度 */
+}
+Alert
+{
+	color:0xAAAAAA;/*文本色彩*/
+	fontSize:12;/*文本字号*/
+	paddingW:5;/*文本与左右间距*/
+	paddingH:10;/*文本与上下间距*/
+}
+Button
+{
+	paddingW:5;/*文本与左右间距*/
+	paddingH:2;/*文本与上下间距*/
+	color:0x999999;/*文本色彩*/
+	font:宋体;/*文本字体*/
+	fontSize:12;/*文本字号*/
+	textRollOverColor:0xCCCCCC;/*文本移过时色彩*/
+	textDisabledColor: 0x1E1E1E;/*文本不可用色彩*/
+	fontWeight: normal;/*normal/bold是否加粗*/
+}
+Panel
+{
+	color:0xAAAAAA;/*文字色彩*/
+	titleColor:0xAAAAAA;/*标题文本色彩*/
+	titleFontSize:12;/*标题文本字号*/
+	titleFontWeight:bold;/*标题文本normal/bold是否加粗*/
+	titleHeight:24;/*标题高度*/
+	titleTextPaddingLeft:5;/*标题文本与左右间距*/
+	closeButtonPaddingRight:4;/*关闭按钮右对齐*/
+}
+Playback
+{
+	height: 35;/*回放条高度*/
+	buttonDistance: 0;/*回放条中按钮的间距*/
+	buttonDistance: 0;/*回放条中按钮的间距*/
+	buttonPaddingLeft:0;/*按钮左对齐*/
+	alpha: 1.0;/*透明度 0~1.0*/
+	fullScreenAlpha: 1.0;/*全屏透明度 0~1.0*/
+	colorFilter:commonClrFilter;
+	timeVerticalAlign:0;/*时间文本框垂直偏移距离*/
+}
+SeekBar
+{
+	trackBarLeft:0;/*track左右间距*/
+	alpha: 1.0;/*透明度 0~1.0*/
+	fullScreenAlpha: 1.0;/*全屏透明度 0~1.0*/
+}
+ToolTip
+{
+	font:宋体;/*文本字体*/
+	color:0x444444;/*文本色彩*/
+	fontSize:12;/*文本字号*/
+	fontWeight: normal;/*normal/bold是否加粗*/
+}
+VSlider
+{
+	paddingW:2;/*滚动条Track与左右边间距*/
+	paddingH:2;/*滚动条Track与上下边间距*/
+	seekRectPaddingW:2;/*滚动条定位块与左右边间距*/
+	seekRectPaddingH:1;/*滚动条定位块与上下边间距*/
+}
+
+ScaleMenuSelect
+{
+	color: 0xAAAAAA;/*文本色彩*/
+	fontSize: 12;/*文本字号*/
+	textRollOverColor: 0xCCCCCC;/*文本移过时色彩*/
+	textDisabledColor: 0xCCCCCC;/*文本不可用色彩*/
+	fontWeight: normal;/*normal/bold是否加粗*/
+	usingMovieClip: true;/*是否使用皮膚中的選擇組件*/
+	centerAlign: 10;/*彈出菜單水平中心線偏移*/
+	verticalAlign: -10;/*彈出菜單竖直線偏移*/
+}
+VolumeMenuSelect
+{
+	usingMovieClip: true;/*是否使用皮膚中的音量組件*/
+}
+SubtitleMenuSelect
+{
+	color: 0xAAAAAA;/*文本色彩*/
+	fontSize: 12;/*文本字号*/
+	textRollOverColor: 0xCCCCCC;/*文本移过时色彩*/
+	textDisabledColor: 0xCCCCCC;/*文本不可用色彩*/
+	fontWeight: normal;/*normal/bold是否加粗*/
+	centerAlign: 0;/*彈出菜單水平中心線偏移*/
+	verticalAlign: -1;/*彈出菜單竖直線偏移*/
+}
+Label
+{
+	paddingW:5;/*文本与左右间距*/
+	paddingH:0;/*文本与上下间距*/
+	color:0xCCCCCC;/*字体色彩*/
+	fontSize:12;/*字体大小*/
+	border:false;/*是否显示边框*/
+	borderThickness:1;/*边框磅值*/
+	borderColor:0x999999;/*边框色彩*/
+	borderAlpha:0.5;/*边框透明度*/
+	background:false;/*是否显示背景*/
+	backgroundColor:0x666666;/*背景色*/
+	backgroundAlpha:0.5;/*背景透明度*/
+	fontWeight:normal;/*normal/bold是否加粗*/
+	font:Arial;/*字体*/
+}
+Shot
+{
+	backgroundColor:0x000000;/*背景色*/
+	backgroundAlpha:1.0;/*背景透明度*/
+}
+Player
+{
+	backgroundColor:0x000000;/*背景色*/
+	backgroundAlpha:1.0;/*背景透明度*/
+	infoToolTip:playerInfoTip;/*提示条样式*/
+	infoLeft:0;/*提示条左对齐*/
+	infoTop:0;/*提示条顶对齐*/
+	playButtonAutoHide:false;/*播放按钮随回放条自动隐藏*/
+}
+playerInfoTip
+{
+	paddingW:5;/*文本与左右间距*/
+	paddingH:0;/*文本与上下间距*/
+	color:0xCCCCCC;/*字体色彩*/
+	fontSize:12;/*字体大小*/
+	border:false;/*是否显示边框*/
+	borderThickness:1;/*边框磅值*/
+	borderColor:0x999999;/*边框色彩*/
+	borderAlpha:0.5;/*边框透明度*/
+	background:true;/*是否显示背景*/
+	backgroundColor:0x666666;/*背景色*/
+	backgroundAlpha:0.5;/*背景透明度*/
+	fontWeight:normal;/*normal/bold是否加粗*/
+	font:Arial;/*字体*/
+	fontBorder:false;/*是否显示文字描边*/
+	fontBorderColor:0xFFFFFF;/*文字描边色彩*/
+	fontBorderAlpha:0.8;/*文字描边透明度*/
+	align:left;/*对齐,三个数值 left, right, center*/
+}
+Subtitle
+{
+	text:subtitleText;/*字幕样式*/
+	paddingHorizon:10;/*左右间距*/
+	bottom:5;/*底对齐,优先级高于top,若同时存在,则取底对齐.若要顶对齐,赋值NaN*/
+	top:5;/*顶对齐*/
+	bottomBaseline:25;/*底部基线(当playback及进度条隐藏时, 底部基准线)*/
+	fullScreenFontSize:30;/*全屏字体大小*/
+	fullScreenHardscaleFontSize:16;/*全屏字体大小(使用硬缩放)*/
+	showNum:1;/*显示行数, 最大值5, 功能暂未开放*/
+	effect:fade;/*切换效果,默认为fade*/
+	alpha:0.8;/*字幕整体透明度*/
+}
+subtitleText
+{
+	paddingW:5;/*文本与左右间距*/
+	paddingH:0;/*文本与上下间距*/
+	color:0x000000;/*字体色彩*/
+	fontSize:16;/*字体大小*/
+	border:false;/*是否显示边框*/
+	borderThickness:1;/*边框磅值*/
+	borderColor:0x999999;/*边框色彩*/
+	borderAlpha:0.5;/*边框透明度*/
+	background:false;/*是否显示背景*/
+	backgroundColor:0x666666;/*背景色*/
+	backgroundAlpha:0.5;/*背景透明度*/
+	fontWeight:normal;/*normal/bold是否加粗*/
+	font:微软雅黑;/*字体*/
+	fontBorder:true;/*是否显示文字描边*/
+	fontBorderColor:0xFFFFFF;/*文字描边色彩*/
+	fontBorderAlpha:0.6;/*文字描边透明度*/
+	align:center;/*对齐,三个数值 left, right, center*/
+	letterSpacing:2;/*字间距*/
+}
+commonClrFilter
+{
+	bright:0;/*亮度*/
+	contrast:0;/*对比度*/
+	saturation:0;/*饱和度*/
+	hue:0;/*色调*/
+    rr:0; /*红*/
+    gg:0; /*绿*/
+    bb:0; /*蓝*/
+    ro:0; /*红色偏移*/
+    go:0; /*绿色偏移*/
+    bo:0; /*蓝色偏移*/
+
+	
+}
+ItemList
+{
+	src:<RAW_SERVER>playerdata/win7_class_ItemList1.swf;/*列表SWF地址 <SERVER> <FIXED_SERVER> <RAW_SERVER>*/
+	backgroundColor:0x000000;
+	backgroundAlpha:1.0;
+}

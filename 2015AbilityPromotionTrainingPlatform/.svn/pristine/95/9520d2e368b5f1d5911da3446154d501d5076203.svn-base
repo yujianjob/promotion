@@ -1,0 +1,107 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Areas.Learn.Controllers
+{
+    public class MyTestController : Controller
+    {
+        //
+        // GET: /Learn/MyTest/
+
+        public ActionResult Index(int? id)
+        {
+            //id = id == null ? 0 : id;
+            //ViewBag.Id = id;
+
+            Member_Account member = new Member_AccountBLL().GetModel(Code.SiteCache.Instance.LoginInfo.UserId, "Delflag=0 and Status=2");
+            int outId = 0;
+            if (member != null)
+            {
+                if (member.OutSourceId != null)
+                    outId = Convert.ToInt32(member.OutSourceId);
+            }
+            ViewBag.OutId = outId;
+
+            MyTestRound mode = null;
+            List<MyTestRound> round = new List<MyTestRound>();
+            string score1 = "";
+            string score2 = "";
+            string tick1 = "";
+            string tick2 = "";
+
+            if (outId != 0)
+            {
+                LearnMyTestBLL bll = new LearnMyTestBLL();
+
+                round = bll.GetRoundList(outId, "uploaddatetime desc");
+
+                if (id == null)
+                {
+                    mode = round.FirstOrDefault();
+                }
+                else
+                {
+                    mode = round.FirstOrDefault(t => t.Id == id);
+                }
+
+                id = 0;
+                if (mode != null)
+                {
+                    id = mode.Id;
+                    List<MyTestScore> score = bll.GetScoreList(Convert.ToInt32(id), "dimensionid");
+                    StringBuilder sbScore1 = new StringBuilder();
+                    if (score.Count >= 10)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            sbScore1.Append(score[i].Score + ",");
+                        }
+                        sbScore1.Remove(sbScore1.Length - 1, 1);
+                    }
+                    score1 = sbScore1.ToString();
+                    StringBuilder sbScore2 = new StringBuilder();
+                    if (score.Count >= 10)
+                    {
+                        for (int i = 5; i < 10; i++)
+                        {
+                            sbScore2.Append(score[i].Score + ",");
+                        }
+                        sbScore2.Remove(sbScore2.Length - 1, 1);
+                    }
+                    score2 = sbScore2.ToString();
+
+                    string[] tick = new string[] { "I技术素养", "I计划与准备", "I组织与管理", "I评论与诊断", "I学习与发展", "II技术素养", "II计划与准备", "II组织与管理", "II评论与诊断", "II学习与发展" };
+                    StringBuilder sbTick1 = new StringBuilder();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sbTick1.Append("\"" + tick[i] + "\",");
+                    }
+                    sbTick1.Remove(sbTick1.Length - 1, 1);
+                    tick1 = sbTick1.ToString();
+                    StringBuilder sbTick2 = new StringBuilder();
+                    for (int i = 5; i < 10; i++)
+                    {
+                        sbTick2.Append("\"" + tick[i] + "\",");
+                    }
+                    sbTick2.Remove(sbTick2.Length - 1, 1);
+                    tick2 = sbTick2.ToString();
+                }
+            }
+
+            ViewBag.Id = id;
+            ViewBag.RoundData = round;
+            ViewBag.Score1 = score1;
+            ViewBag.Score2 = score2;
+            ViewBag.Tick1 = tick1;
+            ViewBag.Tick2 = tick2;
+            return View(mode);
+        }
+
+    }
+}

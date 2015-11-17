@@ -1,0 +1,233 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+@using Web.Controllers
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    int groupId = (int)ViewData["groupId"];
+}
+
+
+@model List<Traning_Detail>
+
+@{  
+    string searchTitle = ViewData["searchTitle"].ToString();
+
+    object organId = ViewData["organId"];
+    object field = ViewData["field"];
+    object partitionId = ViewData["partitionId"];
+    int sum = Convert.ToInt32(ViewBag.Sum);
+
+    string searchTitleShow = string.IsNullOrEmpty(searchTitle) ? "课程搜索" : searchTitle;
+}
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">
+                    课程超市
+              <div class="search form-inline">
+                  <div class="form-group">
+                      <select id="organId" class="form-control" style="width: 240px;">
+                          @if (ViewBag.OType == 1)
+                          {
+                              <option value="-1">全部培训机构</option>
+                              foreach (Organ_Detail organ in ViewBag.OrganList)
+                              {
+                              <option value="@organ.Id">@organ.Title</option>
+                              }
+                          }
+                          else if (ViewBag.OType == 2 || ViewBag.OType == 5)
+                          {<option value="-1">全部区县</option>
+                              foreach (Organ_Detail organ in ViewBag.OrganList)
+                              {
+                              <option value="@organ.Id">@organ.Title</option>
+                              }
+
+                          }
+
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <input id="searchTitle" type="text" value="@searchTitleShow" class="SearchBoxNull form-control" placeholder="课程搜索" style="width: 300px; display: inline-block;" maxlength="50">
+                      <button type="button" class="btn btn-default" onclick="search()">搜索</button>
+                  </div>
+              </div>
+                </div>
+                <hr>
+            </div>
+            <div class="col-xs-3">
+                <div id="blk_ln_menu_coursemarket" class="blk_ln_menu_coursemarket" data-km-htm="blk_ln_menu_coursemarket.html">
+                    <div class="d-leftmenu">
+                        @{string ac = "";
+                          if (field == null) { ac = "active"; } }
+                        <a href="/Market/Coursemarket/CoursemarketSingleList?organId=@organId&searchTitle=@searchTitle" class="i @ac">全部 (@sum)</a>
+                        @{for (int i = 0; i < ViewBag.FieldList.Count; i++)
+                          {
+                              string c = "";
+                              if (field != null)
+                              {
+                                  if (field.ToString() == ViewBag.FieldList[i].Id.ToString())
+                                  { c = "active"; }
+                              }
+                            <a href="/Market/Coursemarket/CoursemarketSingleList?field=@ViewBag.FieldList[i].Id&organId=@organId&searchTitle=@searchTitle" class="i @c">@ViewBag.FieldList[i].Title (@ViewBag.FCount[i])</a>
+                          }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-9">
+                <div id="blk_ln_coursemarket_all" class="d-coursemarketlist blk_ln_coursemarket_all" data-km-htm="blk_ln_coursemarket_all.html">
+                    @*  <div class="filter">
+                        <label>
+                            <input class="chk" name="a1" type="radio" checked="">全部显示</label>
+                        <label>
+                            <input class="chk" name="a1" type="radio">只看测评推荐课程</label>
+                    </div>*@
+                    @foreach (var item in Model)
+                    {
+                        <div class="i">
+                            <a href="CoursemarketSingleEnrollC?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="thumb">
+                                <img src="@item.Pic" style="width:200px;height:125px;">
+                                @{
+                        Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                        System.Data.DataTable dt = member_ClassRegisterBLL.GetTable(" TrainingId='" + item.Id + "' and IsPass=1 and Delflag='false'", "");
+                        int people = 0;
+                        if (dt != null && dt.Rows.Count > 0)
+                        {
+                            people = dt.Rows.Count;
+                        }
+                                }
+                                <div class="text-muted">累计培训 @people 人</div>
+                                @*<div class="ref">荐</div>*@
+                            </a>
+                            @{Organ_DetailBLL organ_DetailBLL = new Organ_DetailBLL();}
+
+                            <span class="source">@organ_DetailBLL.GetModel((int)item.OrganId).Title</span><br>
+                            @*<a href="CoursemarketSingleEnrollC?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="title">@item.Title</a>*@
+                            <a href="CoursemarketSingleEnrollC?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="title">
+                                <pre>@item.Title</pre>
+                            </a>
+                            @{Traning_InfoFkBLL traning_InfoFkBLL = new Traning_InfoFkBLL();}
+                            @if (item.TrainingForm != null)
+                            {
+                                <span class="type">@traning_InfoFkBLL.GetModel((int)item.TrainingForm, "").Title</span>
+                            }
+                            <span class="teacher">讲师 : @item.TeacherName</span>
+                            <div class="desc text-justify">@item.Content</div>
+                            @{
+                            Class_DetailBLL class_DetailBLL = new Class_DetailBLL();
+
+                            List<Class_Detail> list = class_DetailBLL.GetListModel(" display=1 and delflag='false' and TraningId='" + item.Id + "' and PartitionId='" + partitionId + "' and status in (3,4)");
+                        
+                            }
+
+                            @foreach (Class_Detail c in list)
+                            {
+                                <div class="classinfo">
+                                    @if (groupId == 7)
+                                    {
+                                        <a href="CoursemarketSingleEnroll?id=@Dianda.Common.QueryString.UrlEncrypt(c.Id)" class="name">@c.Title</a>
+                                    }
+                                    else if (groupId == 2 || groupId == 3 || groupId == 4)
+                                    {
+                                        <a href="CoursemarketEnroll?id=@Dianda.Common.QueryString.UrlEncrypt(c.Id)" class="name">@c.Title</a>
+                                    }
+                                    @if (c.LimitPeopleCnt == -1)
+                                    { <span class="student-num">班级人数 : 不限</span>}
+                                    else
+                                    {<span class="student-num">班级人数 : @c.LimitPeopleCnt</span>}
+                                    <span class="sign-num">已报名人数 : @c.People</span><br>
+                                    <span class="date">@c.SignUpStartTime.ToString("yyyy-MM-dd") 至 @c.SignUpEndTime.ToString("yyyy-MM-dd")</span>
+                                    <div class="action">
+                                        @if (groupId == 7)
+                                        {
+                                            if (Web.Areas.Market.Controllers.CoursemarketController.CheckCanEnroll(c.Id))
+                                            {
+                                            <a href="CoursemarketSingleEnroll?id=@Dianda.Common.QueryString.UrlEncrypt(c.Id)"  class="btn btn-success">我要报名</a>
+                                            }
+                                            else
+                                            {
+                                            <a href="CoursemarketSingleEnroll?id=@Dianda.Common.QueryString.UrlEncrypt(c.Id)"  class="btn btn-success">已报名</a>
+                                            }
+                                        }
+                                        else if (groupId == 2 || groupId == 3 || groupId == 4)
+                                        {
+                                            <a href="CoursemarketEnroll?id=@Dianda.Common.QueryString.UrlEncrypt(c.Id)" class="btn btn-primary">批量报名</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            @{Traning_FieldBLL traning_FieldBLL = new Traning_FieldBLL();}
+                            <span class="sign bg-sign orange">@traning_FieldBLL.GetModel(item.TraingField, "").Title.Substring(0, 2)<span class="hour">@item.TotalTime 课时</span></span>
+                        </div>
+                    }
+
+                    <hr>
+                    @if (ViewBag.totalPage > 10)
+                    {
+                        @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, basecount = 10, pagecount = @ViewBag.totalPage })
+                    }
+                    @if (ViewBag.totalPage == 0)
+                    { 
+                        <p style="text-align: center; padding-top: 30px; font-size: 13px;">对不起，没有搜索到该课程。</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input id="url"  type="hidden" value="/Market/Coursemarket/CoursemarketSingleList?field=@field"/>
+@Html.Hidden("searchTitleValue", string.IsNullOrEmpty(searchTitle) ? "" : searchTitle);
+<script src="/Resources/Scripts/Coursemarket/coursemarketSingleList.js"></script>
+
+<script>
+    $('#organId').val(@organId);
+    $('#searchTitle').val(@searchTitle);
+</script>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            var searchBox = $("#searchTitle");
+            searchBox.click(function () {
+                if (searchBox.attr("class") == "SearchBoxNull form-control") {
+                    searchBox.val("");
+                    searchBox.attr("class", "SearchBox form-control");
+                }
+            });
+            searchBox.blur(function () {
+                if ($.trim(searchBox.val()) == "" && searchBox.attr("class") == "SearchBox form-control") {
+                        searchBox.attr("class", "SearchBoxNull form-control");
+                        searchBox.val("课程搜索");
+                }
+                else {
+                    searchBox.attr("class", "SearchBox form-control")
+                    searchBox.val(@searchTitle);
+                }
+            })
+        });
+    });
+
+</script>
+<style>
+    pre {
+        padding: 0px;
+        color: #009dd9;
+        font-size: 18px;
+        background-color: #fff;
+        border: none;
+        border-radius: unset;
+        overflow: unset;
+    }
+
+    .SearchBox {
+        color: black;
+    }
+
+    .SearchBoxNull {
+        color: #C2C2C2;
+    }
+</style>

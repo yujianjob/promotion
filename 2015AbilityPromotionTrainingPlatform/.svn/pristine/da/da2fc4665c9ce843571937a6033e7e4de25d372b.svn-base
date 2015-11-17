@@ -1,0 +1,420 @@
+﻿@using Dianda.AP.Model;
+
+@model IEnumerable<Dianda.AP.Model.Prepare.TrainingApply.TrainingInfo>
+
+@{
+    ViewBag.Title = "课程上报";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+
+            @using (Html.BeginForm("List", "TrainingApply", FormMethod.Get))
+            {
+        <div class="d-page-title">
+            课程上报
+            <div class="search form-inline">
+            <div class="form-group">
+                <select class="form-control" name="SubjectId" id="SubjectId">
+                <option>全部学科</option>
+                    @foreach (var item in ViewBag.Subject)
+                    {
+                        if (item.Id == ViewBag.SubjectId)
+                        {
+                            <option selected="selected" value="@item.Id">@item.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" name="StatusId" id="StatusId">
+                <option>全部状态</option>
+                    @foreach (KeyValuePair<int, string> item in ViewBag.Status)
+                    {
+                        if (item.Key == ViewBag.StatusId)
+                        {
+                            <option selected="selected" value="@item.Key">@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Key">@item.Value</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" value="@ViewBag.KeyWords" class="form-control" placeholder="课程搜索" style="width:300px;display:inline-block;" name="KeyWords" id="KeyWords" maxlength="50">
+                <button type="submit" class="btn btn-default">搜索</button>
+                <a href="@Url.Action("Add")" class="btn btn-success" style="margin-left:20px;">上报新课程</a>
+            </div>
+            </div>
+        </div>
+            }
+
+
+        <hr>
+        <div id="blk_at_coursereport_list" class="d-coursereport-list blk_at_coursereport_list">
+        @if (Model.Count() == 0)
+        {
+            <div class="No_Content_Title">暂无信息</div>
+        }
+        @foreach (var item in Model)
+        {
+            <div class="i">
+                @{
+                    string outLink = "Details?Id=" + Dianda.Common.QueryString.UrlEncrypt(item.Id);
+                    //if (item.OutSideType == -1)
+                    //{
+                    //    outLink = "javascript:void(0);";
+                    //}
+                    //else
+                    //{
+                    //    Traning_OutCourseType outCourseType = ((List<Traning_OutCourseType>)ViewBag.OutCourseType).FirstOrDefault(t => t.Id == item.OutSideType);
+                    //    outLink = outCourseType == null ? "javascript:void(0);" : string.Format(outCourseType.Link, item.OutSideLink);
+                    //}
+                }
+                <a href="@outLink" class="thumb">
+		            <img src="@item.Pic"  width="200" height="125">
+		            <div class="text-muted">累计培训 @item.Trainers 人</div>
+	            </a>
+                <span class="source">@item.OrganName</span><br>
+
+                <a href="@outLink" class="title">@item.Title</a>
+                <span class="teacher">@item.TeacherTitleName：@item.TeacherName</span>
+                <div class="desc text-justify" style="overflow-x:hidden;">@Html.Raw(item.Content)</div>
+                <div class="subject">学科：
+                    @if (item.Subject.IndexOf("-1") > -1)
+                    {
+                        <span>全部</span>
+                    }
+                    else
+                    {
+                        foreach (var subject in ViewBag.SubjectData)
+                        {
+                            string[] array = item.Subject.Split(',');
+                            foreach (string s in array)
+                            {
+                                if (s == subject.Id.ToString())
+                                {
+                                    <span>@subject.Title</span><span>&nbsp;</span>
+                                }
+                            }
+                        }
+                    }
+                </div>
+                <div class="action">
+                    @if (item.Status == 4)
+                    {
+                        <span class="status danger">原因：@item.ApplyRemark</span>
+                        <span class="status bg-danger">不通过&nbsp;<span class="glyphicon glyphicon-remove"></span></span>
+                    }
+                        
+                    @if (item.Status == 3 || item.Status == 5 || item.Status == 6)
+                    {
+                        <span class="status bg-success">已通过&nbsp;<span class="glyphicon glyphicon-ok"></span></span>
+                    }
+
+                    @if (item.Status == 2)
+                    {
+                        <span class="status bg-info">待审核&nbsp;<span class="glyphicon glyphicon-time"></span></span>
+                        <a href="javascript:;" class="btn btn-primary" onclick="Revoke(@item.Id);">撤销</a>
+                    }
+
+                    @if (item.Status == 3 || item.Status == 5 || item.Status == 6)
+                    {
+                        <a href="javascript:;" class="btn btn-primary" onclick="ShowIframe(@item.Id)">安排教师</a>
+                        if (item.OutSideType == -1)
+                        {
+                            <a href="/Course/CourseCreate/CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="btn btn-primary">课程制作</a>
+                        }
+                    }
+
+                    @if (item.Status == 1 || item.Status == 4 || item.CanEdit)
+                    {
+                        <a href="Edit?Id=@Dianda.Common.QueryString.UrlEncrypt(item.Id)" class="btn btn-primary">编辑</a>
+                        @*<a href="Edit?Id=@item.Id" class="btn btn-primary">编辑</a>*@
+                    }
+                            
+                    @if (item.Status == 3)
+                    {
+                        <a href="javascript:;" class="btn btn-primary" onclick="OnShelf(@item.Id);">上架</a>
+                    }
+
+                    @if (item.Status == 5)
+                    {
+                        <a href="javascript:;" class="btn btn-primary" onclick="OffShelf(@item.Id);">下架</a>
+                    }
+
+                    @if (item.Status == 6)
+                    {
+                        <a href="javascript:;" class="btn btn-primary"  onclick="OnShelf(@item.Id);">重新上架</a>
+                    }
+                        
+                    @if (item.Status == 1)
+                    {
+                        <a href="javascript:;" class="btn btn-primary"  onclick="Delete(@item.Id);">删除</a>
+                    }
+                </div>
+                @if (item.TraingField == 1)
+                {
+                    <span class="sign bg-sign orange">通识<span class="hour">@item.TotalTime 课时</span></span>
+                }
+                @if (item.TraingField == 2)
+                {
+                    <span class="sign bg-sign blue">专业<span class="hour">@item.TotalTime 课时</span></span>
+                }
+            </div>
+        }
+
+@if (ViewBag.RecordCount > ViewBag.PageSize)
+{
+    <hr>
+    @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+        new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+}
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-teacher-select">
+<div class="modal-dialog" style="width:800px;height:640px;margin:30px auto;">
+  <div class="modal-content d-form" style="padding:5px;">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-title">选择教师</div>
+    </div>
+      <iframe id="iframe-teacherlsit" name="showlist" src="" width="100%" height="640" frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling="no"></iframe>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="modal-shelf-on">
+<div class="modal-dialog" style="width:600px;margin:30px auto;">
+  <div class="modal-content d-form" style="padding:5px;">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-title">确认上架？</div>
+    </div>
+      
+      <div class="modal-footer">
+      <button type="button" class="btn btn-success" onClick="OnShelfSubmit();">确认</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="modal-shelf-off">
+<div class="modal-dialog" style="width:600px;margin:30px auto;">
+    
+  <div class="modal-content d-form" style="padding:5px;">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-title">确认下架？</div>
+    </div>
+      
+      <div class="modal-footer">
+      <button type="button" class="btn btn-success" onClick="OffShelfSubmit();">确认</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="modal-revoke">
+<div class="modal-dialog" style="width:600px;margin:30px auto;">
+    
+  <div class="modal-content d-form" style="padding:5px;">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-title">确认撤销？</div>
+    </div>
+      
+      <div class="modal-footer">
+      <button type="button" class="btn btn-success" onClick="RevokeSubmit();">确认</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="modal-delete">
+    <div class="modal-dialog" style="width:600px;margin:30px auto;">
+        <div class="modal-content d-form" style="padding:5px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">确认删除？</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onClick="DeleteSubmit();">确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+<script>
+    var trainingId = 0;
+
+    function ShowIframe(id) {
+        $('#iframe-teacherlsit').attr('src', '/Prepare/TrainingApply/TeacherList?TrainingId=' + id);
+        $('#modal-teacher-select').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+    
+    function OnShelf(id) {
+        $('#modal-shelf-on').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        trainingId = id;
+    }
+
+    function OffShelf(id) {
+        $('#modal-shelf-off').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        trainingId = id;
+    }
+
+    function Revoke(id) {
+        $('#modal-revoke').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        trainingId = id;
+    }
+
+    function Delete(id) {
+        $('#modal-delete').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        trainingId = id;
+    }
+
+    function OnShelfSubmit() {
+        $.ajax({
+            url: 'AjaxSetShelf',
+            type: 'get',
+            data: { TrainingId: trainingId, Status: 5 },
+            content: 'application/json',
+            dataType: 'text',
+            success: function (data) {
+                var myData = $.parseJSON(data);
+                if (myData.Result) {
+                    window.location.href = '@Url.Action("List")';
+                }
+                else {
+                    Alert(myData.Msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 302) {
+                    eval(XMLHttpRequest.responseText);
+                }
+            }
+        });
+    }
+
+    function OffShelfSubmit() {
+        $.ajax({
+            url: 'AjaxSetShelf',
+            type: 'get',
+            data: { TrainingId: trainingId, Status: 6 },
+            content: 'application/json',
+            dataType: 'text',
+            success: function (data) {
+                var myData = $.parseJSON(data);
+                if (myData.Result) {
+                    window.location.href = '@Url.Action("List")';
+                }
+                else {
+                    Alert(myData.Msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 302) {
+                    eval(XMLHttpRequest.responseText);
+                }
+            }
+        });
+    }
+
+    function RevokeSubmit() {
+        $.ajax({
+            url: 'AjaxRevoke',
+            type: 'get',
+            data: { TrainingId: trainingId },
+            content: 'application/json',
+            dataType: 'text',
+            success: function (data) {
+                var myData = $.parseJSON(data);
+                if (myData.Result) {
+                    window.location.href = '@Url.Action("List")';
+                }
+                else {
+                    $('#modal-revoke').modal('hide');
+                    Alert(myData.Msg);
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 302) {
+                    eval(XMLHttpRequest.responseText);
+                }
+            }
+        });
+    }
+
+    function DeleteSubmit() {
+        $.ajax({
+            url: 'AjaxDelete',
+            type: 'get',
+            data: { TrainingId: trainingId },
+            dataType: 'text',
+            success: function (data) {
+                var myData = $.parseJSON(data);
+                if (myData.Result) {
+                    window.location.href = '@Url.Action("List")';
+                }
+                else {
+                    $('#modal-delete').modal('hide');
+                    Alert(myData.Msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 302) {
+                    eval(XMLHttpRequest.responseText);
+                }
+            }
+        });
+    }
+
+    function AfterTeacherSubmit(result, msg) {
+        if (result)
+            $('#modal-teacher-select').modal('hide');
+        Alert(msg);
+        
+    }
+
+    $(function() {
+      $proto.init(function (){
+          /* 页面加载后立即执行的代码写在这里 */
+
+      });
+    });
+</script>

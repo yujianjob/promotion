@@ -1,0 +1,40 @@
+﻿@using Dianda.AP.Model.Prepare.ClassAddressList;;
+@{
+    ViewBag.Title = "班级通讯录";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">班级通讯录</div>
+                <div id="blk_ac_setup_period" class="blk_ac_setup_period">
+                    <div class="d-datatable">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width:100px;">姓名</th>
+                                    <th style="width:100px;">手机</th>
+                                    <th style="width:100px;">座机</th>
+                                    <th>地址</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (AddressList item in ViewBag.MemberInfo)
+                                {
+                                    <tr>
+                                    <td style="width:100px;">@item.RealName</td>
+                                    <td style="width:100px;">@item.Mobile</td>
+                                    <td style="width:100px;">@item.Phone</td>
+                                    <td>@item.Address</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

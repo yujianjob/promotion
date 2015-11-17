@@ -1,0 +1,60 @@
+<div class="i">
+	<a href="#" class="thumb"><img src="/jnpx/dist/resource/course/1-200x125.png"></a>
+	<span class="source">上海开放大学</span>
+	<a href="#" class="title">云服务在课堂教育中的应用</a>
+	<div class="period clearfix">
+  	<div class="pull-left">2015-09-05</div>
+  	<div class="pull-right text-right"></div>
+	</div>
+	<div class="action">
+		<a href="/jnpx/dist/learner/learn-course.html" class="btn btn-success">放弃该课程</a>
+	</div>
+	<span class="sign bg-sign orange">通识<span class="hour">15课时</span></span>
+</div>
+
+<div class="i">
+	<a href="#" class="thumb"><img src="/jnpx/dist/resource/course/2-200x125.png"></a>
+	<span class="source">中国教师进修网</span>
+	<a href="#" class="title">新技术下的化学课程教学应用</a>
+	<div class="period clearfix">
+  	<div class="pull-left">2015-09-05</div>
+  	<div class="pull-right text-right"></div>
+	</div>
+	<div class="action">
+		<a href="/jnpx/dist/learner/learn-course.html" class="btn btn-success">放弃该课程</a>
+	</div>
+	<span class="sign bg-sign blue">专业<span class="hour">15课时</span></span>
+</div>
+
+<div class="i">
+	<a href="#" class="thumb"><img src="/jnpx/dist/resource/course/3-200x125.png"></a>
+	<span class="source">上海师范大学</span>
+	<a href="#" class="title">初中化学</a>
+	<div class="period clearfix">
+  	<div class="pull-left">2015-09-05</div>
+  	<div class="pull-right text-right"></div>
+	</div>
+	<div class="action">
+		<a href="/jnpx/dist/learner/learn-course.html" class="btn btn-success">放弃该课程</a>
+	</div>
+	<span class="sign bg-sign blue">专业<span class="hour">15课时</span></span>
+</div>
+
+<hr>
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

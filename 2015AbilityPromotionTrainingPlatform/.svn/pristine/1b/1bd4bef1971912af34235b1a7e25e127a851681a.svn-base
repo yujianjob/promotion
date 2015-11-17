@@ -1,0 +1,480 @@
+﻿@using Dianda.AP.Model;
+@using System.Data;
+@{
+    ViewBag.Title = "学时标准设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DataTable dt = ViewBag.GetList as DataTable;
+    DataTable Fiedt = ViewBag.GetFieCount as DataTable;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+@if (dt.Rows.Count != 0)
+{
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">标准设置</div>
+                <div id="blk_ac_setup_period" class="blk_ac_setup_period">
+                    <div class="d-datatable">
+
+                        @if (int.Parse(ViewData["GroupId"].ToString()) == (int)XXW.Enum.PlatformGroupEnum.ManagerCity)
+                        {
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>课程类别</th>
+                                    <th>最低标准学时</th>
+                                    <th>最高标准学时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dt.Rows.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@dt.Rows[i]["TraningFieTitle"].ToString()</td>
+                                    <td>
+                                        <input type="text" style="width:100px" maxlength="5" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MinValue"]"></td>
+                                    <td>
+                                        <input type="text" style="width:100px" maxlength="5" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MaxValue"]"></td>
+                                    </tr>
+                                }
+                               
+                                <tr>
+                                    <td>总分标准</td>
+                                    <td>
+                                        <input type="text" style="width:100px" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" maxlength="7" class="form-control" id="@ViewData["AvgId"]" value="@ViewData["Avg"]"></td>
+                                    <td></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        }
+                        else
+                        {
+                            DataTable organ = ViewData["Organ"] as DataTable;
+                            <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>课程类别</th>
+                                    <th>最低标准学时</th>
+                                    <th>最高标准学时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dt.Rows.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@dt.Rows[i]["TraningFieTitle"].ToString()</td>
+                                    <td>
+                                        <input type="text" style="width:100px" maxlength="5" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MinValue"]"></td>
+                                        <td>
+                                            @for (int k = 0; k < organ.Rows.Count; k++)
+                                            {
+                                                if (dt.Rows[i]["TraningField"].ToString() == organ.Rows[k]["TraningField"].ToString())
+                                                { 
+                                                    <p name="Span" style="color:red;">可设范围:@organ.Rows[k]["MinValue"]~@organ.Rows[k]["MaxValue"]</p>
+                                                }
+                                            } 
+                                        </td>
+                                    <td style="display:none;">
+                                        <input type="text" style="width:100px" class="form-control" id="@dt.Rows[i]["Id"]" value="@dt.Rows[i]["MaxValue"]"><p name="Span" style="color:red;">可设范围:@dt.Rows[i]["MinValue"]~@dt.Rows[i]["MaxValue"]</p></td>
+                                    </tr>
+                                }
+                               
+                                <tr>
+                                    <td>总分标准</td>
+                                    <td>
+                                        <input readonly="readonly" style="width:100px" type="text" class="form-control" id="@ViewData["AvgId"]" value="@ViewData["Avg"]"></td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-right text-right">
+                            <button type="button" class="btn btn-success" style="margin-left: 20px;" onclick="Edit()">保存</button>
+                            <button type="button" class="btn btn-success" style="margin-left: 20px;">清空</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+else
+{
+    <div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">标准设置</div>
+                <div id="blk_ac_setup_period" class="blk_ac_setup_period">
+                    <div class="d-datatable">
+
+                        @if (int.Parse(ViewData["GroupId"].ToString()) == 1)
+                        {
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>课程类别</th>
+                                    <th>最低标准学时</th>
+                                    <th>最高标准学时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Fiedt.Rows.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@Fiedt.Rows[i]["Title"].ToString()</td>
+                                    <td>
+                                        <input type="text" style="width:100px" id="@Fiedt.Rows[i]["Id"].ToString()" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control" value="0"></td>
+                                    <td>
+                                        <input type="text" style="width:100px" id="@Fiedt.Rows[i]["Id"].ToString()"  onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control" value="0"></td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td>总分标准</td>
+                                    <td>
+                                        <input type="text" style="width:100px" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control" value="0"></td>
+                                    <td></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        }
+                        else
+                        {
+                            DataTable organ = ViewData["Organ"] as DataTable;
+                            <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>课程类别</th>
+                                    <th>最低标准学时</th>
+                                    <th>最高标准学时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Fiedt.Rows.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@Fiedt.Rows[i]["Title"].ToString()</td>
+                                    <td>
+                                        <input type="text" style="width:100px" id="@Fiedt.Rows[i]["Id"].ToString()" class="form-control"></td>
+                                        <td>
+                                            @for (int k = 0; k < organ.Rows.Count; k++)
+                                            {
+                                                if (Fiedt.Rows[i]["Id"].ToString() == organ.Rows[k]["TraningField"].ToString())
+                                                { 
+                                                    <p name="Span" style="color:red;">可设范围:@organ.Rows[k]["MinValue"]~@organ.Rows[k]["MaxValue"]</p>
+                                                }
+                                            } 
+                                        </td>
+                                    <td style="display:none;">
+                                        <input type="text" style="width:100px" id="@Fiedt.Rows[i]["Id"].ToString()" class="form-control" value="0"><p name="Span" style="color:red;">可设范围:无</p></td>
+                                    </tr>
+                                }
+                               
+                                <tr>
+                                    <td>总分标准</td>
+                                    <td>
+                                        <input type="text" style="width:100px" readonly="readonly" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" class="form-control sstyle" value="0"></td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-right text-right">
+                            <button type="button" class="btn btn-success" style="margin-left: 20px;" onclick="Add();">保存</button>
+                            <button type="button" class="btn btn-success" style="margin-left: 20px;">清空</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<script type="text/javascript">
+    function Add() {
+        var GroupId = "@ViewData["GroupId"]";
+        var Value = "", Avg = "";
+        var count = $(".table :input[type='text']").length;
+        var Sum = 0;
+        var value1 = 0;
+        if (GroupId == "1") {
+            for (var i = 0; i < count; i++) {
+                if ($(".table :input[type='text']").eq(i).val() == "") {
+                    $(".table :input[type='text']").eq(i).val("0");
+                }
+            }
+        } else {
+            for (var i = 0; i < count; i++) {
+                if ($(".table :input[type='text']").eq(i).val() == "") {
+                    $(".table :input[type='text']").eq(i).val("0");
+                }
+                if (i % 2 == 0 && i != count - 1) {
+                    var y = parseFloat($(".table :input[type='text']").eq(i).val());
+                    if (isNaN(y)) {
+                        value1 += 0;
+                    } else {
+                        value1 += y;
+                    }
+                }
+            }
+
+            $(".table :input[type='text']").eq(count - 1).val(value1);
+        }
+        if (GroupId == "1") {
+            for (var i = 0; i < count; i++) {
+                var id = $(".table :input[type='text']").eq(i).attr("id");
+                if (i < count - 1) {
+                    if (i % 2 == 0) {
+                        if (parseFloat($(".table :input[type='text']").eq(i).val()) >= parseFloat($(".table :input[type='text']").eq(i + 1).val())) {
+                            Alert("最低标准学时不能大于等于最高标准学时！！！");
+                            return false;
+                        }
+                        Value += "1" + "," + id + "," + $(".table :input[type='text']").eq(i).val() + "," + $(".table :input[type='text']").eq(i + 1).val() + ";";
+                        Sum += parseFloat($(".table :input[type='text']").eq(i).val());
+                    }
+                } else if (i == count - 1) {
+                    if (Sum > parseFloat($(".table :input[type='text']").eq(i).val())) {
+                        Alert("总分标准不能小于所有最低标准的总和");
+                        return false;
+                    } else {
+                        Value += "1" + "," + id + "," + $(".table :input[type='text']").eq(i).val() + "," + "0";
+                    }
+                }
+            }
+        } else {
+            for (var i = 0; i < count; i++) {
+                var id = $(".table :input[type='text']").eq(i).attr("id");
+                if (i < count - 1) {
+                    if (i % 2 == 0) {
+                        Value += "2" + "," + id + "," + $(".table :input[type='text']").eq(i).val() + "," + "0" + ";";
+                    } else {
+                        var text = $("p[name='Span']").eq(i - 1).text();
+                        var src = text.split(':');
+                        var data = src[1].split('~');
+                        var MinValue = $(".table :input[type='text']").eq(i - 1).val();
+                        if (parseFloat(MinValue) < parseFloat(data[0]) || parseFloat(MinValue) > parseFloat(data[1])) {
+                            Alert('输入的值超出范围！！！');
+                            return false;
+                        }
+                    }
+                } else if (i == count - 1) {
+                    Value += "2" + "," + id + "," + $(".table :input[type='text']").eq(i).val() + "," + "0";
+                }
+            }
+        }
+
+        $.ajax({
+            url: '@Url.Action("AddSetup")',
+                    type: 'get',
+                    data: { Value: Value },
+                    cache: false,
+                    dataType: 'text',
+                    timeout: 30000,
+                    success: function (data) {
+                        var list = data.split(':');
+                        //Alert(list[1]);
+                        location.href = "/Prepare/Standard_Setting/setup_period";
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        Alert(errorMessage);
+                    }
+                });
+    }
+
+
+    function Edit() {
+        var GroupId = "@ViewData["GroupId"]";
+        var TextCount = $("p[name='Span']").length;
+        var Value = "", Avg = "";
+        var count = $(".table :input[type='text']").length;
+        var Sum = 0;
+        var value1 = 0;
+        if (GroupId == "1") {
+            for (var i = 0; i < count; i++) {
+                if ($(".table :input[type='text']").eq(i).val() == "") {
+                    $(".table :input[type='text']").eq(i).val("0");
+                }
+            }
+        } else {
+            for (var i = 0; i < count; i++) {
+                if ($(".table :input[type='text']").eq(i).val() == "") {
+                    $(".table :input[type='text']").eq(i).val("0");
+                }
+                if (i % 2 == 0 && i != count - 1) {
+                    var y = parseFloat($(".table :input[type='text']").eq(i).val());
+                    if (isNaN(y)) {
+                        value1 += 0;
+                    } else {
+                        value1 += y;
+                    }
+                }
+            }
+
+            $(".table :input[type='text']").eq(count - 1).val(value1);
+        }
+
+        if (GroupId == "1") {
+            for (var i = 0; i < count; i++) {
+                if (i < count - 1) {
+                    if (i % 2 == 0) {
+                        var id = $(".table :input[type='text']").eq(i).attr("id");
+                        if (parseFloat($(".table :input[type='text']").eq(i).val()) >= parseFloat($(".table :input[type='text']").eq(i + 1).val())) {
+                            Alert("最低标准学时不能大于等于最高标准学时！！！");
+                            return false;
+                        }
+                        Value += id + "," + $(".table :input[type='text']").eq(i).val() + "," + $(".table :input[type='text']").eq(i + 1).val() + ";";
+                        Sum += parseFloat($(".table :input[type='text']").eq(i).val());
+                    }
+                } else if (i == count - 1) {
+                    var id = $(".table :input[type='text']").eq(i).attr("id");
+                    if (Sum > parseFloat($(".table :input[type='text']").eq(i).val())) {
+                        Alert("总分标准不能小于所有最低标准的总和");
+                        return false;
+                    } else {
+                        Value += id + "," + $(".table :input[type='text']").eq(i).val() + "," + "0";
+                    }
+                }
+            }
+        } else {
+            for (var i = 0 ; i < count; i++) {
+                if (i != count - 1) {
+                    if (i % 2 != 0) {
+                        var text = $("p[name='Span']").eq(i - 1).text();
+                        var src = text.split(':');
+                        var data = src[1].split('~');
+                        var MinValue = $(".table :input[type='text']").eq(i - 1).val();
+                        if (parseFloat(MinValue) < parseFloat(data[0]) || parseFloat(MinValue) > parseFloat(data[1])) {
+                            Alert('输入的值超出范围！！！');
+                            return false;
+                        }
+                    } else {
+                        var id = $(".table :input[type='text']").eq(i).attr("id");
+                        Value += id + "," + $(".table :input[type='text']").eq(i).val() + "," + $(".table :input[type='text']").eq(i + 1).val() + ";";
+                    }
+                } else {
+                    var id = $(".table :input[type='text']").eq(i).attr("id");
+                    Value += id + "," + $(".table :input[type='text']").eq(i).val() + "," + "0";
+                }
+            }
+        }
+
+        $.ajax({
+            url: '@Url.Action("UpdateSetup")',
+            type: 'get',
+            data: { Value: Value },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var list = data.split(':');
+                //Alert(list[1]);
+                location.href = "/Prepare/Standard_Setting/setup_period";
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+    }
+
+    $(".btn").eq(1).click(function () {
+        var count = $(".table :input[type='text']").length;
+        for (var i = 0; i < count; i++) {
+            $(".table :input[type='text']").eq(i).val(0);
+        }
+    })
+
+   @* $(".table :input[type='text']").change(function () {
+        var groupid = "@ViewData["GroupId"]";
+        var count = $(".table :input[type='text']").length;
+        var value = 0;
+        if (groupid == "1") {
+            for (var i = 0; i < count; i++) {
+                if ($(".table :input[type='text']").eq(i).val() == "") {
+                    $(".table :input[type='text']").eq(i).val("0");
+                }
+            }
+        } else {
+            for (var i = 0; i < count; i++) {
+                if ($(".table :input[type='text']").eq(i).val() == "") {
+                    $(".table :input[type='text']").eq(i).val("0");
+                }
+                if (i % 2 == 0 && i != count - 1) {
+                    var y = parseFloat($(".table :input[type='text']").eq(i).val());
+                    if (isNaN(y)) {
+                        value += 0;
+                    } else {
+                        value += y;
+                        alert(value);
+                    }
+                }
+            }
+
+            $(".table :input[type='text']").eq(count - 1).val(value);
+        }
+    });*@
+</script>
+
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+
+        })
+    });
+
+
+   
+
+    
+    //if (groupid == "1") {
+    //    $(".table :input[type='text']").change(function () {
+    //        var count = $(".table :input[type='text']").length;
+    //        for (var i = 0; i < count; i++) {
+    //            if ($(".table :input[type='text']").eq(i).val() == "") {
+    //                $(".table :input[type='text']").eq(i).val("0");
+    //            }
+    //        }
+    //    });
+
+    //    $(".table :input[type='text']").eq(count - 1).removeAttr("readonly");
+    //} else {
+    //    $(".table :input[type='text']").change(function () {
+    //        var count = $(".table :input[type='text']").length;
+    //        var value = 0;
+    //        for (var i = 0; i < count; i++) {
+    //            if ($(".table :input[type='text']").eq(i).val() == "") {
+    //                $(".table :input[type='text']").eq(i).val("0");
+    //            }
+    //            if (i % 2 == 0 && i != count - 1) {
+    //                var y = parseFloat($(".table :input[type='text']").eq(i).val());
+    //                if (isNaN(y)) {
+    //                    value += 0;
+    //                } else {
+    //                    value += y;
+    //                    alert(value);
+    //                }
+    //            }
+    //        }
+
+    //        $(".table :input[type='text']").eq(count - 1).val(value);
+    //    })
+    //}
+</script>

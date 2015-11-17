@@ -1,0 +1,46 @@
+﻿function saveVerify(id, status) {
+    var content = $("#content").val();
+    var id = $("#mpId").val();
+    var status = $("input[name='a13']:checked").val();
+
+    if (check()) {
+        $.ajax({
+            type: 'get',
+            url: '/Market/Coursemarket/MyVerify',
+            data: {
+                Status: status, Id: id, Content: content
+            },
+            contentType: 'application/json',
+            dataType: "text",
+            success: function (data) {
+                var result = $.parseJSON(data);
+                if (result.Code == 0) {
+                    Alert(result.Msg, 'window.location.reload()');
+                }
+                else {
+                    Alert(result.Msg);
+                }
+            },
+            error: function () {
+                Alert('服务器错误！');
+            }
+        });
+    }
+}
+
+function check() {
+    if ($("input[name='a13']:checked").val() == undefined) {
+        Alert('请选择审核结果!');
+        return false;
+    }
+    if ($("input[name='a13']:checked").val() == '2' && content == '') {
+        Alert('请填审核内容!');
+        return false;
+    }
+    if ($("input[name='a13']:checked").val() == '2' && content.length > 500) {
+        Alert('实践内容不能超过500字符!');
+        return false;
+    }
+    return true;
+}
+

@@ -1,0 +1,189 @@
+﻿@{
+    IHtmlString Loading = @Html.Raw("<div style='position:relative;font-size:20px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='position:relative;font-size:16px'>没有试题信息……</div>");
+
+    ViewBag.Title = "增加单元测试题目";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseActivityQuizQues.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+        <div class="d-form">
+            <ol class="breadcrumb" style ="width:894px;">
+            <li><a href="CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">课程制作</a></li>
+            <li><a href="CourseActivityAdd?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">添加学习活动</a></li>
+            <li class="active">测试试题</li>
+            </ol>
+            <div id="blk_ct_course_activity_quiz_ques" class="blk_ct_course_activity_quiz_ques">
+                <h4 class="text-center">添加学习活动 - 测试 - 试题（@ViewBag.TrainingInfo.Title）</h4>
+                <div class="row d-ques">
+                  <div class="col-xs-5">
+                    <div class="h">
+                      题目列表 (共<span id ="QuesCount"></span>题)
+                      <div class="action">
+                        <div class="dropdown">
+                          <button type="button" data-toggle="dropdown" class="btn btn-primary">
+                             新增题目 <span class="caret"></span>
+                          </button>
+                          <a class="btn btn-success" href ="/CourseCreate/ExportQuestionExecl">下载模板</a>
+                          <div class="btn" style="padding:0;margin-top:-30px;margin-right:-20px;"><input type="file" id="AttachUpload"></div>
+                          <ul id ="QuesTypeAdd" class="dropdown-menu" aria-labelledby="dLabel">
+                            <li><a href="javascript:;" onclick="ShowQuesDetail(1,this);">单选题</a></li>
+                            <li><a href="javascript:;" onclick="ShowQuesDetail(2,this);">多选题</a></li>
+                            <li><a href="javascript:;" onclick="ShowQuesDetail(3,this);">判断题</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div id = "queslist" class="queslist">
+                    </div>
+                  </div>
+                  <div class="col-xs-7">
+		              <div class="ques">
+                      <div id="d_ques" class="quesedit" style="display:none;">
+                        <div class="row">
+                          <div id ="TestId" style ="display:none;"></div>
+                          <div class="col-xs-12">
+                            <div class="form-group">
+                              <label class="control-label">题型</label>
+                              <select id ="ddlQuesType" class="form-control" name="" style="width:150px;">
+                                  <option value ="1">单选题</option>
+                                  <option value ="2">多选题</option>
+                                  <option value ="3">判断题</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-xs-8">
+                            <div class="form-group">
+                              <label class="control-label">题目<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtContent">此项为必填内容</span></label>
+                              <input id ="txtContent" type="text" class="form-control" maxlength="100">
+                            </div>
+                          </div>
+                          <div class="col-xs-4">
+                            <div class="form-group">
+                              <label class="control-label">权重<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtCredit">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtCredit" validtype="number">此项必须正整数</span></label>
+                              <input id ="txtCredit" type="text" class="form-control" maxlength="2">
+                            </div>
+                          </div>
+                          <div id ="" style ="display:none;"></div>
+                          <div class="col-xs-12">
+        		              <div id ="SelectQues" style ="display:none;">
+                                <div id="d_quesoptions" class="form-group">
+        			                <label class="control-label">选项<span class="text-danger">*</span></label>
+                                    <div id="Option" class="option">
+                                        <label class="chk" style="width:70px;">
+          				                    <input id ="chkRight" type="checkbox" name="a1" value="1" checked> 正确
+          			                    </label>
+                                        <input id ="QtContent" type="text" class="form-control" value="" style="display:inline-block;width:450px;" maxlength="100">
+                                        <a href="#" class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></a>
+                                    </div>
+        		                </div>
+                                <div class="action">
+                                   <a href="javascript:void(0);" onclick="doAddOptions()">增加选项</a>
+                                </div>
+                              </div>
+                              <div id ="IsOrNoQues" style ="display:none;">
+                                <div id="d_quesoptions" class="form-group">
+        			                <label class="control-label">选项<span class="text-danger">*</span></label>
+                                    <div class="option">
+                                        <label class="chk" style="width:200px;">
+                                            <input id ="radioRight" type="radio" name="IsOrNoQues" value="1" checked ="checked"> 对
+                                        </label>
+                                        <label class="chk" style="width:200px;">
+                                            <input id ="radioNoPrintScore" type="radio" name="IsOrNoQues" value="2"> 错
+                                        </label>
+                                    </div>
+        		                </div>
+                              </div>
+        	              </div>
+                          <div class="col-xs-12">
+                             <a id ="btnAdd" href="javascript:void(0);" class="btn btn-danger" style="width:100px;">新增</a>
+                             <a id ="btnEdit" href="javascript:void(0);" class="btn btn-danger" style="width:100px;display:none;">保存</a>
+                              &nbsp;&nbsp;&nbsp;&nbsp;<a id ="btnDelete" href="javascript:void(0);" onclick = "DeleteUnitTest();">删除</a>
+                          </div>
+                        </div>
+                        </div>
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <hr>
+		                <a href="javascript:void(0);" class="btn btn-success" style="width:150px;" onclick ="SetVerson();">完成</a>
+	                </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div id="OptionModel" class="form-group" style ="display:none;">
+    <div id="Option" class="option">
+        <label class="chk" style="width:70px;">
+          	<input id ="chkRight" type="checkbox" name="a1" value="1"> 正确
+        </label>
+        <input id ="QtContent" type="text" class="form-control" style="width:450px;" maxlength="300">
+        <a href="#" class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></a>
+    </div>
+</div>
+
+<div id = "quesModel" class="queslist" style ="disply:none;">
+    <div id ="DetailEdit" class="i">
+        <div id ="Content" class="title"></div>
+    </div>
+</div>
+
+<script>
+    var OptionHtml = '';
+    OptionHtml += '<div id="d_quesoptions" class="form-group">';
+    OptionHtml += '<label class="control-label">选项<span class="text-danger">*</span></label>';
+    for(i = 0;i < 4;i++)
+    {
+        OptionHtml += '<div id="Option" class="option">';
+        OptionHtml += '<label class="chk" style="width:70px;">';
+        OptionHtml += '<input id ="chkRight" type="checkbox" name="a1" value="1" checked> 正确';
+        OptionHtml += '</label>';
+        OptionHtml += '<input id ="QtContent" type="text" class="form-control" value="" style="display:inline-block;width:450px;" maxlength="300">';
+        OptionHtml += '<a href="#" class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></a>';
+        OptionHtml += '</div>';
+    }
+    OptionHtml += '</div>';
+
+    var Loading = "@Loading";
+    var noDataTip = "@noDataTip";
+    var TrainingId = "@ViewBag.TrainingId";
+    var UnitContent = "@ViewBag.UnitContent";
+
+    $('#AttachUpload').UploadFile({
+        multi: true,
+        queueSizeLimit: 10,
+        itemTemplate: '<div id="${fileID}" class="uploadify-queue-item" style="display:none;"></div>',
+        fileTypeExts: '*.xls;*.xlsx;',
+        uploader: '/CourseCreate/TestExeclTemp?UnitContent=' + UnitContent,
+        buttonText: "导入试题",
+        auto: true,
+        buttonClass: "btn-success-Upload",
+        width: 82,
+        height: 34,
+        onUploadSuccess: function (file, data, response) {
+            if (response) {
+                var sss = data.split(":");
+                if (sss[0] == "yes") {
+                    //Alert(sss[1]);
+                    //location.reload();
+                    Alert(sss[1], 'location.href = location.href');
+                } else {
+                    Alert(sss[1]);
+                    return false;
+                }
+            } else {
+                Alert("服务器无响应");
+                return false;
+            }
+        }
+    });
+</script>

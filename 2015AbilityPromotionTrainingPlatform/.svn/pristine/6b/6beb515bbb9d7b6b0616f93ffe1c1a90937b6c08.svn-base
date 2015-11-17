@@ -1,0 +1,24 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ErrorFunction</title>
+    <script type="text/javascript">
+        function ToHome() {
+            setTimeout(function () {
+                window.location.href = '/Entrance/Home/Index';
+            }, 3000);
+        }
+    </script>
+</head>
+<body onload="ToHome();">
+    <div>
+        没有权限，3秒后将跳转到首页
+    </div>
+</body>
+</html>

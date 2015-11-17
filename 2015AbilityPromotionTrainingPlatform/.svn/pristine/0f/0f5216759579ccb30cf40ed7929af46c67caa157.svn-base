@@ -1,0 +1,127 @@
+﻿using Dianda.AP.Model.Learn.MyLearn;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.DAL
+{
+    public class LearnMyCourseDAL
+    {
+        /// <summary>
+        /// 取得我的课程记录数
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public int GetMyCourseCount(string where)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select count(1) from");
+            sql.Append(" Member_ClassRegister A");
+            sql.Append(" join Class_Detail B on A.ClassId=B.Id");
+            sql.Append(" join Traning_Detail C on B.TraningId=C.Id");
+            sql.Append(" join Organ_Detail D on C.OrganId=D.Id");
+            sql.Append(" join Traning_Field E on C.TraingField=E.Id");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()));
+        }
+
+        /// <summary>
+        /// 取得我的课程分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<MyCourseInfo> GetMyCourseList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select ROW_NUMBER() over (order by " + orderBy + ") as [RowNum],");
+            sql.Append("A.Id,A.Status,A.AccountId,A.CurrentSchedule,A.TotalSchedule,");
+            sql.Append("B.Id as ClassId,B.Title as ClassName,B.OpenClassFrom,B.OpenClassTo,");
+            sql.Append("C.Id as TrainingId,C.Title as TrainingName,C.Pic,C.OrganId,C.TotalTime,");
+            sql.Append("D.Title as OrganName,");
+            sql.Append("E.Id as FieldId,E.Title as FieldName");
+            sql.Append(" from Member_ClassRegister A");
+            sql.Append(" join Class_Detail B on A.ClassId=B.Id");
+            sql.Append(" join Traning_Detail C on B.TraningId=C.Id");
+            sql.Append(" join Organ_Detail D on C.OrganId=D.Id");
+            sql.Append(" join Traning_Field E on C.TraingField=E.Id");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<MyCourseInfo> list = new List<MyCourseInfo>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    MyCourseInfo model = new MyCourseInfo();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 放弃选课
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteCourse(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update Member_ClassRegister set Delflag=1 where Id=" + id);
+            sql.Append(" if exists (select 1 from Member_ClassRegister where Id=" + id + " and Status=4)");
+            sql.Append(" update Class_Detail set People=People-1 where Id=(select ClassId from Member_ClassRegister where Id=" + id + ")");
+            MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString());
+        }
+
+        #region
+        private void ConvertToModel(IDataReader reader, MyCourseInfo model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["ClassId"] != DBNull.Value)
+                model.ClassId = Convert.ToInt32(reader["ClassId"]);
+            if (reader["ClassName"] != DBNull.Value)
+                model.ClassName = reader["ClassName"].ToString();
+            if (reader["TrainingId"] != DBNull.Value)
+                model.TrainingId = Convert.ToInt32(reader["TrainingId"]);
+            if (reader["TrainingName"] != DBNull.Value)
+                model.TrainingName = reader["TrainingName"].ToString();
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["OrganName"] != DBNull.Value)
+                model.OrganName = reader["OrganName"].ToString();
+            if (reader["CurrentSchedule"] != DBNull.Value)
+                model.CurrentSchedule = Convert.ToInt32(reader["CurrentSchedule"]);
+            if (reader["TotalSchedule"] != DBNull.Value)
+                model.TotalSchedule = Convert.ToInt32(reader["TotalSchedule"]);
+            if (reader["OpenClassFrom"] != DBNull.Value)
+                model.OpenClassFrom = Convert.ToDateTime(reader["OpenClassFrom"]);
+            if (reader["OpenClassTo"] != DBNull.Value)
+                model.OpenClassTo = Convert.ToDateTime(reader["OpenClassTo"]);
+            if (reader["FieldId"] != DBNull.Value)
+                model.FieldId = Convert.ToInt32(reader["FieldId"]);
+            if (reader["FieldName"] != DBNull.Value)
+                model.FieldName = reader["FieldName"].ToString();
+            if (reader["TotalTime"] != DBNull.Value)
+                model.TotalTime = Convert.ToDouble(reader["TotalTime"]);
+        }
+        #endregion
+    }
+}

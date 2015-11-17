@@ -1,0 +1,303 @@
+﻿@using Dianda.AP.Model;
+@using System.Data;
+@using Dianda.Common;
+@{
+    ViewBag.Title = "通知提醒";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Sys_Message> list = ViewBag.GetList as List<Sys_Message>;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript">
+    function del(id) {
+        $('#modal-edit-status .modal-title').text("确定删除吗？");
+        $('#btnOK').attr("onclick", "ActivityDisplay(" + id + ");");
+
+        $('#modal-edit-status').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+
+    function ActivityDisplay(id) {
+        $.ajax({
+            url: '@Url.Action("DelDetail")',
+            type: 'get',
+            data: { id: id, Type: "@ViewData["Type"]" },
+            cache: false,
+            datatype: 'text',
+            success: function (data) {
+                var res = data.split(':');
+                if (res[0] == 'yes') {
+                    window.location.href = "/Prepare/Message/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&Type=@QueryString.UrlEncrypt(ViewData["Type"])";
+                }
+                else if (res[0] == 'no') {
+                    Alert(res[1]);
+                    return false;
+                }
+                else {
+                    alert('未知错误！');
+                    window.location.href = "/Prepare/Message/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&Type=@QueryString.UrlEncrypt(ViewData["Type"])";
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+        return false;
+    }
+
+
+
+    function BatchDel() {
+        var count = $("input[type='checkbox']:checked").length;
+        if (count == 0) {
+            Alert("请选择需要删除的内容");
+            return false;
+        }
+        $('#modal-edit-status .modal-title').text("确定删除所选内容吗？");
+        $('#btnOK').attr("onclick", "DelCheck();");
+
+        $('#modal-edit-status').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+
+    function DelCheck()
+    {
+        var idlist = "";
+        var count = $("input[type='checkbox']:checked").length;
+        if (count != 0) {
+            for (var i = 0; i < count; i++) {
+                var id = $("input[type='checkbox']:checked").eq(i).attr("id");
+                if (id != "" && id != null) {
+                    if (i != count - 1) {
+                        idlist += id + ";";
+                    } else {
+                        idlist += id;
+                    }
+                }
+            }
+        }
+        if (idlist == "")
+        {
+            Alert("请选择需要删除的内容！！！");
+            return false;
+        }
+
+        $.ajax({
+            url: '@Url.Action("BatchDel")',
+            type: 'get',
+            data: { IdList: idlist,Type:"@ViewData["Type"]" },
+            cache: false,
+            datatype: 'text',
+            success: function (data) {
+                var res = data.split(':');
+                if (res[0] == 'yes') {
+                    window.location.href = "/Prepare/Message/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&Type=@QueryString.UrlEncrypt(ViewData["Type"])";
+                }
+                else if (res[0] == 'no') {
+                    alert(res[1]);
+                    window.location.href = "/Prepare/Message/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&Type=@QueryString.UrlEncrypt(ViewData["Type"])";
+                }
+                else {
+                    alert('未知错误！');
+                    window.location.href = "/Prepare/Message/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&Type=@QueryString.UrlEncrypt(ViewData["Type"])";
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+        return false;
+    }
+</script>
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">通知提醒</div>
+                <div id="blk_ln_menu_notification" class="blk_ln_menu_notification">
+                    <div class="d-navmenu">
+                        <a id="d_learner_notification_unread" href="/Prepare/Message/Index?Type=@QueryString.UrlEncrypt("NotRead")" class="i">未读通知</a>
+                        <a id="d_learner_notification_read" href="/Prepare/Message/Index?Type=@QueryString.UrlEncrypt("Read")" class="i">已读通知</a>
+                        <a id="d_learner_notification_trash" href="/Prepare/Message/Index?Type=@QueryString.UrlEncrypt("Recovery")" class="i">回收站</a>
+                    </div>
+                </div>
+                <div id="blk_ln_notification_unread" class="d-notificationlist unread blk_ln_notification_unread">
+                    <div class="action">
+                        <label>
+                            <input class="chk" type="checkbox">全选</label>
+                        <a href="#" onclick="BatchDel()" class="btn btn-default btn-sm BatchDel">删除</a>
+                    </div>
+                    @if(list.Count>0)
+                    {
+                    for (int i = 0; i < list.Count; i++)
+                    { 
+                        <div class="i">
+                            <a href="/Prepare/Message/Details?id=@QueryString.UrlEncrypt(list[i].Id)&Type=@QueryString.UrlEncrypt(ViewData["Type"])"><span class="title">@list[i].Title</span></a>
+                        <span class="date">@list[i].CreateDate.ToString("yyyy-MM-dd")</span>
+                        <div class="content">@list[i].Content</div>
+                        <div class="action">
+                            <label>
+                                <input id="@list[i].Id" type="checkbox" class="chk">选择</label>
+                                <a href="#" onclick="del('@list[i].Id')">删除</a>
+                        </div>
+                    </div>
+                    }
+                    }else
+                    {
+                       <div id="blk_ct_course_list" class="d-courseauthor-list blk_ct_course_list">
+                             <h4 class="No_Content_Title">暂无信息……</h4>
+                            <hr>
+                            </div>
+                    }
+                    <hr>
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            @if (@ViewData["pageCount"].ToString() == "0")
+                            {
+                                <span>总页数 1</span>
+                            }
+                            else
+                            {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                            }
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="/Prepare/Message/Index?PageIndex=@QueryString.UrlEncrypt(1)&Type=@QueryString.UrlEncrypt(ViewData["Type"])">首页</a>
+
+                            <a id="OnPage" href="/Prepare/Message/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) - 1)&Type=@QueryString.UrlEncrypt(ViewData["Type"])">上一页</a>
+
+                            <a id="NextPage" href="/Prepare/Message/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) + 1)&Type=@QueryString.UrlEncrypt(ViewData["Type"])">下一页</a>
+
+                            <a id="LastPage" href="/Prepare/Message/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageCount"].ToString()))&Type=@QueryString.UrlEncrypt(ViewData["Type"])">尾页</a>
+
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-edit-status" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding:0;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-title"></div>
+        </div>
+    
+        <div class="modal-footer">
+            <button id ="btnOK" type="button" class="btn btn-success">确认</button>
+            <button id ="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+            $('input.input-date').datepicker({});
+        });
+    });
+
+    $("input[type='checkbox']").eq(0).click(function () {
+        if (this.checked == true) {
+            $("input[type='checkbox']").each(function () {
+                this.checked = true;
+            })
+        } else {
+            $("input[type='checkbox']").each(function () {
+                this.checked = false;
+            })
+        }
+    })
+
+    $("#GoBtn").click(function () {
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (pagecount == "0") {
+            pagecount = "1";
+        }
+        if (index == "0")
+        {
+            Alert('请输入正确的页数！！！');
+            return false;
+        }
+        else if (parseInt(index) > parseInt(pagecount)) {
+            Alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            Alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = "/Prepare/Message/Index?PageIndex=" + UrlEncode(index) + "&Type=@QueryString.UrlEncrypt(ViewData["Type"])";
+        }
+    })
+
+    $(document).ready(function () {
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10 || index == pagecount) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+
+        var type = "@ViewData["Type"]";
+        if (type == "NotRead")
+        {
+            //$("#d_learner_notification_unread").css("color", "blue");
+            $("#d_learner_notification_unread").addClass('active');
+        } else if (type == "Read") {
+            //$("#d_learner_notification_read").css("color", "blue");
+            $("#d_learner_notification_read").addClass('active');
+        } else {
+            //$("#d_learner_notification_trash").css("color", "blue");
+            $("#d_learner_notification_trash").addClass('active');
+        }
+    })
+
+    function UrlEncode(code) {
+        var EnCode = "";
+        var obj = JSON.stringify({ Code: code });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/Course/CourseCreate/EnCode',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                if (!data || !data.Data || data.Data.length == 0) {
+                    return;
+                }
+
+                EnCode = data.Data;
+            },
+            error: function () {
+            }
+        });
+
+        return EnCode;
+    }
+</script>

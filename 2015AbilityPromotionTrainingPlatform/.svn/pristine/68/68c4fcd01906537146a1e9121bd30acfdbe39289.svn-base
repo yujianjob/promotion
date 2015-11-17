@@ -1,0 +1,97 @@
+﻿using Dianda.AP.BLL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Areas.Learn.Controllers
+{
+    public class MyLearnController : Controller
+    {
+        // 我的课程
+        // GET: /Learn/MyLearn/
+
+        #region 学习中的课程
+        public ActionResult InDate()
+        {
+            LearnMyLearnBLL bll = new LearnMyLearnBLL();
+            
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            StringBuilder where = new StringBuilder();
+            where.Append("A.AccountId=" + cache.LoginInfo.UserId + " and B.Status in (5,6) and C.PartitionId=" + cache.LoginInfo.PartitionId);
+            
+            int recordCount = bll.GetMyLearnCount(where.ToString());
+
+            int pageSize = 8, pageIndex;
+            int pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            int.TryParse(Request["PageIndex"], out pageIndex);
+            if (pageIndex < 1)
+                pageIndex = 1;
+            else if (pageIndex > pageCount)
+                pageIndex = pageCount;
+            ViewBag.RecordCount = recordCount;
+            ViewBag.PageCount = pageCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(bll.GetMyLearnList(pageSize, pageIndex, where.ToString(), "A.Id"));
+        }
+        #endregion
+
+        #region 未开始的课程
+        public ActionResult BeforeDate()
+        {
+            LearnMyLearnBLL bll = new LearnMyLearnBLL();
+
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            StringBuilder where = new StringBuilder();
+            where.Append("A.AccountId=" + cache.LoginInfo.UserId + " and B.Status=3 and C.PartitionId=" + cache.LoginInfo.PartitionId);
+
+            int recordCount = bll.GetMyLearnCount(where.ToString());
+
+            int pageSize = 8, pageIndex;
+            int pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            int.TryParse(Request["PageIndex"], out pageIndex);
+            if (pageIndex < 1)
+                pageIndex = 1;
+            else if (pageIndex > pageCount)
+                pageIndex = pageCount;
+            ViewBag.RecordCount = recordCount;
+            ViewBag.PageCount = pageCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(bll.GetMyLearnList(pageSize, pageIndex, where.ToString(), "A.Id"));
+        }
+        #endregion
+
+        #region 已结束的课程
+        public ActionResult OutDate()
+        {
+            LearnMyLearnBLL bll = new LearnMyLearnBLL();
+
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            StringBuilder where = new StringBuilder();
+            where.Append("A.AccountId=" + cache.LoginInfo.UserId + " and B.Status=6 and C.PartitionId=" + cache.LoginInfo.PartitionId);
+
+            int recordCount = bll.GetMyLearnCount(where.ToString());
+
+            int pageSize = 8, pageIndex;
+            int pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            int.TryParse(Request["PageIndex"], out pageIndex);
+            if (pageIndex < 1)
+                pageIndex = 1;
+            else if (pageIndex > pageCount)
+                pageIndex = pageCount;
+            ViewBag.RecordCount = recordCount;
+            ViewBag.PageCount = pageCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(bll.GetMyLearnList(pageSize, pageIndex, where.ToString(), "A.Id"));
+        }
+        #endregion
+    }
+}

@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+您 Web 项目的发布/打包进程将使用此文件。您可以通过编辑此 MSBuild 文件
+来自定义该进程的行为。若要了解与此相关的详细信息，请访问 http://go.microsoft.com/fwlink/?LinkID=208121。
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>F:\项目发布\上海学习网\Portal</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/Dianda.CacheFactory.dll">
+      <publishTime>04/30/2015 15:19:58</publishTime>
+    </File>
+    <File Include="bin/Dianda.Common.dll">
+      <publishTime>04/30/2015 15:19:58</publishTime>
+    </File>
+    <File Include="bin/Dianda.Communication.dll">
+      <publishTime>04/30/2015 15:19:59</publishTime>
+    </File>
+    <File Include="bin/Dianda.DALSqlServer.dll">
+      <publishTime>04/30/2015 14:43:03</publishTime>
+    </File>
+    <File Include="bin/Enyim.Caching.dll">
+      <publishTime>04/14/2014 09:45:59</publishTime>
+    </File>
+    <File Include="bin/log4net.dll">
+      <publishTime>04/09/2014 17:46:41</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Common.dll">
+      <publishTime>04/04/2014 17:46:10</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Data.dll">
+      <publishTime>04/04/2014 17:46:06</publishTime>
+    </File>
+    <File Include="bin/Microsoft.QualityTools.Testing.Fakes.dll">
+      <publishTime>03/15/2013 00:05:56</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Infrastructure.dll">
+      <publishTime>01/15/2015 14:41:11</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Mvc.FixedDisplayModes.dll">
+      <publishTime>04/04/2014 17:46:08</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>04/04/2014 17:46:09</publishTime>
+    </File>
+    <File Include="bin/Site.dll">
+      <publishTime>04/30/2015 15:20:00</publishTime>
+    </File>
+    <File Include="bin/System.Net.Http.Formatting.dll">
+      <publishTime>01/15/2015 14:40:52</publishTime>
+    </File>
+    <File Include="bin/System.Web.Helpers.dll">
+      <publishTime>01/15/2015 14:41:02</publishTime>
+    </File>
+    <File Include="bin/System.Web.Http.dll">
+      <publishTime>01/15/2015 14:40:55</publishTime>
+    </File>
+    <File Include="bin/System.Web.Http.WebHost.dll">
+      <publishTime>01/15/2015 14:40:58</publishTime>
+    </File>
+    <File Include="bin/System.Web.Mvc.dll">
+      <publishTime>01/15/2015 14:40:40</publishTime>
+    </File>
+    <File Include="bin/System.Web.Razor.dll">
+      <publishTime>01/15/2015 14:40:45</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Deployment.dll">
+      <publishTime>01/15/2015 14:41:02</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.dll">
+      <publishTime>01/15/2015 14:41:02</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Razor.dll">
+      <publishTime>01/15/2015 14:41:02</publishTime>
+    </File>
+    <File Include="bin/XXW.CommonBLL.dll">
+      <publishTime>04/30/2015 15:19:58</publishTime>
+    </File>
+    <File Include="bin/XXW.CommonDAL.dll">
+      <publishTime>04/30/2015 15:19:58</publishTime>
+    </File>
+    <File Include="bin/XXW.CommonModels.dll">
+      <publishTime>04/30/2015 14:43:03</publishTime>
+    </File>
+    <File Include="bin/XXW.Enum.dll">
+      <publishTime>04/30/2015 14:43:03</publishTime>
+    </File>
+    <File Include="bin/XXW.IDAL.dll">
+      <publishTime>04/30/2015 14:43:03</publishTime>
+    </File>
+    <File Include="bin/XXW.SiteUtils.dll">
+      <publishTime>04/30/2015 15:19:59</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>03/15/2013 04:14:06</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Net.Http.Formatting.resources.dll">
+      <publishTime>01/15/2015 14:40:53</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Helpers.resources.dll">
+      <publishTime>01/15/2015 14:41:05</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Http.resources.dll">
+      <publishTime>01/15/2015 14:40:57</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Http.WebHost.resources.dll">
+      <publishTime>01/15/2015 14:41:00</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Mvc.resources.dll">
+      <publishTime>01/15/2015 14:40:43</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Razor.resources.dll">
+      <publishTime>01/15/2015 14:40:48</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.WebPages.Deployment.resources.dll">
+      <publishTime>01/15/2015 14:41:05</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.WebPages.Razor.resources.dll">
+      <publishTime>01/15/2015 14:41:05</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.WebPages.resources.dll">
+      <publishTime>01/15/2015 14:41:05</publishTime>
+    </File>
+    <File Include="Default1/AC_RunActiveContent.js">
+      <publishTime>01/27/2014 09:08:19</publishTime>
+    </File>
+    <File Include="Default1/flash/oPlayer.swf">
+      <publishTime>01/14/2014 11:02:32</publishTime>
+    </File>
+    <File Include="Default1/playerdata/07103319843.swf">
+      <publishTime>07/07/2010 11:41:36</publishTime>
+    </File>
+    <File Include="Default1/playerdata/flash8net_58973.swf">
+      <publishTime>07/07/2010 11:56:10</publishTime>
+    </File>
+    <File Include="Default1/playerdata/getid2.xml">
+      <publishTime>01/14/2014 11:14:06</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/audio_logo.png">
+      <publishTime>05/12/2008 15:01:28</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/head.jpg">
+      <publishTime>03/30/2009 20:08:44</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/head_logo.png">
+      <publishTime>12/28/2009 16:13:20</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/Icon_Set_1_blue.jpg">
+      <publishTime>04/02/2009 00:33:20</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/olive_head_logo.png">
+      <publishTime>08/24/2009 13:22:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/shot.jpg">
+      <publishTime>04/02/2009 15:25:48</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/shotgroup.jpg">
+      <publishTime>03/25/2013 19:01:26</publishTime>
+    </File>
+    <File Include="Default1/playerdata/image/zhtv2.png">
+      <publishTime>03/02/2010 16:35:34</publishTime>
+    </File>
+    <File Include="Default1/playerdata/ItemList.swf">
+      <publishTime>09/04/2012 17:10:48</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/As Long As You Love Me.lrc">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/As Long As You Love Me.ssa">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/Garnet_Moon.lrc">
+      <publishTime>03/04/2010 09:55:34</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/sub.srt">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test-ANSI.lrc">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test-ANSI.zip">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test-utf8.lrc">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test-utf8.zip">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test.lrc">
+      <publishTime>06/16/2011 17:30:14</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test.srt">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test.ssa">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/test.zip">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/刘德华 - 我和我追逐的梦.lrc">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/lrc/刘德华 - 我和我追逐的梦.srt">
+      <publishTime>01/20/2010 16:03:40</publishTime>
+    </File>
+    <File Include="Default1/playerdata/manifest.f4m">
+      <publishTime>11/05/2011 09:46:22</publishTime>
+    </File>
+    <File Include="Default1/playerdata/mc1.swf">
+      <publishTime>07/07/2010 16:55:16</publishTime>
+    </File>
+    <File Include="Default1/playerdata/media/wow.flv">
+      <publishTime>01/20/2010 16:03:24</publishTime>
+    </File>
+    <File Include="Default1/playerdata/ovideo.swf">
+      <publishTime>05/22/2008 10:21:48</publishTime>
+    </File>
+    <File Include="Default1/playerdata/system_config.xml">
+      <publishTime>01/23/2014 10:55:23</publishTime>
+    </File>
+    <File Include="Default1/playerdata/text/balancer.xml">
+      <publishTime>10/10/2012 16:11:42</publishTime>
+    </File>
+    <File Include="Default1/playerdata/wait.swf">
+      <publishTime>12/26/2013 19:15:46</publishTime>
+    </File>
+    <File Include="Default1/playerdata/win7_class_ItemList.swf">
+      <publishTime>09/04/2012 17:10:50</publishTime>
+    </File>
+    <File Include="Default1/playerdata/zhang.swf">
+      <publishTime>06/08/2012 15:36:30</publishTime>
+    </File>
+    <File Include="Default1/playerdata/zhangyan.swf">
+      <publishTime>10/24/2011 13:42:56</publishTime>
+    </File>
+    <File Include="Default1/styles/base_style.css">
+      <publishTime>11/01/2011 13:34:50</publishTime>
+    </File>
+    <File Include="Default1/styles/blue_style.css">
+      <publishTime>07/11/2012 14:19:12</publishTime>
+    </File>
+    <File Include="Default1/styles/fasion_style.css">
+      <publishTime>12/19/2012 16:00:04</publishTime>
+    </File>
+    <File Include="Default1/styles/normal_style.css">
+      <publishTime>11/04/2011 17:33:52</publishTime>
+    </File>
+    <File Include="Default1/styles/swfs/base_skin.swf">
+      <publishTime>07/04/2013 23:39:02</publishTime>
+    </File>
+    <File Include="Default1/styles/swfs/blue_skin.swf">
+      <publishTime>07/04/2013 23:39:24</publishTime>
+    </File>
+    <File Include="Default1/styles/swfs/fasion_skin.swf">
+      <publishTime>12/06/2013 12:23:08</publishTime>
+    </File>
+    <File Include="Default1/styles/swfs/normal_skin.swf">
+      <publishTime>07/04/2013 23:40:08</publishTime>
+    </File>
+    <File Include="Default1/styles/swfs/win7_class_skin.swf">
+      <publishTime>07/04/2013 23:28:32</publishTime>
+    </File>
+    <File Include="Default1/styles/swfs/yellow_skin.swf">
+      <publishTime>07/04/2013 23:40:54</publishTime>
+    </File>
+    <File Include="Default1/styles/win7_class_style.css">
+      <publishTime>11/01/2011 09:04:56</publishTime>
+    </File>
+    <File Include="Default1/styles/yellow_style.css">
+      <publishTime>11/04/2011 16:34:40</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>04/14/2014 09:46:01</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>04/14/2014 09:46:01</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.7.1.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.7.1.min.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.20.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.20.min.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery.unobtrusive-ajax.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery.unobtrusive-ajax.min.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.min.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.unobtrusive.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.unobtrusive.min.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/knockout-2.1.0.debug.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/knockout-2.1.0.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/modernizr-2.5.3.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Scripts/_references.js">
+      <publishTime>04/14/2014 09:44:05</publishTime>
+    </File>
+    <File Include="Views/Default1/Details.cshtml">
+      <publishTime>05/15/2014 14:07:34</publishTime>
+    </File>
+    <File Include="Views/Default1/Index.cshtml">
+      <publishTime>06/20/2014 15:04:14</publishTime>
+    </File>
+    <File Include="Views/Default1/Play.cshtml">
+      <publishTime>05/15/2014 13:59:57</publishTime>
+    </File>
+    <File Include="Views/Default2/Create.cshtml">
+      <publishTime>04/29/2014 13:26:59</publishTime>
+    </File>
+    <File Include="Views/Web.config">
+      <publishTime>04/14/2014 09:46:01</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>04/30/2015 14:43:07</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

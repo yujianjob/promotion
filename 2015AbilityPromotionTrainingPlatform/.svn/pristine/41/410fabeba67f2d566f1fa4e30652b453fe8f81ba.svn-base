@@ -1,0 +1,194 @@
+﻿@{
+    ViewBag.Title = "统计";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">统计</div>
+                <hr>
+                <div id="blk_as_teacher_apply_list" class="blk_as_teacher_apply_list" data-km-htm="blk_as_teacher_apply_list.html">
+                    <div class="d-search">
+
+                        <form class="form-inline">
+                            @if (ViewBag.GroupId > 0)
+                            {
+                                int GroupId = ViewBag.GroupId;
+                                switch (GroupId)
+                                {
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerCity://市级
+                                        break;
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerArea://区级
+                                        break;
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerTraining://机构
+                                        break;
+                                }
+                            }
+
+                            <div class="form-group">
+                                <select class="form-control" id="drpRegin" style="max-width: 200px">
+                                    <option value="0">--请选择区县--</option>
+                                    @foreach (var item in ViewBag.List_Regin)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="drpOrgan" style="max-width: 200px">
+                                    <option value="0">--请选择机构--</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="IsTest" style="max-width: 200px">
+                                    <option value="0">未测</option>
+                                    <option value="1">已测</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <input id="searchTitle" type="text" class="form-control" placeholder="请输入关键字" style="width: 300px;">
+                                </div>
+                                <button type="button" class="btn btn-default" onclick="verifySearch()"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <div class="d-datatable" style="min-height: 500px; height: auto; vertical-align: middle;">
+
+                        <table class="table table-bordered table-hover" style="font-size: 14px;">
+                            <thead style="text-align: center;">
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    <th>区县</th>
+                                    <th>机构</th>
+                                    <th>评论次数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @if (ViewBag.List_accountOther != null && ViewBag.List_accountOther.Count > 0)
+                                {
+                                    var List_accountOther = ViewBag.List_accountOther as List<Dianda.AP.Model.accountOther>;
+                                    foreach (var item in List_accountOther)
+                                    {
+                                    <tr>
+                                        <td>@item.RealName</td>
+                                        <td>@item.TeacherNo</td>
+                                        <td>@item.RegionTitle</td>
+                                        <td>@item.OrganTitle</td>
+                                        <td>@item.DiscussCnt</td>
+                                        <td>
+                                            <a href="StatisticsDetailView?Id=@item.Id" target="_blank">查看</a>
+
+
+                                        </td>
+                                    </tr>	 
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                        <hr />
+                        @if (ViewBag.RecordCount > ViewBag.PageSize)
+                        {
+                            @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+        });
+    });
+
+    //搜索
+    function verifySearch() {
+
+        var pagePath = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        if (checkts($('#searchTitle').val())) {
+            var RegionId = Number($("#drpRegin").val());
+            var OrganId = Number($("#drpOrgan").val());
+            //alert("RegionId : " + RegionId + " ,OrganId : " + OrganId);
+            var IsTest = Number($("#IsTest").val());
+            var SearchTxt = $('#searchTitle').val();
+            var PageIndex = Number(@ViewBag.PageIndex);
+
+            pagePath = pagePath + "?" + "RegionId=" + RegionId + "&OrganId=" + OrganId + "&IsTest=" + IsTest + "&SearchTxt=" + SearchTxt + "&PageIndex=" + PageIndex;
+            window.location.href = pagePath;
+            //var jsonData = JSON.stringify({
+            //    RegionId: RegionId,
+            //    OrganId: OrganId,
+            //    IsTest: IsTest,
+            //    SearchTxt: SearchTxt,
+            //    PageIndex: PageIndex
+            //});
+
+
+            //$.ajax({
+            //    cache: false,
+            //    async: false,
+            //    url: '/Statistics/Statistics/StatisticsListView',
+            //    type: 'Post',
+            //    contentType: "application/json; charset=utf-8",
+            //    data: jsonData,
+            //    success: function (data) {
+            //        //window.location.href = pagePath
+            //        //var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+            //        //window.location.href = pagePath;
+            //    },
+            //    error: function () {
+            //    }
+            //});
+
+        }
+    }
+
+    function checkts(search) {
+        if (search.length > 0) {
+            var reg = new RegExp('^[^\/\\#$%&\^\*\<\>]+$');
+            if (!reg.test(search)) {
+                Alert('搜索的内容不能输入特殊字符 ^ / \ # $ % & * < >');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //获取机构
+    $("#drpRegin").change(function () {
+        $("#drpOrgan").html("<option value>--请选择机构--</option>");
+        var id = $(this).val();
+        if (id != null && id != "") {
+            $.ajax({
+                url: '@Url.Action("GetRegion")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    for (var i = 0; i < json.length; i++) {
+                        $("#drpOrgan").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    Alert(errorMessage);
+                }
+            });
+        }
+    })
+</script>

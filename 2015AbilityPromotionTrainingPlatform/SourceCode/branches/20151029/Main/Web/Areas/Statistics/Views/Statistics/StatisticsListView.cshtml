@@ -1,0 +1,191 @@
+﻿@model IList<Dianda.AP.Model.accountOther>
+@{
+    ViewBag.Title = "统计";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+
+    IHtmlString Loading = @Html.Raw("<div style='left:400px;position:relative;font-size:15px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='left:400px;top:8px;position:relative;font-size:15px'>没有统计信息……</div>");
+
+    var ManagerCityGroupId = (int)XXW.Enum.PlatformGroupEnum.ManagerCity;
+    var ManagerAreaGroupId = (int)XXW.Enum.PlatformGroupEnum.ManagerArea;
+    var DetailUrl = ViewBag.DetailUrl;
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Statistics/StatisticsListView.js")"></script>
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">统计</div>
+                <div id="blk_ct_menu_class" class="blk_ct_menu_class">
+                    <div class="d-navmenu">
+                        <a id="d_courseteacher_class_progress" href="/Statistics/Statistics" class="i active">详细信息</a>
+                        <a id="d_courseteacher_class_member" href="/Statistics/Statistics/Statistics" class="i">统计数据</a>
+                    </div>
+                </div>
+                <div id="blk_as_teacher_apply_list" class="blk_as_teacher_apply_list" data-km-htm="blk_as_teacher_apply_list.html">
+                    <div class="d-search">
+                        <form class="form-inline">
+                            @if (ViewBag.GroupId > 0)
+                            {
+                                int GroupId = ViewBag.GroupId;
+                                switch (GroupId)
+                                {
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerCity://市级
+                                        <div class="form-group">
+                                            <select id="drpRegin" class="form-control" style="max-width: 200px">
+                                                <option value="-1">--请选择区县--</option>
+                                                @foreach (var item in ViewBag.List_Regin)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select id="drpOrgan" class="form-control" style="width:200px;max-width: 250px">
+                                                <option value="-1">--请选择机构--</option>
+                                            </select>
+                                        </div>
+                                                break;
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerArea://区级
+                                        <div class="form-group">
+                                            <select id="drpRegin" class="form-control" style="max-width: 200px;display:none;">
+                                                <option value="-1">--请选择区县--</option>
+                                                @foreach (var item in ViewBag.List_Regin)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select id="drpOrgan" class="form-control" style="width:200px;max-width: 250px">
+                                                <option value="-1">--请选择机构--</option>
+                                            </select>
+                                        </div>
+                                                break;
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerTraining://机构
+                                        <div class="form-group">
+                                            <select id="drpRegin" class="form-control" style="max-width: 200px;display:none;">
+                                                <option value="-1">--请选择区县--</option>
+                                                @foreach (var item in ViewBag.List_Regin)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select id="drpOrgan" class="form-control" style="max-width: 300px;display:none;">
+                                                <option value="-1">--请选择机构--</option>
+                                            </select>
+                                        </div>
+                                                break;
+                                    case (int)XXW.Enum.PlatformGroupEnum.ManagerSchool://机构
+                                        <div class="form-group">
+                                            <select id="drpRegin" class="form-control" style="max-width: 200px;display:none;">
+                                                <option value="-1">--请选择区县--</option>
+                                                @foreach (var item in ViewBag.List_Regin)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select id="drpOrgan" class="form-control" style="max-width: 300px;display:none;">
+                                                <option value="-1">--请选择机构--</option>
+                                            </select>
+                                        </div>
+                                                break;
+                                }
+                            }
+                            <div class="form-group">
+                                <select id="IsTest" class="form-control" style="max-width: 200px">
+                                    <option value="-1">--请选择--</option>
+                                    <option value="1">已测</option>
+                                    <option value="0">未测</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <input id="searchTitle" type="text" class="form-control" placeholder="姓名、师训编号搜索" value ="@ViewBag.SearchTxt" style="width: 300px;">
+                                </div>
+                                <button type="button" class="btn btn-default" onclick="verifySearch()"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="d-datatable" style="min-height: 500px; height: auto; vertical-align: middle;">
+                        <table class="table table-bordered table-hover" style="font-size: 14px;">
+                            <thead style="text-align: center;">
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    <th>区县</th>
+                                    <th>机构</th>
+                                    <th>测试次数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Count > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td nowrap>@item.RealName</td>
+                                            <td nowrap>@item.TeacherNo</td>
+                                            <td nowrap>@item.RegionTitle</td>
+                                            <td nowrap>@item.OrganTitle</td>
+                                            <td nowrap>@item.DiscussCnt.ToString()</td>
+                                            <td nowrap>
+                                                <a href="@DetailUrl.Replace("{0}", item.Id.ToString())" target ="_blank">查看&nbsp;</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td nowrap colspan ="6">
+                                            <h4 class ="No_Content_Title">暂无信息</h4>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <hr/>
+                        @if (ViewBag.RecordCount > ViewBag.PageSize)
+                        {
+                            @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id ="ListModel" style ="display:none;">
+    <table>
+        <tr>
+            <td><div id ="RealName"></div></td>
+            <td><div id ="TeacherNo"></div></td>
+            <td><div id ="RegionTitle"></div></td>
+            <td><div id ="OrganTitle"></div></td>
+            <td><div id ="DiscussCnt"></div></td>
+            <td>
+                <a id ="btnSearch" target="_blank">查看</a>
+            </td>
+        </tr>	
+    </table>
+</div>
+
+<script>
+    var GroupId = "@ViewBag.GroupId";
+    var ManageOrganId = "@ViewBag.ManageOrganId";
+    var ManagerCityGroupId = "@ManagerCityGroupId";
+    var ManagerAreaGroupId = "@ManagerAreaGroupId";
+
+    var RegionId = "@ViewBag.RegionId";
+    var OrganId = "@ViewBag.OrganId";
+    var IsTest = "@ViewBag.IsTest";
+</script>

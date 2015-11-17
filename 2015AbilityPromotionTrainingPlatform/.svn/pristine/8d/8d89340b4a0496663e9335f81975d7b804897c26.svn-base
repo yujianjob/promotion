@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.DAL
+{
+    public partial class Course_UnitContentDAL
+    {
+        public  int GetUnitCountByClassAndUnitType(int classId, string unitType)
+        {
+            StringBuilder sbSql = new StringBuilder();
+            sbSql.Append(@"SELECT COUNT(1) FROM dbo.Course_UnitContent un
+		JOIN Member_ClassUnitContentSchedule sc ON un.id=sc.UnitContent
+		WHERE sc.ClassId= " + classId + " and un.UnitType in( " + unitType+")");
+
+            return (int)MSEntLibSqlHelper.ExecuteScalarBySql(sbSql.ToString());
+
+        }
+    }
+}

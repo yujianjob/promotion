@@ -1,0 +1,225 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 作业";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_task" class="blk_ln_course_task" data-km-htm="blk_ln_course_task.html" style="word-break:break-all; word-wrap:break-word;">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent Theme_Model = ViewBag.Model_Course_UnitContent;
+                        <h3 style="word-break: break-all; word-wrap: break-word;">作业：@Theme_Model.Title</h3>
+                        <p style="word-break: break-all; word-wrap: break-word;">@Theme_Model.Content</p>
+                    }
+                    <hr>
+                    <div class="post" style="height: auto; min-height: 350px;overflow:hidden;">
+                        <div class="h">提交作业</div>
+                        <div class="ta">
+                            @if (ViewBag.Model_Course_UnitHomeWork != null)
+                            {
+                                Dianda.AP.Model.Course_UnitHomeWork HomeWork_Model = ViewBag.Model_Course_UnitHomeWork;
+                                string strAtt = string.Empty;
+                                <textarea id="txtContent" class="form-control" style="height: 200px; max-width:880px;">@HomeWork_Model.Content</textarea>
+                                <div class="form-control" style="overflow: hidden; height: auto; border:0px; min-height: 50px;">
+                                    <div style="float: left; width: 300px; position: relative;">
+                                        <input type="file" maxlength="30" id="AttachUpload">
+                                        <a href="javascript:$('#AttachUpload').uploadify('upload', '*')" style="float: right;">上传</a>
+                                    </div>
+                                    <div style="float: right; width: 500px; padding: 5px 0;" id="AttachNameList">
+                                        @if (HomeWork_Model.AttList != null)
+                                        {
+                                            //解析Json
+                                            JavaScriptSerializer jr = new JavaScriptSerializer();
+                                            var HomeWorkAtt = jr.Deserialize<List<Dianda.AP.Model.Course_UnitHomeWorkOther>>(HomeWork_Model.AttList);
+
+                                            if (HomeWorkAtt != null && HomeWorkAtt.Count > 0)
+                                            {
+                                                foreach (var AttItem in HomeWorkAtt)
+                                                {
+                                                    strAtt += "0," + AttItem.AttName + "," + AttItem.AttPath + ":";                                                    
+                                            <p><a href="DownloadFile?FilePath=@AttItem.AttPath&FileName=@AttItem.AttName">@AttItem.AttName</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onclick="RemoveAttach(this);" fileid="0" src="@AttItem.AttPath" filename="@AttItem.AttName">删除</a></p>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                @Html.Hidden("AttachPathList", strAtt);
+                            }
+                            else
+                            {
+                                <textarea id="txtContent" class="form-control" style="height: 200px;"></textarea>
+                                <div class="form-control" style="overflow: hidden; height: auto; border:0px; min-height: 100px;">
+                                    <div style="float: left; width: 300px; position: relative;">
+                                        <input type="file" maxlength="30" id="AttachUpload">
+                                        <a href="javascript:$('#AttachUpload').uploadify('upload', '*')">上传</a>
+                                    </div>
+                                    <div style="float: right; width: 500px; padding: 5px 0;" id="AttachNameList">
+                                    </div>
+                                </div>
+                                @Html.Hidden("AttachPathList");
+                            }
+                        </div>
+                        @*<div style="float: left; display: block;">
+                            <button id="btnSubmit" class="btn btn-success" style="width: 150px;">提交作业</button>
+                        </div>*@
+                        <button id="btnSubmit" class="btn btn-success" style="width: 150px;float: left; display: block;">提交作业</button>
+                    </div>
+                    @*<a href="@Url.Action("LearnOnLineTaskShowView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, ClassId = ViewBag.ClassId })">查看作业</a>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav fixed">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $("#btnSubmit").click(function () {
+                var txtContent = $("#txtContent").val();
+
+                if (txtContent == '') {
+                    Alert('请输入作业内容!');
+                    $("#txtContent").focus();
+                    return;
+                }
+
+                if (txtContent.length > 1000) {
+                    Alert('输入的字数不能大于1000!');
+                    $("#txtContent").focus();
+                    return;
+                }
+
+                var AttachPathList = $('#AttachPathList').val();
+
+                var attsJson = "";//附件Json
+                if (AttachPathList.length > 0) {
+                    var attsArr = AttachPathList.split(':');
+                    for (var i = 0; i < attsArr.length - 1; i++) {
+                        var attMol = attsArr[i].split(',');
+                        attsJson += JSON.stringify({
+                            AttId: attMol[0],
+                            AttName: attMol[1],
+                            AttPath: attMol[2]
+                        }) + ",";
+                    }
+
+                    attsJson = "[" + attsJson.substring(0, attsJson.length - 1) + "]";
+                }
+
+                var jsonData = JSON.stringify({
+                    UnitId: '@ViewBag.UnitId',
+                    ClassId: "@ViewBag.ClassId",
+                    TrainingId: '@ViewBag.TrainingId',
+                    UnitContent: "@ViewBag.UnitContent",
+                    Content: txtContent,
+                    AttList: attsJson
+                });
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/LearnOnLineTaskEdit',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        if (data.Result) {
+                            var pagePath = window.location.href;
+                            Alert(data.Msg, 'window.location = \'' + pagePath + '\'');
+                        }
+                        else {
+                            Alert(data.Msg);
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            });
+
+            //上传附件
+            $('#AttachUpload').UploadFile({
+                multi: true,
+                queueSizeLimit: 3,
+                fileTypeExts: '*.zip; *.rar; *.7z; *.pdf; *.doc; *.txt; *.xls',
+                uploader: '/Entrance/Login/UploadAttach',
+                onUploadSuccess: function (file, data, response) {
+                    if (response) {
+                        var myData = $.parseJSON(data);
+                        if (myData.Result) {
+                            $('#AttachNameList').append('<p><a href="' + myData.Msg + '">' + file.name + '</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:void(0)" onclick="RemoveAttach(this);" fileid="0" src="' + myData.Msg + '" filename="' + file.name + '">删除</a></p>');
+                            $('#AttachPathList').val($('#AttachPathList').val() + '0,' + file.name + ',' + myData.Msg + ':');
+                        } else {
+                            Alert(myData.Msg);
+                        }
+                    }
+                    else {
+                        Alert('服务器没有响应！');
+                    }
+                }
+            });
+
+        });
+    });
+
+    //移除附件
+    function RemoveAttach(e) {
+        var path = $(e).attr('src');
+        var fileName = $(e).attr('filename');
+        var fileId = $(e).attr('fileId');
+        $('#AttachPathList').val($('#AttachPathList').val().replace(fileId + ',' + fileName + ',' + path + ':', ''));
+        $(e).parent().remove();
+    }
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+        var ClassId = Number(@ViewBag.ClassId);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent,
+            ClassId: ClassId
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+
+</script>

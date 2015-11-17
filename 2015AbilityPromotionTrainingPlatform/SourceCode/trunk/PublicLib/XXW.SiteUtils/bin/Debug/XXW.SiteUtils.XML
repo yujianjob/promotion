@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>XXW.SiteUtils</name>
+    </assembly>
+    <members>
+        <member name="P:XXW.SiteUtils.AvatarHelper.AvatarList">
+            <summary>
+            所有默认头像信息
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.AvatarHelper.AvatarIconList">
+            <summary>
+            所有默认头像图标信息
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.CircleCoverLimitedSize">
+            <summary>
+            学圈封面文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.CircleAttachmentPicLimitedSize">
+            <summary>
+            学圈附件图片限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.CircleAttachmentFileLimitedSize">
+            <summary>
+            学圈附件文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.MemberAvatarLimitedSize">
+            <summary>
+            会员头像文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.EspeciallyPlanLimitedSize">
+            <summary>
+            特别策划文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.EspeciallyPlanPreviewLimitedSize">
+            <summary>
+            特别策划缩略图文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.SpecialRecommendCoverLimitedSize">
+            <summary>
+            特别推荐封面文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.LevelIcoLimitedSize">
+            <summary>
+            等级图标文件限制容量
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.HomepagePath">
+            <summary>
+            首页生成路径（包含路径和文件名）
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.ParameterHelper.SmartStudyEncryptKey">
+            <summary>
+            特别策划文件限制容量
+            </summary>
+        </member>
+        <member name="M:XXW.SiteUtils.SessionHelper.getObject``1(System.String,System.Boolean)">
+            <summary>
+            获取任意类型的对象，如果没有则执行跳转代码
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="page"></param>
+            <param name="sessionName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XXW.SiteUtils.SessionHelper.setObject``1(System.String,``0)">
+            <summary>
+            获取任意类型的对象，如果没有则执行跳转代码
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="page"></param>
+            <param name="sessionName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XXW.SiteUtils.SessionHelper.Refresh">
+            <summary>
+            保持session的过期时间为最长
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.AccountId">
+            <summary>
+            平台管理员Id
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.PartitionId">
+            <summary>
+            分区Id
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.OrganId">
+            <summary>
+            组织Id
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.Level">
+            <summary>
+            级别
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.GroupId">
+            <summary>
+            权限组Id
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.RoleId">
+            <summary>
+            角色Id
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.GroupName">
+            <summary>
+            权限组名称
+            </summary>
+        </member>
+        <member name="P:XXW.SiteUtils.SessionHelper.ValidateCode">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="M:XXW.SiteUtils.SiteAddressHelper.ReLoad">
+            <summary>
+            重新加载所有的缓存数据
+            </summary>
+        </member>
+        <member name="M:XXW.SiteUtils.SiteAddressHelper.GetUrl(XXW.Enum.SiteTypeEnum)">
+            <summary>
+            获取站点地址
+            </summary>
+            <param name="siteType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XXW.SiteUtils.StaticFilesGen.GetFilePath(XXW.Enum.ObjectTypeEnum,System.String,System.Boolean)">
+            <summary>
+            只有CourseInfo,ActivitiesInfo,ReadingEBook,CourseWareInfo才有值。
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XXW.SiteUtils.StaticFilesGen.getFilePath(XXW.Enum.ObjectTypeEnum,System.String,System.String,System.Boolean)">
+            <summary>
+            只有CourseInfo,ActivitiesInfo,ReadingEBook,CourseWareInfo才有值。
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XXW.SiteUtils.StaticFilesGen.ReLoad">
+            <summary>
+            重新加载所有的缓存数据
+            </summary>
+        </member>
+        <member name="M:XXW.SiteUtils.StaticFilesGen.GetFilePath(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="Key"></param>
+            <param name="Id"></param>
+            <param name="RegionId"></param>
+            <param name="isEncode"></param>
+            <returns></returns>
+        </member>
+        <member name="F:XXW.SiteUtils.OperationModeEnum.AutoRefMinSize">
+            <summary>
+            以最短一条边为尺寸。
+            </summary>
+        </member>
+        <member name="F:XXW.SiteUtils.UploadFileHelper.datetimePath">
+            <summary>
+            上传的零时目录
+            </summary>
+        </member>
+        <member name="M:XXW.SiteUtils.UploadFileHelper.#ctor(System.String)">
+            <summary>
+            参数给Server.MapPath("~/")
+            </summary>
+            <param name="serverMapPath"></param>
+        </member>
+        <member name="M:XXW.SiteUtils.UploadFileHelper.CheckFileSize(System.Web.HttpRequestBase,System.Int32)">
+            <summary>
+            判断上传后文件的大小，kb为单位。
+            </summary>
+            <param name="request"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XXW.SiteUtils.ThumbnailOperation.MakeThumbnail(System.String,System.Int32,System.Int32,XXW.SiteUtils.OperationModeEnum)">
+            <summary>
+            生成缩略图
+            </summary>
+            <param name="originalImagePath">源图路径（物理路径）</param>
+            <param name="width">缩略图宽度</param>
+            <param name="height">缩略图高度</param>
+            <param name="mode">生成缩略图的方式</param>    
+        </member>
+        <member name="M:XXW.SiteUtils.ThumbnailOperation.MakeThumbnailLow(System.String,System.Int32,System.Int32,XXW.SiteUtils.OperationModeEnum)">
+            <summary>
+            生成缩略图
+            </summary>
+            <param name="originalImagePath">源图路径（物理路径）</param>
+            <param name="width">缩略图宽度</param>
+            <param name="height">缩略图高度</param>
+            <param name="mode">生成缩略图的方式</param>    
+        </member>
+        <member name="M:XXW.SiteUtils.ThumbnailOperation.AutoRefMinSize(System.Int32,System.Int32,System.Int32@,System.Int32@)">
+             <summary>
+            
+             </summary>
+             <param name="ow"></param>
+             <param name="oh"></param>
+             <param name="towidth"></param>
+             <param name="toheight"></param>
+        </member>
+    </members>
+</doc>

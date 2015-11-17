@@ -1,0 +1,177 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Web.Code;
+using XXW.SiteUtils;
+using Dianda.Common.StringSecurity;
+using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using Dianda.AP.Model.Entrance.Login;
+using System.IO;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using Dianda.AP.Model.Entrance.Home;
+using XXW.Enum;
+
+namespace Web.Areas.Entrance.Controllers
+{
+    public class LoginController : Controller
+    {
+        //登录处理
+        // GET: /Entrance/Login/
+
+        EntranceLoginBLL bll = new EntranceLoginBLL();
+
+        //登录界面
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        //登录动作
+        public ActionResult DoLogin()
+        {
+            #region 检查字段
+            if (string.IsNullOrEmpty(Request["UserName"]))
+            {
+                return Json(new { Result = false, Msg = "用户名不能为空！" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (string.IsNullOrEmpty(Request["Password"]))
+            {
+                return Json(new { Result = false, Msg = "密码不能为空！" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (string.IsNullOrEmpty(Request["ValidCode"]))
+            {
+                return Json(new { Result = false, Msg = "验证码不能为空！" }, JsonRequestBehavior.AllowGet);
+            }
+            #endregion
+
+            #region 检查验证码
+            if (string.IsNullOrEmpty(SessionHelper.Instance.ValidateCode))
+            {
+                return Json(new { Result = false, Msg = "验证码错误！" }, JsonRequestBehavior.AllowGet);
+            }
+            if (!Request["ValidCode"].Equals(SessionHelper.Instance.ValidateCode, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return Json(new { Result = false, Msg = "验证码错误！" }, JsonRequestBehavior.AllowGet);
+            }
+            #endregion
+            
+            //清空验证码
+            SessionHelper.Instance.ValidateCode = "";
+
+            string userName = Request["UserName"];
+            string password = Request["Password"];
+
+            int userId;
+            if (bll.Login(userName, MD5Lib.Encrypt(password), out userId))
+            {
+                EntranceHomeBLL ehBLL = new EntranceHomeBLL();
+                Member_Account member = ehBLL.GetMember_AccountModel(userId, "Delflag=0 and Status=2");
+
+                SiteCache cache = SiteCache.Instance;
+                LoginInfo loginInfo = new LoginInfo();
+                loginInfo.PartitionId = 1;
+                loginInfo.UserId = userId;
+
+                cache.LoginInfo = loginInfo;
+                cache.UserName = member.UserName;
+                cache.NickName = member.Nickname;
+                cache.OrganId = Convert.ToInt32(member.OrganId);
+                List<PlatformGroups> list = ehBLL.GetPlatformGroupsList(1, userId);
+                PlatformGroups model = new PlatformGroups()
+                {
+                    Id = (int)PlatformGroupEnum.TeacherGeneral,
+                    Title = "普通教师",
+                    ManageOrganId = Convert.ToInt32(member.OrganId)
+                };
+                list.Add(model);
+                cache.PlatformGroups = list;
+
+                return Json(new { Result = true, Msg = "登录成功！" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { Result = false, Msg = "用户名或密码不正确！" }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        //登出动作
+        public ActionResult DoLogOut()
+        {
+            SiteCache cache = SiteCache.Instance;
+
+            cache.LoginInfo = null;
+            SessionHelper.Instance.Remove("PlanId");
+            SessionHelper.Instance.Remove("GroupId");
+            SessionHelper.Instance.Remove("ManageOrganId");
+            SessionHelper.Instance.Remove("NotifyCount");
+
+            return Redirect("/Entrance/Login/Index");
+        }
+
+        //选择分区
+        public ActionResult EntranceSelect()
+        {
+            return View(bll.GetPartition_DetailList("Delflag=0 and Status=0", ""));
+        }
+
+        //验证码
+        public ActionResult ValidCode()
+        {
+            ValidateCode validateCode = new ValidateCode();
+            string code = validateCode.CreateValidateCode(4);
+            SessionHelper.Instance.ValidateCode = code;
+            byte[] buffer = validateCode.CreateValidateGraphic(code);
+            return File(buffer, "image/jpeg");
+        }
+
+        //上传图片
+        public ActionResult UploadImage()
+        {
+            HttpPostedFileBase file = Request.Files[0];
+            string msg = "";
+            string filePath = "";
+            filePath = Code.UploadCore.UploadImage(file, ref msg);
+            if (filePath == "")
+            {
+                return Json(new { Result = false, Msg = msg }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                if (Code.UploadCore.CreateThumbs(filePath, 160))
+                {
+                    return Json(new { Result = true, Msg = filePath }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { Result = false, Msg = "缩略图生成失败。" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+        }
+
+        //上传附件
+        public ActionResult UploadAttach()
+        {
+            HttpPostedFileBase file = Request.Files[0];
+            string msg = "";
+            string filePath = "";
+            filePath = Code.UploadCore.UploadAttach(file, ref msg);
+            if (filePath == "")
+            {
+                return Json(new { Result = false, Msg = msg }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { Result = true, Msg = filePath }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+    }
+}

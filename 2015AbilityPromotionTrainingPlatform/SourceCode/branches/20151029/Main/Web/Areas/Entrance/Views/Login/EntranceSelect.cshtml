@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Dianda.AP.Model.Partition_Detail>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EntranceSelect</title>
+    <style type="text/css">
+        .entrace {
+            width:600px;margin:100px auto;
+        }
+        .entrace div {
+            float:left;
+        }
+        .entrace div a{
+            display:block;width:200px;height:140px;line-height:140px;text-align:center;text-decoration:none;
+            font-size:16px;font-weight:bold;color:#ff6a00;
+        }
+        .entrace div a:hover{
+            background:#efefef;text-decoration:none;
+        }
+    </style>
+</head>
+<body>
+    <div class="entrace">
+        @foreach (var item in Model)
+        {
+            if(item.Title == "教师培训")
+            {
+                <div><a href="@Url.Action("Index", "Login")">@item.Title</a></div>
+            }
+            else
+            {
+                <div><a href="javascript:void(0);">@item.Title</a></div>
+            }
+        }
+    </div>
+</body>
+</html>

@@ -1,0 +1,465 @@
+﻿@{
+    IHtmlString Loading = @Html.Raw("<div style='position:relative;font-size:15px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='top:-7px;position:relative;font-size:15px'>没有笔记信息……</div>");
+    
+    ViewBag.Title = "在线学习 - 视频";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script src="~/Resources/Scripts/Video/html5media.min.js"></script>
+<link href="http://vjs.zencdn.net/4.11/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/4.11/video.js"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" class="title">@ViewBag.TraningDetailTitle</a>
+                    <span class="action">
+                        <a href="javascript:;" onclick="showNote(this)">显示笔记</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h d-h-video">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 rel">
+                <div id="blk_ln_course_video" class="blk_ln_course_video">
+                    <div class="video-container">
+                        @if (ViewBag.Model_Course_UnitContent != null)
+                        {
+                            Dianda.AP.Model.Course_UnitContent Video_Model = ViewBag.Model_Course_UnitContent;
+                            <div class="video-player">
+                                <video id="example_video_1" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" width="1000" height="500" data-setup="{}">
+                                    <source src="@Video_Model.Content" type='video/mp4' />
+                                </video>
+                            </div>
+                            <div class="video-info">
+                                <span class="title" style="word-break: break-all; word-wrap: break-word;">@Video_Model.Title</span>
+                                <span class="duration">@Html.Raw(Video_Model.TimeLength + "分钟")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div id="d_note" class="d-note-float">
+                    <div id="blk_ln_course_note" class="blk_ln_course_note">
+                        <div class="h">
+                            我的笔记
+	                        <a href="javascript:;" class="add" onclick="$('#d_new').show()">
+                                <span class="glyphicon glyphicon-plus"></span>&nbsp;新建笔记
+                            </a>
+                        </div>
+
+                        <div id="d_new" class="new">
+                            <div class="ta">
+                                <textarea class="form-control" style="height: 150px; margin-bottom: 10px;" id="newText"></textarea>
+                                <button type="button" class="btn btn-success" onclick="EditSave('')">保存</button>&nbsp;&nbsp;<a href="javascript:;" onclick="$('#d_new').hide();">取消</a>
+                            </div>
+                        </div>
+
+                        <div id="NoteContent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav dark">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-discuss-wide">
+                    <div id="blk_ln_course_discuss" class="blk_ln_course_discuss">
+                        <div class="course-d">
+                            <div class="d-discuss-subject">
+                                <div class="h">学习讨论</div>
+                                <div class="action">
+                                    <a href="javascript:;" onclick="$('#txtDisContent').focus();Reply('','');">我要发言</a>
+                                </div>
+                            </div>
+
+                            @foreach (KeyValuePair<Dianda.AP.Model.Course_UnitReplyDetailOther, List<Dianda.AP.Model.Course_UnitReplyDetailOther>> TopicItem in ViewBag.Topic_Reply_Dictry)
+                            {
+                                Dianda.AP.Model.Course_UnitReplyDetailOther TopicOtherModel = TopicItem.Key;
+                                List<Dianda.AP.Model.Course_UnitReplyDetailOther> List_Reply = TopicItem.Value;
+                                <!-- 话题 -->
+                                <div class="i">
+                                    <a href="#" class="thumb">
+                                        <img src="@TopicOtherModel.Pic"></a>
+                                    <div class="u">
+                                        <span class="name">@TopicOtherModel.NickName</span>
+                                        <span class="school">@TopicOtherModel.OrganDetailTitle</span>
+                                        <span class="action">
+                                            <a href="javascript:;" onclick="DelDiscuss('@TopicOtherModel.CourseUnitReplyDetail.Id','@TopicOtherModel.CourseUnitReplyDetail.ParentReplyId')">删除</a>&nbsp;
+                                            <a href="javascript:;" onclick="Reply('@TopicOtherModel.CourseUnitReplyDetail.Id','@TopicOtherModel.NickName')">回应</a>
+                                        </span>
+                                    </div>
+                                    <div class="d" style="word-break:break-all; word-wrap:break-word;">
+                                        @TopicOtherModel.CourseUnitReplyDetail.Content
+                                    </div>
+                                </div>
+                                <!-- 回复 -->
+                                <div class="reply">
+                                    @foreach (Dianda.AP.Model.Course_UnitReplyDetailOther ReplyItem in List_Reply)
+                                    {
+                                        <div class="i">
+                                            <a href="#" class="thumb">
+                                                <img src="@TopicOtherModel.Pic"></a>
+                                            <div class="u">
+                                                <span class="name">@ReplyItem.NickName</span>
+                                                <span class="school">@ReplyItem.OrganDetailTitle</span>
+                                                <span class="action">
+                                                    <a href="javascript:;" onclick="DelDiscuss('@ReplyItem.CourseUnitReplyDetail.Id','@ReplyItem.CourseUnitReplyDetail.ParentReplyId')">删除</a>&nbsp;
+                                                    <a href="javascript:;" onclick="Reply('@TopicOtherModel.CourseUnitReplyDetail.Id','@ReplyItem.NickName')">回应</a>
+                                                </span>
+                                            </div>
+                                            <div class="d" style="word-break:break-all; word-wrap:break-word;">
+                                                @ReplyItem.CourseUnitReplyDetail.Content
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                            <!-- 学习讨论 -->
+                            <hr />
+                            @if (ViewBag.TopicRecordCount > 0)
+                            {
+                                @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = ViewBag.TopicPageIndex, basecount = ViewBag.TopicPageSize, pagecount = ViewBag.TopicRecordCount })
+                            }
+                            <input type="hidden" id="hidReplyId" />
+                            <!-- 我来说两句 -->
+                            <div class="post">
+                                <div class="h">我来说两句 <label style="font-size:initial;font-style:initial;" class="h" id="ReplyContent" ></label></div>
+                                <div class="editor">
+                                    <textarea id="txtDisContent" class="form-control"></textarea>
+                                </div>
+                                <div class="action">
+                                    <button id="btnSubmit" type="button" class="btn btn-success">提交</button>&nbsp;&nbsp;<a href="javascript:;" onclick="$('#txtDisContent').val('');$('#txtDisContent').focus();">清空内容</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id ="NoteModel" style ="display:none;">
+    <div>
+        <div class="i" id="NoteList_Id">
+            <pre id="divNote_Id" class="content"></pre>
+            <div id="NoteDate" class="date"></div>
+            <div class="action">
+                <a id ="NoteDelete" href="javascript:void(0);" class="del">删除</a>&nbsp;
+                <a id ="NoteEidt" href="javascript:void(0);" class="edit")">编辑</a>
+            </div>
+        </div>
+                            
+        <div id="editNote_Id" class="new" style="display:none;">
+            <div class="ta">
+                <textarea id="editText_Id" class="form-control" style="height: 150px; margin-bottom: 10px;"></textarea>
+                <button id ="NoteSave" type="button" class="btn btn-success">保存</button>&nbsp;&nbsp;
+                <a id ="NoteCancel" href="javascript:void(0);">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var Loading = "@Loading";
+    var noDataTip = "@noDataTip";
+    var TrainingId = "@ViewBag.TrainingId";
+    var UnitContent = "@ViewBag.UnitContent";
+    var ClassId = "@ViewBag.ClassId";
+
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            LoadNoteInfo();
+
+            //提交
+            $("#btnSubmit").click(function () {
+                var txtContent = $("#txtDisContent").val().trim();
+
+                if (txtContent == '') {
+                    Alert('请输入讨论内容!');
+                    $("#txtDisContent").focus();
+                    return;
+                }
+
+                if (txtContent.length > 1000) {
+                    Alert('输入的字数不能大于1000!');
+                    $("#txtDisContent").focus();
+                    return;
+                }
+
+                var hidReplyIdVal = $("#hidReplyId").val();
+                var ParentReplyId = hidReplyIdVal == '' ? "0" : hidReplyIdVal;
+
+                var jsonData = JSON.stringify({
+                    UnitId: '@ViewBag.UnitId',
+                    ClassId: "@ViewBag.ClassId",
+                    TrainingId: '@ViewBag.TrainingId',
+                    UnitContent: "@ViewBag.UnitContent",
+                    AccountId: "@ViewBag.AccountId",
+                    ParentReplyId: ParentReplyId,
+                    Content: txtContent,
+                    AttList: ""
+                });
+
+                $("#hidReplyId").val('');//清空回复Id
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/EditCourseUnitReply',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        //if (ParentReplyId == "0")//话题新增
+                        //    Alert("话题新增" + data.Msg);
+                        //else
+                        //    Alert("话题回应" + data.Msg);
+
+                        location.href = window.location.href;
+                        $("#txtDisContent").focus();
+                    },
+                    error: function () {
+                    }
+                });
+            });
+        });
+    });
+
+    //加载笔记信息
+    function LoadNoteInfo()
+    {
+        var NoteModel = $("#NoteModel div:eq(0)");
+        var obj = JSON.stringify({ TrainingId: TrainingId, UnitContent: UnitContent, ClassId: ClassId });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/LearnOnLine/ReadingNoteList',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                $("#NoteContent").html(Loading);
+                if (!data || !data.Data || data.Data.length == 0) {
+                    $("#NoteContent").html(noDataTip);
+                    return;
+                }
+
+                var htmls = "";
+                for (var i = 0; i < data.Data.length; i++) {
+                    var eleCon = NoteModel.clone(true);
+
+                    eleCon.find("#NoteList_Id").attr("id", "NoteList_" + data.Data[i]["Id"]);
+                    eleCon.find("#divNote_Id").html(data.Data[i]["Content"]);
+                    eleCon.find("#divNote_Id").attr("id", "divNote_" + data.Data[i]["Id"]);
+                    eleCon.find("#NoteDate").html(data.Data[i]["CreateTime"]);
+                    eleCon.find("#NoteDelete").attr("onclick", "DelMember('" + data.Data[i]["Id"] + "')");
+                    eleCon.find("#NoteEidt").attr("onclick", "EditMember('" + data.Data[i]["Id"] + "')");
+                    eleCon.find("#editNote_Id").attr("id", "editNote_" + data.Data[i]["Id"]);
+                    eleCon.find("#editText_Id").attr("id", "editText_" + data.Data[i]["Id"]);
+                    eleCon.find("#NoteSave").attr("onclick", "EditSave('" + data.Data[i]["Id"] + "')");
+                    eleCon.find("#NoteCancel").attr("onclick", "$('#editNote_" + data.Data[i]["Id"] + "').hide();$('#NoteList_" + data.Data[i]["Id"] + "').show();");
+
+                    htmls += $(eleCon)[0].outerHTML;
+                }
+
+                $("#NoteContent").html(htmls);
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function showNote(eo) {
+        if ($('#d_note').css('display') == 'none') {
+            $('#example_video_1').attr('style', "width:700px;height:500px;");
+            $(eo).text('隐藏笔记');
+            $('#d_note').show();
+        } else {
+            $('#example_video_1').attr('style', "width:1000px;height:500px;");
+            $(eo).text('显示笔记');
+            $('#d_note').hide();
+        }
+    }
+
+    //删除
+    function DelMember(delId) {
+        if (confirm('你确定要删除该条记录吗?')) {
+            var jsonData = JSON.stringify({ Id: delId });
+            $.ajax({
+                cache: false,
+                url: '/LearnOnLine/DelContentNote',
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (data) {
+                    LoadNoteInfo();
+                },
+                error: function () {
+                }
+            });
+        }
+    }
+
+    //编辑
+    function EditMember(editId) {
+        if ($('#editNote_' + editId).css('display') == 'none') {
+            $('#NoteList_' + editId).hide();//隐藏笔记文本显示
+            $('#editText_' + editId).html(strText);
+            $('#editNote_' + editId).show();
+        }
+    }
+
+    //[修改],[新增]保存--我的笔记
+    function EditSave(editId) {
+        var txtContent = editId == '' ? $('#newText').val().trim() : $('#editText_' + editId).val().trim();
+        var IsNew = editId == '' ? true : false;
+        editId = editId == '' ? "0" : editId;
+
+        if (txtContent.length <= 0) {
+            Alert('笔记内容不能为空!');
+            if (editId == "0") {
+                $('#newText').focus();
+            } else {
+                $('#editText_' + editId).focus();
+            }
+            return;
+        }
+        alert(txtContent.length);
+        if (txtContent.length > 1000) {
+            Alert('输入的字数不能大于1000.');
+            if (editId == "0") {
+                $('#newText').focus();
+            } else {
+                $('#editText_' + editId).focus();
+            }
+            return;
+        }
+
+        var jsonData = JSON.stringify({
+            Id: editId,
+            Content: txtContent,
+            ClassId: "@ViewBag.ClassId",
+            TrainingId: "@ViewBag.TrainingId",
+            AccountId: "@ViewBag.AccountId",
+            UnitContent: "@ViewBag.UnitContent"
+        });
+
+        $.ajax({
+            cache: false,
+            async: false,
+            url: '/LearnOnLine/EditContentNote',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                if (IsNew) {
+                    $('#newText').val('');
+                    $('#d_new').hide();
+                }
+                else {
+                    $('#editNote_' + editId).hide();
+                    $('#NoteList_' + editId).show();
+                }
+
+                LoadNoteInfo();
+            },
+            error: function () {
+            }
+        });
+    }
+
+    //删除
+    function DelDiscuss(Id, ParentReplyId) {
+        var alertStr = ParentReplyId == "0" ? "删除该话题,所有的回复信息一起删除,确定继续么?" : "你确定要删除该回复么?";
+        if (confirm(alertStr)) {
+
+            var jsonData = JSON.stringify({
+                Id: Id,
+                UnitContent: Number(@ViewBag.UnitContent),
+                ClassId: Number(@ViewBag.ClassId),
+                AccountId: Number(@ViewBag.AccountId),
+                ParentReplyId: ParentReplyId
+            });
+
+            $.ajax({
+                cache: false,
+                async: true,
+                url: '/LearnOnLine/EditCourseUnitReply',
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (data) {
+                    //Alert(data.Msg);
+                    location.href = window.location.href;
+                },
+                error: function () {
+                }
+            });
+        }
+    }
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+        var ClassId = Number(@ViewBag.ClassId);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent,
+            ClassId: ClassId
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+    
+    //回复
+    function Reply(Id, Content) {
+        if (Content != "") {
+            Content = Content.length > 20 ? Content.substring(0, 20) + "..." : Content;
+            Content = '(回复: ' + Content + ')';
+        }
+        $('#txtDisContent').focus();
+        $('#hidReplyId').val(Id);
+        $('#ReplyContent').text(Content);
+    }
+</script>

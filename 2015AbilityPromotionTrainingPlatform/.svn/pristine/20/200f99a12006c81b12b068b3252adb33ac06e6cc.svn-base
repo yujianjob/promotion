@@ -1,0 +1,128 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Dianda.AP.Model;
+using Dianda.AP.BLL;
+
+namespace Web.Areas.Prepare.Controllers
+{
+    public class ClassMessageController : Controller
+    {
+        //
+        // GET: /Prepare/ClassMessage/
+        Class_NoticeBLL bll = new Class_NoticeBLL();
+
+
+        public ActionResult List()
+        {
+            string where = "";
+            int ClassId = 1;
+            int pageIndex = 1, pageSize = 10, pageCount, recordCount;
+            if (!String.IsNullOrEmpty(Request["PageIndex"]))
+                int.TryParse(Request["PageIndex"], out pageIndex);
+            if (!string.IsNullOrEmpty(Request["ClassId"]))
+            {
+                ClassId = Convert.ToInt32(Request["ClassId"]);
+            }
+            where += " and a.ClassId = " + ClassId + " ";
+
+            List<Class_Notice> list = bll.GetList(pageSize, pageIndex, where, " a.id desc", out recordCount);
+            ViewBag.List = list;
+            pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            ViewData["pageSize"] = pageSize;
+            ViewData["pageIndex"] = pageIndex;
+            ViewData["pageCount"] = pageCount;
+            ViewData["recordCount"] = recordCount;
+            ViewData["ClassId"] = ClassId;
+            return View();
+        }
+
+        public ActionResult Index()
+        {
+            //Instructor
+            //Class_Detail
+            string where = "";
+            int ClassId = 1;
+            int pageIndex = 1, pageSize = 10, pageCount, recordCount;
+            if (!String.IsNullOrEmpty(Request["PageIndex"]))
+                int.TryParse(Request["PageIndex"], out pageIndex);
+            if (!string.IsNullOrEmpty(Request["ClassId"]))
+            {
+                ClassId = Convert.ToInt32(Request["ClassId"]);
+            }
+            where += " and a.ClassId = " + ClassId + " ";
+
+            List<Class_Notice> list = bll.GetList(pageSize, pageIndex, where, " a.id desc", out recordCount);
+            ViewBag.List = list;
+            pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            ViewData["pageSize"] = pageSize;
+            ViewData["pageIndex"] = pageIndex;
+            ViewData["pageCount"] = pageCount;
+            ViewData["recordCount"] = recordCount;
+            ViewData["ClassId"] = ClassId;
+            ViewBag.classId = ClassId;
+            return View();
+        }
+
+
+        public ActionResult Details(int id)
+        {
+            Class_Notice model = bll.GetModel(id);
+            return View(model);
+        }
+
+        public ActionResult ClassMessageAdd(int ClassId)
+        {
+            ViewData["ClassId"] = ClassId;
+            return View();
+        }
+
+        public ActionResult Add(Class_Notice model)
+        {
+            model.CreateDate = DateTime.Now;
+            if (bll.Add(model) > 0)
+            {
+                return Content("<script>alert('添加成功');location.href = '/Prepare/ClassMessage/Index'</script>");
+            }
+            else
+            {
+                return Content("<script>alert('添加失败');location.href = '/Prepare/ClassMessage/Index'</script>");
+            }
+        }
+
+        public ActionResult ClassMessageEdit(int id)
+        {
+            Class_Notice model = bll.GetModel(id);
+            return View(model);
+        }
+
+        public ActionResult Edit(Class_Notice model)
+        {
+            model.Delflag = false;
+            model.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+            if (bll.Update(model))
+            {
+                return Content("<script>alert('修改成功');location.href = '/Prepare/ClassMessage/Index'</script>");
+            }
+            else
+            {
+                return Content("<script>alert('修改失败');location.href = '/Prepare/ClassMessage/Index'</script>");
+            }
+        }
+
+        public ActionResult ClassMessageDel(int id)
+        {
+            if (bll.Del(id))
+            {
+                return Content("yes:删除成功！！！");
+            }
+            else
+            {
+                return Content("no:删除失败！！！");
+            }
+        }
+    }
+}

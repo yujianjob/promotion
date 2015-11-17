@@ -1,0 +1,525 @@
+﻿@{
+    ViewBag.Title = "Statistics";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    int TotlaNum = ViewBag.TotalNum;
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/echarts-2.2.7/echarts-all.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">统计</div>
+                <div id="blk_ct_menu_class" class="blk_ct_menu_class">
+                    <div class="d-navmenu">
+                        <a href="/Statistics/Statistics" class="i">详细信息</a>
+                        <a href="/Statistics/Statistics/Statistics" class="i">统计数据</a>
+                        <div class="i active">图形统计</div>
+                    </div>
+                </div>
+                
+                <style type="text/css">
+                    .chart td{
+                        padding:5px 0;
+                    }
+                </style>
+
+                <div class="d-datatable" style="min-height: 500px; height: auto; vertical-align: middle;padding:0 10px;">
+                    @using (Html.BeginForm("Chart", "Statistics", FormMethod.Get))
+                    {
+                    <table class="chart">
+                        <tr>
+                            <td width="120">省份：</td>
+                            <td>
+                                @Html.DropDownList("ProvId", ViewBag.ProvData as SelectList, "请选择", new { disabled = "disabled", @class = "form-control" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>地市：</td>
+                            <td>
+                                @Html.DropDownList("CityId", ViewBag.CityData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>性别：</td>
+                            <td>
+                                @Html.DropDownList("SexId", ViewBag.SexData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>年龄段：</td>
+                            <td>
+                                @Html.DropDownList("AgeId", ViewBag.AgeData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>年级段：</td>
+                            <td>
+                                @Html.DropDownList("GradeId", ViewBag.GradeData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>学科：</td>
+                            <td>
+                                @Html.DropDownList("SubjectId", ViewBag.SubjectData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>学校所在区域：</td>
+                            <td>
+                                @Html.DropDownList("AreaId", ViewBag.AreaData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>教学经验：</td>
+                            <td>
+                                @Html.DropDownList("ExpId", ViewBag.ExpData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>职称：</td>
+                            <td>
+                                <div  class="form-inline">
+                                @Html.DropDownList("MJobId", ViewBag.MJobData as SelectList, "请选择", new { @class = "form-control" })
+                                @Html.DropDownList("SJobId", ViewBag.SJobData as SelectList, "请选择", new { @class = "form-control", style = "width:120px;" })
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>教学称号：</td>
+                            <td>
+                                @Html.DropDownList("TitleId", ViewBag.TitleData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>最高学历：</td>
+                            <td>
+                                @Html.DropDownList("EduId", ViewBag.EduData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>在校身份：</td>
+                            <td>
+                                @Html.DropDownList("IdenId", ViewBag.IdenData as SelectList, "请选择", new { @class = "form-control" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><input type="submit" class="btn btn-success" value="提交" /></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    }
+                    <br />
+                    <p style="font-weight:bold;">您好！你选选择的条件是上海市，最终筛选的惨测人数共 @ViewBag.TotalNum 人</p>
+                    <div class="col-xs-6">
+                        <div id="RadarChart1" style ="height:380px;"></div>
+                        <center>各维度平均水平</center>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div id="ColumnChart1" style ="height:380px;"></div>
+                        <center>各维度合格比例百分比</center>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <br />
+                        <div id="RadarChart2" style ="height:380px;"></div>
+                        <center>各维度平均水平</center>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <br />
+                        <div id="ColumnChart2" style ="height:380px;"></div>
+                        <center>各维度合格比例百分比</center>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <style type="text/css">
+                            .table-nation {
+                                width:100%;
+                            }
+                            .table-nation td{
+                                height:20px;line-height:20px;border:1px solid #cccccc;padding:2px 5px;
+                            }
+                            .table-nation tbody tr:nth-child(2n+1){
+                                background:#f1f1f1;
+                            }
+                            .table-nation thead tr {
+                                background:#5b9bd5;color:#fff;
+                            }
+                        </style>
+                        <br />
+                        <br />
+                        <br />
+                        选课结果如下：
+                        <br />
+                        <br />
+                        <table class="table-nation">
+                            <thead>
+                                <tr>
+                                    <td width="360">课程列表</td>
+                                    <td>选课比例</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (string item in ViewBag.TNationData)
+                                {
+                                    System.Data.DataRow row = ((System.Data.DataTable)(ViewBag.TData)).Select("respect='" + item + "'").FirstOrDefault();
+                                    double percent;
+                                    string pwidth;
+                                    if (row == null)
+                                    {
+                                        percent = 0;
+                                    }
+                                    else
+                                    {
+                                        percent = Math.Round((Convert.ToDouble(row[1]) / ViewBag.TotalNum), 2) * 100;
+                                        
+                                    }
+                                    pwidth = (5 * percent + 2).ToString() + "px";
+                                    <tr>
+                                        <td>@item</td>
+                                        <td><div style="background:#2dc4ef;float:left;margin-top:5px;height:10px;width:@pwidth;"></div>&nbsp;@percent%</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var dimension1 = '@ViewBag.Dimension1'.split(',');
+        var dimension2 = '@ViewBag.Dimension2'.split(',');
+
+        var indicator1 = new Array();
+        for (var i = 0; i < dimension1.length; i++) {
+            var item = dimension1[i];
+            indicator1.push({ text: item, max: 1.0 });
+        }
+
+        //雷达图1
+        var radarChart1 = echarts.init(document.getElementById('RadarChart1')).setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            polar: [
+               {
+                   indicator: indicator1,
+                   axisLabel: {
+                       show: true
+                   }
+               }
+            ],
+            calculable: false,
+            series: [
+                {
+                    name: '能力水平',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: '@ViewBag.RadarData1'.split(','),
+                            name: '平均得分'
+                        }
+                    ],
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                type: 'default'
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+
+        //柱状图1
+        var columnChart1 = echarts.init(document.getElementById('ColumnChart1')).setOption({
+            grid: {
+                height: 220
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params, ticket, callback) {
+                    //console.log(params)
+                    var res = params[0].name;
+                    for (var i = 0, l = params.length; i < l; i++) {
+                        res += '<br/>' + params[i].seriesName + ' : ' + Math.round(params[i].value * 100) + '%';
+                    }
+                    setTimeout(function () {
+                        // 仅为了模拟异步回调
+                        callback(ticket, res);
+                    }, 0)
+                    return 'loading';
+                }
+            },
+            legend: {
+                y: 'bottom',
+                data: ['优秀', '合格', '不合格']
+            },
+            calculable: false,
+            xAxis: [
+                {
+                    type: 'category',
+                    data: dimension1,
+                    axisLabel: {
+                        rotate: 45,
+                        textStyle: {
+                            fontWeight: 'bold',
+                            fontFamily: 'SimSun'
+                        }
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    max: 1.0,
+                    min: 0.0,
+                    splitNumber: 5,
+                    axisLabel: {
+                        formatter: function (value) {
+                            return value * 100;
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '优秀',
+                    type: 'bar',
+                    data: '@ViewBag.ColumnData1_Rank1'.split(','),
+                    itemStyle: {
+                        normal: {
+                            color: '#009900',
+                            label: {
+                                show: true,
+                                formatter: function (params) {
+                                    return Math.round(params.value * 100);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    name: '合格',
+                    type: 'bar',
+                    data: '@ViewBag.ColumnData1_Rank2'.split(','),
+                    itemStyle: {
+                        normal: {
+                            color: '#FFCC00',
+                            label: {
+                                show: true,
+                                formatter: function (params) {
+                                    return Math.round(params.value * 100);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    name: '不合格',
+                    type: 'bar',
+                    data: '@ViewBag.ColumnData1_Rank3'.split(','),
+                    itemStyle: {
+                        normal: {
+                            color: '#FF0000',
+                            label: {
+                                show: true,
+                                formatter: function (params) {
+                                    return Math.round(params.value * 100);
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+
+        var indicator2 = [];
+        for (var i = 0; i < dimension2.length; i++) {
+            var item = dimension2[i];
+            indicator2.push({ text: item, max: 1.0 });
+        }
+        //雷达图2
+        var radarChart2 = echarts.init(document.getElementById('RadarChart2')).setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            polar: [
+               {
+                   indicator: indicator2,
+                   axisLabel: {
+                       show: true
+                   }
+               }
+            ],
+            calculable: false,
+            series: [
+                {
+                    name: '能力水平',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: '@ViewBag.RadarData2'.split(','),
+                            name: '平均得分'
+                        }
+                    ],
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                type: 'default'
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+
+        //柱状图2
+        var columnChart2 = echarts.init(document.getElementById('ColumnChart2')).setOption({
+            grid: {
+                height: 220
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params, ticket, callback) {
+                    //console.log(params)
+                    var res = params[0].name;
+                    for (var i = 0, l = params.length; i < l; i++) {
+                        res += '<br/>' + params[i].seriesName + ' : ' + Math.round(params[i].value * 100) + '%';
+                    }
+                    setTimeout(function () {
+                        // 仅为了模拟异步回调
+                        callback(ticket, res);
+                    }, 0)
+                    return 'loading';
+                }
+            },
+            legend: {
+                y: 'bottom',
+                data: ['优秀', '合格', '不合格']
+            },
+            calculable: false,
+            xAxis: [
+                {
+                    type: 'category',
+                    data: dimension2,
+                    axisLabel: {
+                        rotate: 45,
+                        textStyle: {
+                            fontWeight: 'bold',
+                            fontFamily: 'SimSun'
+                        }
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    max: 1.0,
+                    min: 0.0,
+                    splitNumber: 5,
+                    axisLabel: {
+                        formatter: function (value) {
+                            return value * 100;
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '优秀',
+                    type: 'bar',
+                    data: '@ViewBag.ColumnData2_Rank1'.split(','),
+                    itemStyle: {
+                        normal: {
+                            color: '#009900',
+                            label: {
+                                show: true,
+                                formatter: function (params) {
+                                    return Math.round(params.value * 100);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    name: '合格',
+                    type: 'bar',
+                    data: '@ViewBag.ColumnData2_Rank2'.split(','),
+                    itemStyle: {
+                        normal: {
+                            color: '#FFCC00',
+                            label: {
+                                show: true,
+                                formatter: function (params) {
+                                    return Math.round(params.value * 100);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    name: '不合格',
+                    type: 'bar',
+                    data: '@ViewBag.ColumnData2_Rank3'.split(','),
+                    itemStyle: {
+                        normal: {
+                            color: '#FF0000',
+                            label: {
+                                show: true,
+                                formatter: function (params) {
+                                    return Math.round(params.value * 100);
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $('#MJobId').change(function () {
+                $.ajax({
+                    url: 'AjaxSJob',
+                    type: 'get',
+                    data: { MJobId: $(this).val() },
+                    dataType: 'text',
+                    success: function (data) {
+                        var myData = $.parseJSON(data);
+                        $('#SJobId').empty();
+                        $('#SJobId').append('<option value>请选择</option>');
+                        for (var i = 0; i < myData.length; i++) {
+                            var item = myData[i];
+                            $('#SJobId').append('<option value="' + item.Id + '">' + item.Title + '</option>');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        if (XMLHttpRequest.status == 302) {
+                            eval(XMLHttpRequest.responseText);
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>

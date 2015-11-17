@@ -1,0 +1,88 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using Dianda.AP.Model;
+
+namespace Dianda.AP.DAL
+{
+    public class PeriodDAL
+    {
+        public DataTable GetTrainingFie()
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Traning_Field where DisPlay = 1 and Delflag = 0 ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+
+        public DataTable GetList(int pageSize, string where, string orderBy)
+        {
+            DataTable Fie = GetTrainingFie();
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select top " + pageSize + " * from ( ");
+            sql.Append(" select a.AccountId,c.TeacherNo,c.RealName,b.Title, ");
+            sql.Append(" convert(varchar,a.Credits)+'/'+CONVERT(varchar,d.MinValue) as value,e.Result ");
+            sql.Append(" from Member_TrainingRedit a ");
+            sql.Append(" inner join Traning_Field b on a.TrainingField = b.Id ");
+            sql.Append(" inner join dbo.Member_BaseInfo c on a.AccountId = c.AccountId ");
+            sql.Append(" inner join Training_Credits d on a.TrainingField = d.TraningField ");
+            sql.Append(" inner join Member_PlanOverall e on a.AccountId = e.AccountId ");
+            sql.Append(" inner join Organ_Detail f on c.Organid = f.Id  ");
+            sql.Append(" where b.Display = 1 and b.Delflag = 0 and d.Level = 2 ");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(where);
+            sql.Append(" ) t pivot ( Max(value) for t.Title in ( ");
+            for (int i = 0; i < Fie.Rows.Count; i++)
+            {
+                if (i != Fie.Rows.Count - 1)
+                {
+                    sql.Append("[" + Fie.Rows[i][1].ToString() + "],");
+                }
+                else
+                {
+                    sql.Append("[" + Fie.Rows[i][1].ToString() + "]");
+                }
+            }
+            sql.Append(")) as ourpivot");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+
+        public DataTable GetSearch(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title as FidTitle,c.Title as DetailTitle,a.Credits,a.CreateDate from Member_TrainingRedit a ");
+            sql.Append(" left join Traning_Field b on a.TrainingField = b.Id ");
+            sql.Append(" left join Traning_Detail c on a.TrainingField = c.TraingField ");
+            sql.Append(" where a.AccountId = " + AccountId + " ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+
+
+        private void ConvertToModel(IDataReader reader, PeriodModel model)
+        {
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = reader["TeacherNo"].ToString();
+
+            if (reader["Value"] != DBNull.Value)
+                model.Value = reader["Value"].ToString();
+
+            if (reader["Result"] != DBNull.Value)
+                model.Result = Convert.ToInt32(reader["Result"]);
+        }
+    }
+}

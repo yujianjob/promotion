@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Attributes
+{
+    public class UrlRWAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string qs = Dianda.Common.QueryString.Decrypt(HttpUtility.UrlDecode(filterContext.HttpContext.Request.QueryString.ToString()));
+            List<ParameterDescriptor> pds = filterContext.ActionDescriptor.GetParameters().ToList();
+            filterContext.ActionParameters.Clear();
+
+            if (!string.IsNullOrEmpty(qs))
+            {
+                string[] array = qs.Split('&');
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(array[i]))
+                    {
+                        string key = array[i].Substring(0, array[i].IndexOf('='));
+                        string value = array[i].Substring(array[i].IndexOf('=') + 1);
+
+                        ParameterDescriptor pd = pds.FirstOrDefault(t => t.ParameterName.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+                        if (pd != null)
+                        {
+                            filterContext.ActionParameters.Add(key, Convert.ToInt32(value));
+                        }
+                        else
+                        {
+                            filterContext.ActionParameters.Add(key, value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    class DefaultModelBinder : IModelBinder
+    {
+        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

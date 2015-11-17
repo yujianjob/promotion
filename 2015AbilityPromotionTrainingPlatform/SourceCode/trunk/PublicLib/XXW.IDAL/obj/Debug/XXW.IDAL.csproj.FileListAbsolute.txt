@@ -1,0 +1,5 @@
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.IDAL\bin\Debug\XXW.IDAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.IDAL\bin\Debug\XXW.IDAL.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.IDAL\obj\Debug\XXW.IDAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.IDAL\obj\Debug\XXW.IDAL.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.IDAL\obj\Debug\XXW.IDAL.csprojResolveAssemblyReference.cache

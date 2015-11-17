@@ -1,0 +1,69 @@
+﻿//获取指定Id下章节最大顺序号
+function GetChapterSectionMaxOrder(ParentId,TrainingId) {
+    var obj = JSON.stringify({ ParentId: ParentId, TrainingId: TrainingId });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/GetChapterSectionMaxOrder',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            $("#txtSort").val(data.MaxOrder + 1);
+        },
+        error: function () {
+        }
+    });
+}
+
+//获取指定章节指定内容类型学习活动最大顺序号
+function GetUnitContentMaxOrder(UnitId, UnitType) {
+    var obj = JSON.stringify({ UnitId: UnitId, UnitType: UnitType });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/GetUnitContentMaxOrder',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            $("#txtSort").val(data.MaxOrder + 1);
+        },
+        error: function () {
+        }
+    });
+}
+
+//判断是否为非负整数
+function isNotIntNum(num) {
+    var re = /^[0-9]+$/;
+    return re.test(num);
+}
+
+//判断是否为非负浮点数
+function isNotFloatNum(num) {
+    var re = /^\d+(\.\d+)?$/;
+    return re.test(num);
+}
+
+function HtmlEncode(html) {
+    var temp = document.createElement("div");
+    (temp.textContent != null) ? (temp.textContent = html) : (temp.innerText = html);
+    var output = temp.innerHTML;
+    temp = null;
+    return output;
+}
+
+function HtmlDecode(text) {
+    var temp = document.createElement("div");
+    temp.innerHTML = text;
+    var output = temp.innerText || temp.textContent;
+    temp = null;
+    return output;
+}
+
+function Trim(str) {
+    return str.replace(/(^\s*)|(\s*$)/g, "");
+}

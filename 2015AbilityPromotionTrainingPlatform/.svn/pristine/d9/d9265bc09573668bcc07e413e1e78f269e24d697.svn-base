@@ -1,0 +1,50 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-3"><a href="#" class="logo"><img src="/jnpx/dist/common/i/logo.png"></a></div>
+		<div class="col-xs-4">
+			<form class="form-inline">
+			  <div class="form-group">
+			    <div class="input-group">
+			      <div class="input-group-addon">
+			      	<span class="glyphicon glyphicon-th-list"></span>&nbsp;
+			      	<span>目录</span>
+			      </div>
+			      <input type="text" class="form-control" style="width:240px;">
+			      <div class="input-group-addon bg-white">
+			      	<span class="glyphicon glyphicon-search"></span>
+			      </div>
+			    </div>
+			  </div>
+			</form>
+		</div>
+		<div class="col-xs-5 text-right">
+			<a href="announcement-list.html" class="i">培训公告</a>
+			<a href="coursemarketlist-all.html" class="i">课程超市</a>
+			<span class="i">
+				管理功能&nbsp;<span class="caret"></span>
+				<div class="menu">
+					<div class="sub">
+						<a href="teacher-list.html">教师信息管理</a>
+						<a href="teacher-transfer-list.html">教师调动管理</a>
+						<a href="teacher-apply-list.html">教师报名管理</a>
+						<a href="teacher-practice-list.html">实践课程管理</a>
+						<a href="teacher-credit-list.html">教师学分管理</a>
+					</div>
+				</div>
+			</span>
+			<span class="i">
+				<span class="w96">郑焕新焕新</span><span class="caret"></span>
+				<div class="menu">
+					<div class="sub">
+						<a href="teacher-list.html">教师信息管理</a>
+						<a href="teacher-transfer-list.html">教师调动管理</a>
+						<a href="teacher-apply-list.html">教师报名管理</a>
+						<a href="teacher-practice-list.html">实践课程管理</a>
+						<a href="teacher-credit-list.html">教师学分管理</a>
+					</div>
+				</div>
+			</span>
+			<a href="/jnpx/dist/learner/notification-unread.html" class="ba">3</a>
+		</div>
+	</div>
+</div>

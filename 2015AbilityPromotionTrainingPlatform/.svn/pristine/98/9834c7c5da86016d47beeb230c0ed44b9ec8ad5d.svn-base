@@ -1,0 +1,146 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 单元测试[预览]";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CoursePreviewLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" onclick="return confirm('确定放弃当前的单元测试么?');" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_quiz" class="blk_ln_course_quiz" data-km-htm="blk_ln_course_quiz.html" style="word-break: break-all; word-wrap: break-word;">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent modelContent = ViewBag.Model_Course_UnitContent;
+                        <h3 style="word-break: break-all; word-wrap: break-word;">@modelContent.Title：@modelContent.Content</h3>
+                        <p class="text-danger">答题规则 : 共 @ViewBag.QuizQuestionCount 道题目，答对 @modelContent.PassLine 题可以过关，限时 @modelContent.TimeLimit 分钟。</p>
+                    }
+                    <hr>
+
+                    <div id="QuizQuestions">
+
+                        @if (ViewBag.List_Course_UnitQuestion != null && ViewBag.List_Course_UnitQuestion.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Course_UnitQuestion> List_Course_UnitQuestion = ViewBag.List_Course_UnitQuestion;
+                            for (int i = 1; i <= List_Course_UnitQuestion.Count; i++)
+                            {
+                                Dianda.AP.Model.Course_UnitQuestion UnitQuestionModel = List_Course_UnitQuestion[i - 1];
+                                var Qtype = "";
+                                switch (UnitQuestionModel.QTtype)
+                                {
+                                    case 1:
+                                        Qtype = "【单选题】";
+                                        break;
+                                    case 2:
+                                        Qtype = "【多选题】";
+                                        break;
+                                    case 3:
+                                        Qtype = "【判断题】";
+                                        break;
+                                }
+                                
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var UnitTestQuestion = jr.Deserialize<List<Dianda.AP.Model.Course_UnitTestQuestion>>(UnitQuestionModel.Question);
+                            
+                            <div class="item">
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Qtype @Html.Raw(UnitQuestionModel.Content) ( @UnitQuestionModel.Credit 分)</div>
+                                <div class="ques" id="unit_@UnitQuestionModel.Id" itemid="@UnitQuestionModel.Credit">
+                                    <input type="hidden" value="@UnitQuestionModel.Id" itemid="@UnitQuestionModel.Verson" />
+                                    @if (UnitQuestionModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitQuestionModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="checkbox" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitQuestionModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Html.Raw(Quitem.Content == "1" ? '对' : '错')</label>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                            }
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav fixed">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+        });
+    });
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+        if (confirm("确定放弃当前的单元测试么?") == false) {
+            return;
+        }
+
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+        //var ClassId = Number(@ViewBag.ClassId);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent
+            //ClassId: ClassId
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLinePreview/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>

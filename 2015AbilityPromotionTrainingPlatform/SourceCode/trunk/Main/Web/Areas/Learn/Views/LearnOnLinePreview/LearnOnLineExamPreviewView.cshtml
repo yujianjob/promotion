@@ -1,0 +1,151 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 结业考试[预览]";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CoursePreviewLearn", new { TrainingId = Dianda.Common.QueryString.Encrypt(ViewBag.TrainingId) })" onclick="return confirm('确定放弃当前的结业考试么?');" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_exam" class="blk_ln_course_exam" data-km-htm="blk_ln_course_exam.html" style="word-break: break-all; word-wrap: break-word;">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent modelContent = ViewBag.Model_Course_UnitContent;
+                        <h3 style="word-break: break-all; word-wrap: break-word;">@modelContent.Title：@modelContent.Content</h3>
+                        <p class="text-danger">答题规则 : 共 @ViewBag.ExamRecordCount 道题目，答对 @modelContent.PassLine 题可以过关，限时 @modelContent.TimeLimit 分钟。</p>
+                    }
+                    <div class="text-danger">
+                        剩余时间 :
+                        <label id="timeCountDown"></label>
+                    </div>
+                    <hr>
+
+                    <div id="examItems">
+
+                        @if (ViewBag.List_Course_UnitTest != null && ViewBag.List_Course_UnitTest.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Course_UnitTest> List_Course_UnitTest = ViewBag.List_Course_UnitTest;
+                            for (int i = 1; i <= List_Course_UnitTest.Count; i++)
+                            {
+                                Dianda.AP.Model.Course_UnitTest UnitModel = List_Course_UnitTest[i - 1];
+                                var Qtype = "";
+                                switch (UnitModel.QTtype)
+                                {
+                                    case 1:
+                                        Qtype = "【单选题】";
+                                        break;
+                                    case 2:
+                                        Qtype = "【多选题】";
+                                        break;
+                                    case 3:
+                                        Qtype = "【判断题】";
+                                        break;
+                                    case 4:
+                                        Qtype = "【问答题】";
+                                        break;
+                                }
+
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var UnitTestQuestion = jr.Deserialize<List<Dianda.AP.Model.Course_UnitTestQuestion>>(UnitModel.Question);
+                                                                
+                            <div class="item">
+                                @if (UnitModel.Credit > 0)
+                                {
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Qtype @UnitModel.Content ( @UnitModel.Credit 分)</div>
+                                }
+                                else
+                                {
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Qtype @UnitModel.Content</div>    
+                                }
+                                <div class="ques" id="unit_@UnitModel.Id">
+                                    <input type="hidden" value="@UnitModel.Id"/>
+                                    @if (UnitModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitModel.Id" itemid="@Quitem.Id" class="chk" type="checkbox" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Html.Raw(Quitem.Content == "1" ? '对' : '错')</label>
+                                        }
+                                    }
+                                    else if (UnitModel.QTtype == 4)//问答题
+                                    {
+                                        <textarea name="a1_@UnitModel.Id" class="form-control" style="word-break: break-all; word-wrap: break-word; height: 200px; max-width:900px;"></textarea>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        $proto.init(function () {
+
+            /****************************************************** 考试倒计时 开始 ******************************************************/
+
+            var totalTimeMin = "@ViewBag.ExamTimeLimit";
+            var totalTimeSecond = totalTimeMin * 60;
+            $("#timeCountDown").text(totalTimeMin + "分");
+            //计时器开始
+            var InterValObj = window.setInterval(CountDown, 1000);
+
+            function CountDown() {
+                if (totalTimeSecond > 0) {
+                    totalTimeSecond = totalTimeSecond - 1;
+
+                    var second = Math.floor(totalTimeSecond % 60);       // 计算秒
+                    var minite = Math.floor((totalTimeSecond / 60) % 60);//计算分
+                    var showCountDownTime = minite + "分" + second + "秒";
+                    //页面倒计时显示
+                    $("#timeCountDown").text(showCountDownTime);
+                } else {
+                    //剩余时间小于或等于0的时候，就停止间隔函数
+                    window.clearInterval(InterValObj);
+                    //这里可以添加倒计时时间为0后需要执行的事件
+                    Alert("结业考试时间已到!");
+                }
+            };
+            /****************************************************** 考试倒计时 结束 ******************************************************/
+
+        });
+    });
+</script>

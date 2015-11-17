@@ -1,0 +1,95 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 课程评价[预览]";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-11">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CoursePreviewLearn", new { TrainingId = Dianda.Common.QueryString.Encrypt(ViewBag.TrainingId) })" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+
+                <div id="blk_ln_course_evaluate" class="blk_ln_course_evaluate" data-km-htm="blk_ln_course_evaluate.html">
+                    <h3>课程评价</h3>
+                    <p class="text-danger">请如实填写您对于本次课程的评价内容，包括课程内容、安排、讲师、辅导员等课程教学的评价，完成评价作为课程可结业的必要条件。</p>
+                    <hr>
+
+                    <div id="commItems">
+
+                        @if (ViewBag.List_Class_TraningCommentQuestion != null && ViewBag.List_Class_TraningCommentQuestion.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Class_TraningCommentQuestion> List_TraningCommentQuestion = ViewBag.List_Class_TraningCommentQuestion;
+                            for (int i = 1; i <= List_TraningCommentQuestion.Count; i++)
+                            {
+                                Dianda.AP.Model.Class_TraningCommentQuestion CommentModel = List_TraningCommentQuestion[i - 1];
+                                var Qtype = "";
+                                switch (CommentModel.QTtype)
+                                {
+                                    case 1:
+                                        Qtype = "【单选题】";
+                                        break;
+                                    case 2:
+                                        Qtype = "【多选题】";
+                                        break;
+                                    case 3:
+                                        Qtype = "【判断题】";
+                                        break;
+                                }
+
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var CommentQuestion = jr.Deserialize<List<Dianda.AP.Model.Class_TraningCommentQuestionOther>>(CommentModel.Question);
+
+                            <div class="item">
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Qtype @CommentModel.Content </div>
+                                <div class="ques" id="comm_@CommentModel.Id">
+                                    <input type="hidden" value="@CommentModel.Id" itemid="@CommentModel.Verson"/>
+                                    @if (CommentModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in CommentQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@CommentModel.Id" itemid="@Quitem.Id" value="@Quitem.Credits" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (CommentModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in CommentQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@CommentModel.Id" itemid="@Quitem.Id" value="@Quitem.Credits" class="chk" type="checkbox" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (CommentModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in CommentQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@CommentModel.Id" itemid="@Quitem.Id" value="@Quitem.Credits" class="chk" type="radio" />@Html.Raw(Quitem.Content == "1" ? '对' : '错')</label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            }
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+        });
+    });
+</script>

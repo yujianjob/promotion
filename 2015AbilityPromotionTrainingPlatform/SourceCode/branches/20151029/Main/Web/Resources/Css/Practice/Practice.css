@@ -1,0 +1,101 @@
+﻿.fmember {
+    float: left;
+    width: 450px;
+}
+
+.deletes {
+    float: left;
+    width: 26px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.member {
+    float: left;
+    padding: 5px;
+}
+
+.teachers {
+    float: left;
+    width: 900px;
+}
+
+    .teachers .i {
+        height: 125px;
+        float: left;
+        display: block;
+        position: relative;
+        padding: 6px 7px 6px 92px;
+        margin: 0 20px 20px 0;
+        cursor: pointer;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        overflow: hidden;
+        width: 274px;
+    }
+
+        .teachers.i .name {
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .teachers .i .title {
+            display: inline-block;
+            color: #999;
+        }
+
+        .teachers .i .unit {
+            padding: 4px 0;
+        }
+
+    .teachers .trim {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .teachers.i .glyphicon {
+        display: inline-block;
+        padding: 3px 2px;
+        color: #999;
+    }
+
+    .teachers .glyphicon {
+        position: relative;
+        top: 1px;
+        display: inline-block;
+        font-family: 'Glyphicons Halflings';
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .teachers .i .thumb {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 80px;
+        height: 80px;
+        background-color: #eee;
+        overflow: hidden;
+    }
+
+    .teachers .i .int {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 4px 8px;
+    }
+
+
+    .teachers .i .ddlrole {
+        position: absolute;
+        top: 85px;
+        left: 0;
+        width: 274px;
+        overflow: hidden;
+    }

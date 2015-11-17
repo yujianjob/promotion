@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $('.menu-learn a#@ViewBag.MenuId').addClass('active');
+    });
+</script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-3">
+                <div class="blk_ln_menu_profile" id="blk_ln_menu_profile">
+                    <div class="d-leftmenu menu-learn">
+                         @if(!Web.Code.AppConfigHelper.Instance.IsTest)
+                           {   
+	                    <a class="i" href="@Url.Action("InDate", "MyLearn")" id="d_learner_course">我的课程</a>
+	                    <a class="i" href="@Url.Action("Passed", "MyCourse")" id="d_learner_coursetake">我的选课</a>
+	                    <a class="i" href="@Url.Action("List", "MyPractice")" id="d_learner_practice">我的实践</a>
+	                    <a class="i" href="@Url.Action("Index", "MyCredit")" id="d_learner_credit">我的学时</a>
+                         }
+	                    <a class="i" href="@Url.Action("Index", "MyTest")" id="d_learner_assessment">我的测评</a>
+                    </div>
+                </div>
+            </div>
+
+            @RenderBody()
+
+        </div>
+    </div>
+</div>

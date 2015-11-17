@@ -1,0 +1,258 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Dianda.AP.Model;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace Dianda.AP.DAL
+{
+    public class AccountEditDAL
+    {
+        public AccountEditModel GetModel(int AccountId)
+        {
+            List<AccountEditModel> list = new List<AccountEditModel>();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select a.UserName,a.Pic,b.RealName,b.AccountId,b.TeacherNo,a.Email,b.Sex,b.Birthday, ");
+            sql.Append(" b.CredentialsNumber,b.Mobile,b.Nation,b.PoliticalStatus, ");
+            sql.Append(" c.Title as Region,b.StudySection,d.Title as Organ,e.Title as Job, ");
+            sql.Append(" f.Title as WorkRank,b.TeachDate,g.Title as TraningType,h.Title as TraningObject, ");
+            sql.Append(" b.EduLevel,b.EduDegree,b.EduMajor, ");
+            sql.Append(" GraduateSchool,GraduateTime ");
+            sql.Append(" from dbo.Member_Account a ");
+            sql.Append(" left join dbo.Member_BaseInfo b on a.Id=b.AccountId ");
+            sql.Append(" left join Organ_Detail c on b.RegionId = c.Id ");
+            sql.Append(" left join Organ_Detail d on b.Organid = d.Id ");
+            sql.Append(" left join Traning_InfoFk e on b.Job = e.Id ");
+            sql.Append(" left join Traning_InfoFk f on b.WorkRank = f.Id ");
+            sql.Append(" left join Traning_InfoFk g on b.TraningType = g.Id ");
+            sql.Append(" left join Traning_InfoFk h on b.TraningObject = h.Id ");
+            sql.Append(" where b.AccountId = " + AccountId + " and b.Delflag = 'false' ");
+            IDataReader dr = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString());
+            if (dr.Read())
+            {
+                AccountEditModel model = new AccountEditModel();
+                ConvertToModel(dr, model);
+                return model;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public DataTable GetList(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select a.UserName,a.Pic,b.AccountId,b.RealName,b.TeacherNo,a.Email,b.Sex,b.Birthday, ");
+            sql.Append(" b.CredentialsNumber,b.Mobile,i.Title as Nation,j.Title as PoliticalStatus, ");
+            sql.Append(" c.Title as Region,b.StudySection,d.Title as Organ,e.Title as Job, ");
+            sql.Append(" f.Title as WorkRank,b.TeachDate,g.Title as TraningType,h.Title as TraningObject, ");
+            sql.Append(" k.Title as EduLevel,l.Title as EduDegree,m.Title as EduMajor, ");
+            sql.Append(" GraduateSchool,GraduateTime ");
+            sql.Append(" from dbo.Member_Account a ");
+            sql.Append(" left join dbo.Member_BaseInfo b on a.Id=b.AccountId ");
+            sql.Append(" left join Organ_Detail c on b.RegionId = c.Id ");
+            sql.Append(" left join Organ_Detail d on b.Organid = d.Id ");
+            sql.Append(" left join Traning_InfoFk e on b.Job = e.Id ");
+            sql.Append(" left join Traning_InfoFk f on b.WorkRank = f.Id ");
+            sql.Append(" left join Traning_InfoFk g on b.TraningType = g.Id ");
+            sql.Append(" left join Traning_InfoFk h on b.TraningObject = h.Id ");
+            sql.Append(" left join Traning_InfoFk i on b.Nation = i.Id ");
+            sql.Append(" left join Traning_InfoFk j on b.PoliticalStatus = j.Id ");
+            sql.Append(" left join Member_InfoFK k on b.EduLevel = k.Id ");
+            sql.Append(" left join Member_InfoFK l on b.EduDegree = l.Id ");
+            sql.Append(" left join Member_InfoFK m on b.EduMajor = m.Id ");
+            sql.Append(" where b.AccountId = " + AccountId + " and b.Delflag = 'false' ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable GetNation(int type)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Member_InfoFK where InfoType=" + type + " and Display='true' and Delflag = 'false' ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable TeachStudySection(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title from Member_StudySection a  ");
+            sql.Append(" inner join Traning_InfoFk b on a.StudySection = b.Id where a.AccountId = "+AccountId+" ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable TeachSubject(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title from Member_StudySection a  ");
+            sql.Append(" inner join Traning_InfoFk b on a.StudySection = b.Id where a.AccountId = " + AccountId + " ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable TeachGrade(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title from Member_StudySection a  ");
+            sql.Append(" inner join Traning_InfoFk b on a.StudySection = b.Id where a.AccountId = " + AccountId + " ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public bool Edit(AccountEditModel model)
+        {
+            int i = 0;
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" update Member_Account set Email = @Email,Pic = @Pic where Id = @AccountId ");
+            SqlParameter[] pame ={
+                                    new SqlParameter("@Email",SqlDbType.VarChar),
+                                    new SqlParameter("@AccountId",SqlDbType.Int),
+                                    new SqlParameter("@Pic",SqlDbType.VarChar)
+                                  };
+            pame[0].Value = model.Email;
+            pame[1].Value = model.AccountId;
+            pame[2].Value = model.Pic;
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), pame);
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" update Member_BaseInfo set Sex=@Sex,Birthday=@Birthday,CredentialsNumber=@CredentialsNumber, ");
+            sb.Append(" Mobile=@Mobile,Nation=@Nation,PoliticalStatus=@PoliticalStatus,EduLevel=@EduLevel, ");
+            sb.Append(" EduDegree=@EduDegree,EduMajor=@EduMajor,GraduateSchool=@GraduateSchool,GraduateTime=@GraduateTime ");
+            sb.Append(" where AccountId = @AccountId ");
+            SqlParameter[] para ={
+                                    new SqlParameter("@AccountId",SqlDbType.Int),
+                                    new SqlParameter("@Sex",SqlDbType.Int),
+                                    new SqlParameter("@Birthday",SqlDbType.DateTime),
+                                    new SqlParameter("@CredentialsNumber",SqlDbType.VarChar),
+                                    new SqlParameter("@Mobile",SqlDbType.VarChar),
+                                    new SqlParameter("@Nation",SqlDbType.Int),
+                                    new SqlParameter("@PoliticalStatus",SqlDbType.Int),
+                                    new SqlParameter("@EduLevel",SqlDbType.Int),
+                                    new SqlParameter("@EduDegree",SqlDbType.Int),
+                                    new SqlParameter("@EduMajor",SqlDbType.Int),
+                                    new SqlParameter("@GraduateSchool",SqlDbType.VarChar),
+                                    new SqlParameter("@GraduateTime",SqlDbType.DateTime),
+                                        
+                                 };
+            para[0].Value = model.AccountId;
+            para[1].Value = model.Sex;
+            para[2].Value = model.Birthday;
+            para[3].Value = model.CredentialsNumber;
+            para[4].Value = model.Mobile;
+            para[5].Value = model.Nation;
+            para[6].Value = model.PoliticalStatus;
+            para[7].Value = model.EduLevel;
+            para[8].Value = model.EduDegree;
+            para[9].Value = model.EduMajor;
+            para[10].Value = model.GraduateSchool;
+            para[11].Value = model.GraduateTime;
+
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(sb.ToString(),para);
+            if (i == 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        private void ConvertToModel(IDataReader reader, AccountEditModel model)
+        {
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = reader["TeacherNo"].ToString();
+
+            if (reader["Email"] != DBNull.Value)
+                model.Email = reader["Email"].ToString();
+
+            if (reader["Sex"] != DBNull.Value)
+                model.Sex = Convert.ToInt32(reader["Sex"]);
+
+            if (reader["Birthday"] != DBNull.Value)
+                model.Birthday = Convert.ToDateTime(reader["Birthday"]);
+
+            if (reader["CredentialsNumber"] != DBNull.Value)
+                model.CredentialsNumber = reader["CredentialsNumber"].ToString();
+
+            if (reader["Mobile"] != DBNull.Value)
+                model.Mobile = reader["Mobile"].ToString();
+
+            if (reader["Nation"] != DBNull.Value)
+                model.Nation = Convert.ToInt32(reader["Nation"]);
+
+            if (reader["PoliticalStatus"] != DBNull.Value)
+                model.PoliticalStatus = Convert.ToInt32(reader["PoliticalStatus"]);
+
+            if (reader["Region"] != DBNull.Value)
+                model.Region = reader["Region"].ToString();
+
+            if (reader["StudySection"] != DBNull.Value)
+                model.StudySection = reader["StudySection"].ToString();
+
+            if (reader["Organ"] != DBNull.Value)
+                model.Organ = reader["Organ"].ToString();
+
+            if (reader["Job"] != DBNull.Value)
+                model.Job = reader["Job"].ToString();
+
+            if (reader["WorkRank"] != DBNull.Value)
+                model.WorkRank = reader["WorkRank"].ToString();
+
+            if (reader["TeachDate"] != DBNull.Value)
+                model.TeachDate = Convert.ToDateTime(reader["TeachDate"]);
+
+            //if (reader["TeachStudySection"] != DBNull.Value)
+            //    model.TeachStudySection = reader["TeachStudySection"].ToString();
+
+            //if (reader["TeachSubject"] != DBNull.Value)
+            //    model.TeachSubject = reader["TeachSubject"].ToString();
+
+            //if (reader["TeachGrade"] != DBNull.Value)
+            //    model.TeachGrade = reader["TeachGrade"].ToString();
+
+            if (reader["TraningType"] != DBNull.Value)
+                model.TraningType = reader["TraningType"].ToString();
+
+            if (reader["TraningObject"] != DBNull.Value)
+                model.TraningObject = reader["TraningObject"].ToString();
+
+            if (reader["EduLevel"] != DBNull.Value)
+                model.EduLevel = Convert.ToInt32(reader["EduLevel"]);
+
+            if (reader["EduDegree"] != DBNull.Value)
+                model.EduDegree = Convert.ToInt32(reader["EduDegree"]);
+
+            if (reader["EduMajor"] != DBNull.Value)
+                model.EduMajor = Convert.ToInt32(reader["EduMajor"]);
+
+            //if (reader["EduMajorOhter"] != DBNull.Value)
+            //    model.EduMajorOhter = reader["EduMajorOhter"].ToString();
+
+            if (reader["GraduateSchool"] != DBNull.Value)
+                model.GraduateSchool = reader["GraduateSchool"].ToString();
+
+            if (reader["GraduateTime"] != DBNull.Value)
+                model.GraduateTime = Convert.ToDateTime(reader["GraduateTime"]);
+        }
+        
+    }
+}

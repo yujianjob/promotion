@@ -1,0 +1,217 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+@model List<PracticalCourseListModel>
+
+@{  
+    object pc_searchTitle = ViewData["pc_searchTitle"];
+    object pc_state = ViewData["pc_state"];
+    object type = ViewBag.Type;
+}
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">实践课程管理</div>
+                <hr>
+                <div id="blk_as_teacher_practice_list" class="blk_as_teacher_practice_list" data-km-htm="blk_as_teacher_practice_list.html">
+                    <div class="d-search">
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <select id="state" name="state" class="form-control parameter">
+                                    <option value="-1">全部状态</option>
+                                    <option value="1">待审核</option>
+                                    <option value="2">已通过</option>
+                                    <option value="3">不通过</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input id="searchTitle" name="searchTitle" type="text" class="form-control parameter" placeholder="姓名、师训编号、身份证、实践名称搜索" style="width: 300px;">
+                            </div>
+                            <button type="button" class="btn btn-default" onclick="Search()"><span id="search" class="glyphicon glyphicon-search"></span>搜索</button>
+                        </form>
+
+                        <div class="action">
+                            <a href="PracticalCourseAdd" class="btn btn-success">新增实践记录</a>
+                        </div>
+
+                    </div>
+
+                    <div class="d-datatable">
+
+                        <table class="table table-bordered table-hover" style="font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    <th>实践名称</th>
+                                    <th>上传时间</th>
+                                    <th>上传者</th>
+                                    <th>课程小类</th>
+                                    <th>课程主题</th>
+                                    <th>课时</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    Member_AccountBLL member_AccountBLL = new Dianda.AP.BLL.Member_AccountBLL();
+                                    Organ_DetailBLL organ_DetailBLL = new Dianda.AP.BLL.Organ_DetailBLL();
+                                    Traning_CategoryBLL traning_CategoryBLL = new Traning_CategoryBLL();
+                                    Traning_TopicBLL traning_TopicBLL = new Traning_TopicBLL();
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        @{string name = item.Nickname != null ? item.Nickname : item.UserName;}
+                                        <td class="txt-left" title="@name"><span class="lxcellipsis" style="width: 80px;">@name</span></td>
+                                        <td title="@item.TeacherNo"><span class="lxcellipsis" style="width: 80px;">@item.TeacherNo</span></td>
+                                        <td title="@item.Title"><a class="lxcellipsis" style="width:120px;" href="../PracticalCourse/PracticalCourseCheck?memberPCourseid=@item.Id">@item.Title</a></td>
+                                        <td>@item.CreateDate.ToString("yyyy-MM-dd")</td>
+                                        <td>
+                                            @{if (item.Creater == null)
+                                              {
+                                                @organ_DetailBLL.GetModel((int)item.OrganId).Title
+                                              }
+                                              else
+                                              {
+                                                @member_AccountBLL.GetModel((int)item.Creater, "").Nickname
+                                              }
+                                            }</td>
+                                        <td title="@traning_CategoryBLL.GetModel(item.TraingCategory, "").Title"><span class="lxcellipsis" style="width: 120px;">@traning_CategoryBLL.GetModel(item.TraingCategory, "").Title</span></td>
+                                        <td title="@traning_TopicBLL.GetModel(item.TraingTopic, "").Title"><span class="lxcellipsis" style="width: 120px;">@traning_TopicBLL.GetModel(item.TraingTopic, "").Title</span></td>
+                                        @*<td title="@traning_TopicBLL.GetModel(item.TraingTopic, "").Title">@Dianda.Common.Utils.GetSubString(traning_TopicBLL.GetModel(item.TraingTopic, "").Title, 10, "...")</td>*@
+                                        <td>@(item.Credits)</td>
+                                        <td>
+                                            @{
+                                              string style = "";
+                                              string status = "";
+                                              switch (item.Status)
+                                              {
+                                                  case 1:
+                                                      style = "text-info";
+                                                      status = "待审核";
+                                                      break;
+                                                  case 2:
+                                                      style = "text-success";
+                                                      status = "审核通过";
+                                                      break;
+                                                  case 3:
+                                                      style = "text-danger";
+                                                      status = "审核不通过";
+                                                      break;
+                                              }
+                                                <span class='@style'>@status</span>
+                                            }
+
+                                        </td>
+                                        <td>@Html.Raw(item.Status == 1 ? "<a style='cursor:pointer;' onclick='verify(" + @item.Id + ")'>审核</a>&nbsp;&nbsp;" :
+                          "<a style='cursor:pointer' onclick='verify(" + @item.Id + ")'>重新审核</a>")
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @if (ViewBag.totalPage > 10)
+                        {
+                            @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, basecount = 10, pagecount = @ViewBag.totalPage })
+                        }
+                        @if (ViewBag.totalPage == 0)
+                        { 
+                            <p style="text-align: center; padding-top: 30px; font-size: 13px;">无课程实践数据。</p>
+                        }
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade blk_modal_add_class_notify" id="verify" style="display: none;">
+    <div class="modal-dialog">
+        @using (Html.BeginForm("MyVerify", "PracticalCourse", null, FormMethod.Post, new { id = "Check", enctype = "multipart/form-data" }))
+        {
+            <div class="modal-content">
+                <input id="mpId" type="hidden" name="mpId" />
+                <div class="modal-header">
+                    <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">实践审核</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <label class="control-label">审核结果 <span class="text-danger">*</span></label>
+                                <label class="chk">
+                                    <input id="r1" onclick="chk('r1');" type="radio" name="Status" value="2">
+                                    通过
+                                </label>
+                                <label class="chk" id="checkshow">
+                                    <input id="r2" onclick="chk('r2');" type="radio" name="Status" value="3">
+                                    不通过
+                                </label>
+                                <span style="color: red;"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <label id="contt" class="control-label" style="display: none;">审核内容 <span class="text-danger">*</span></label>
+                                <textarea class="form-control" maxlength="250" id="verifycontent" name="verifycontent" style="width: 570px; height: 200px; display: none;"></textarea>
+                                <span style="color: red;"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="saveVerify('no')" class="btn btn-success" type="button">提交</button>
+                    <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<input id="urlPath" type="hidden" value="/Practice/PracticalCourse/PracticalCourseList" />
+<input id="hidstate" type="hidden" data-name="state" class="sltHideValue" value="@pc_state" />
+<input id="hidsearchtitle" type="hidden" data-name="searchTitle" class="sltHideValue" value="@pc_searchTitle" />
+
+<script src="/Resources/Scripts/Practice/practicalCourseList.js"></script>
+<script src="~/Resources/Scripts/Practice/verify.js"></script>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            initListPage();
+            var msg = '@TempData["Msg"]';
+            if (msg != '') {
+                Alert(msg);
+            }
+        });
+    });
+</script>
+<style>
+    .lxcellipsis {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+

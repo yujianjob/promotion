@@ -1,0 +1,56 @@
+﻿@model Dianda.AP.Model.Learn.MyLearn.OutCourseInfo
+@{
+    string link;
+    if (Model.OutCourseLink != null && Model.OutSideLink != null)
+    {
+        link = string.Format(Model.OutCourseLink, Model.OutSideLink);
+    }
+    else
+    {
+        link = "";
+    }
+}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/bootstrap.min.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/app.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/ymPrompt.css")">
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/ymPrompt.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/jquery-1.11.2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/ie10-viewport-bug-workaround.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/km.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/proto.js")"></script>
+    <script type="text/javascript">
+        $(function () {
+            $proto.init(function () {
+
+            });
+
+        });
+
+        function OutCourseSubmit() {
+            window.parent.AfterOutCourseSubmit();
+        }
+
+        function EnterCourse(link) {
+            window.open(link);
+            window.parent.AfterOutCourseSubmit();
+        }
+    </script>
+</head>
+<body>
+<div class="d-course-apply blk_as_course_apply" id="blk_as_course_apply">
+<div class="row" style="min-height:150px;">
+    @Html.Raw(Model.OutSideContent)
+</div>
+<div>
+  <button style="width:150px;" class="btn btn-success" type="button" onclick="EnterCourse('@link');">确定进入</button>
+ <button type="button" class="btn btn-default" onclick="OutCourseSubmit();">取消</button>
+</div>
+</div>
+</body>
+</html>

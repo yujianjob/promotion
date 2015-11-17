@@ -1,0 +1,294 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+
+@model List<ClassRegisterManage>
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    int groupid = (int)ViewData["groupId"];
+    string searchTitle = ViewData["searchTitle"].ToString();
+    int planId = (int)ViewData["planId"];
+    int status = (int)ViewData["status"];
+    int trainingId = (int)ViewData["trainingId"];
+    int myclassId = (int)ViewData["myclassId"];
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">教师报名管理</div>
+                <hr>
+                <div id="blk_as_teacher_apply_list" class="blk_as_teacher_apply_list" data-km-htm="blk_as_teacher_apply_list.html">
+                    <div class="d-search">
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <select class="form-control" id="planId" style="max-width: 200px">
+                                    <option value="-1">全部计划</option>
+                                    @foreach (Training_Plan t in ViewBag.PlanList)
+                                    {
+                                        <option value="@t.Id">@t.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="status" style="max-width: 200px">
+                                    <option value="-1">全部状态</option>
+                                    @if (groupid == 4)
+                                    { 
+                                        <option value="1">等待学校审核</option>
+                                        <option value="2">学校审核通过</option>
+                                        <option value="3">学校审核不通过</option>
+                                        <option value="4">开班机构审核通过</option>
+                                        <option value="5">开班机构审核不通过</option>
+                                    }
+                                    else if (groupid == 3 || groupid == 2)
+                                    {
+                                        <option value="2">学校审核通过</option>
+                                        <option value="4">开班机构审核通过</option>
+                                        <option value="5">开班机构审核不通过</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="trainingId" style="max-width: 200px">
+                                    <option value="-1">全部课程</option>
+                                    @foreach (Traning_Detail t in ViewBag.TraningList)
+                                    {
+                                        <option value="@t.Id">@t.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="myclassId" style="max-width: 200px">
+                                    <option value="-1">全部班级</option>
+                                    @*       @foreach (Class_Detail t in ViewBag.ClassList)
+                                    {
+                                        <option value="@t.Id">@t.Title</option>
+                                    }*@
+                                </select>
+                            </div>
+                        </form>
+                        <form class="form-inline" style="padding-top: 10px;">
+                            <div class="form-group">
+                                <input id="searchTitle" type="text" class="form-control" placeholder="姓名、师训编号、身份证、课程名称搜索" style="width: 300px;" maxlength="50">
+                            </div>
+                            <button type="button" class="btn btn-default" onclick="verifySearch()"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                        </form>
+
+                        <div class="action">
+                            <a href="#" class="btn btn-success" id="allpass" onclick="saveallVerify(@ViewBag.Yes)">批量审核通过</a>
+                            <a href="#" class="btn btn-success" id="allno" onclick="saveallVerify(@ViewBag.No)">批量不通过</a>
+                        </div>
+                    </div>
+
+                    <div class="d-datatable">
+
+                        <table class="table table-bordered table-hover" style="font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="chkItemAll" id="chkItemAll" onclick="chooseall()"></th>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    <th>课程名称</th>
+                                    <th>班级名称</th>
+                                    <th>上课日期</th>
+                                    <th>选课日期</th>
+                                    <th>审核状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (ClassRegisterManage m in Model)
+                                {
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" value="@m.Id" name="chkItem"></th>
+                                        @{string name = m.RealName != null ? m.RealName : (m.Nickname != null ? m.Nickname : m.UserName);}
+                                        <td title="@name"><span class="lxcellipsis" style="width:80px;">@name</span></td>
+                                        <td title="@m.TeacherNo"><span class="lxcellipsis" style="width:80px;">@m.TeacherNo</span></td>
+                                        <td title="@m.TTitle"><span class="lxcellipsis" style="width:120px;">@m.TTitle</span></td>
+                                        <td title="@m.CTitle" class="ctitle"><span class="lxcellipsis" style="width:120px;">@m.CTitle</span></td>
+                                        <td>@m.OpenClassFrom.ToString("yyyy-MM-dd") 至 @m.OpenClassTo.ToString("yyyy-MM-dd")</td>
+                                        <td>@m.SignUpStartTime.ToString("yyyy-MM-dd") 至 @m.SignUpEndTime.ToString("yyyy-MM-dd")</td>
+
+                                        <td>
+                                            @{
+                                          string style = "";
+                                          string sstatus = "";
+                                          switch (m.Status)
+                                          {
+                                              case 1:
+                                                  style = "text-info";
+                                                  sstatus = "等待学校审核";
+                                                  break;
+                                              case 2:
+                                                  if (groupid == 4)
+                                                  { style = "text-success"; }
+                                                  else
+                                                  { style = "text-info"; }
+                                                  sstatus = "学校审核通过";
+                                                  break;
+                                              case 3:
+                                                  style = "text-danger";
+                                                  sstatus = "学校审核不通过";
+                                                  break;
+                                              case 4:
+                                                  style = "text-success";
+                                                  sstatus = "开班机构审核通过";
+                                                  break;
+                                              case 5:
+                                                  style = "text-danger";
+                                                  sstatus = "开班机构审核不通过";
+                                                  break;
+                                          }
+                                                <span class='@style'>@sstatus</span>
+                                            }
+                                        </td>
+                                        <td style="display: none;">
+                                            <input class="status" value="@m.Status" /></td>
+                                        <td style="display: none;">
+                                            <input class="cid" value="@m.CId" /></td>
+                                        <td style="display: none;">
+                                            @{int maxp = m.LimitPeopleCnt - m.People;}
+                                            <input class="maxpeople"  value="@maxp" /></td>
+                                        <td>
+                                            <a href="/Market/Coursemarket/DetailInformation?Id=@m.Id" target="_blank">查看</a>
+                                            @{
+                                              string type = "reverify";
+                                              if (m.Status == 1 || (m.Status == 2 && (groupid == 2 || groupid == 3)))
+                                              {
+                                                  type = "verify";
+                                              }
+                                            }
+                                            @if (!(m.Status == 4 && groupid == 4))
+                                            { 
+                                                @Html.Raw(type == "verify" ? "<a style='cursor:pointer' onclick='marketverify(" + @m.Id + ")'>审核</a>&nbsp;&nbsp;" :
+                          "<a style='cursor:pointer' onclick='marketverify(" + @m.Id + ")'>重新审核</a>")
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @if (ViewBag.totalPage > 10)
+                        {
+                            @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, basecount = 10, pagecount = @ViewBag.totalPage })
+                        }
+                        @if (ViewBag.totalPage == 0)
+                        { 
+                            <p style="text-align: center; padding-top: 30px; font-size: 13px;">无报名数据。</p>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input id="groupid" type="hidden" value="@groupid" />
+
+
+<div class="modal fade blk_modal_add_class_notify" id="verify" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("MyVerify", "Coursemarket", null, FormMethod.Post, new { id = "FormAdd", enctype = "multipart/form-data" }))
+            {
+@*<input id="mpId" type="hidden" />*@
+                @Html.Hidden("mpId");
+                <div class="modal-header">
+                    <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">报名审核</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <label class="control-label">审核结果 <span class="text-danger">*</span></label>
+                                @{
+                                    int yes = 2;
+                                    int no = 3;
+                                    if (groupid == 2 || groupid == 3)
+                                    {
+                                        yes = 4;
+                                        no = 5;
+                                    }
+                                }
+                                <label class="chk">
+                                    <input id="r1" onclick="chk('r1');" type="radio" name="status" value="@yes">
+                                    通过
+                                </label>
+                                <label class="chk" id="checkshow">
+                                    <input id="r2" onclick="chk('r2');" type="radio" name="status" value="@no">
+                                    不通过
+                                </label>
+                                <span style="color: red;"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-8" id="UnpassRemark">
+                            <div class="form-group">
+                                <label id="contt" class="control-label" style="display: none;">审核内容 <span class="text-danger">*</span></label>
+                                <textarea class="form-control" maxlength="250" id="content" name="content" style="width: 570px; height: 200px; display: none;"></textarea>
+                                <span style="color: red;"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" name="submit">提交</button>
+                    <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="@(myclassId > 0 ? myclassId : -1)" id="hidclassid" />
+<input id="url" type="hidden" value="/Market/Coursemarket/CoursemarketVerify?" />
+<script src="/Resources/Scripts/Coursemarket/coursemarketVerify.js"></script>
+<script src="/Resources/Scripts/Coursemarket/verify.js"></script>
+
+<style>
+
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('#planId').val(@planId);
+        $('#status').val(@status);
+        $('#trainingId').val(@trainingId);
+        $('#searchTitle').val(@searchTitle);
+        initVerifyPage();
+    });
+
+
+
+</script>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            var msg = '@TempData["Msg"]';
+            if (msg != '') {
+                Alert(msg);
+            }
+        });
+    });
+</script>
+<style>
+    .lxcellipsis {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

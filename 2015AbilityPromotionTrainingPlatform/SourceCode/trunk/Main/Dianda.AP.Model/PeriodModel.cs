@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.Model
+{
+    public class PeriodModel
+    {
+        public int AccountId { get; set; }
+
+        public string TeacherNo { get; set; }
+
+        public string RealName { get; set; }
+
+        public string Value { get; set; }
+
+        public int Result { get; set; }
+
+    }
+
+
+    public class SearchModel
+    {
+        public string FidTitle { get; set; }
+
+        public string DetailTitle { get; set; }
+
+        public double Credits { get; set; }
+
+        public DateTime CreateDate { get; set; }
+
+        public int Range { get; set; }
+    }
+
+    public class SearchList
+    {
+        public string Title { get; set; }
+        public int Credits { get; set; }
+    }
+}

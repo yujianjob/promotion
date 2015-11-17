@@ -1,0 +1,86 @@
+﻿$(function () {
+    $proto.init(function () {
+        /* 页面加载后立即执行的代码写在这里 */
+        //$('input.input-date').datepicker({});
+
+        //提交按钮单击事件
+        $('#btnSubmit').click(function () {
+            //验证必填表单
+            var result = true;
+            $('.input-valid').each(function () {
+                $(this).css('display', 'none');
+                var validFields = $(this).attr('validfor').split(' ');
+
+                for (var i = 0; i < validFields.length; i++) {
+                    var field = validFields[i];
+                    if (field != "TotalRate")
+                    {
+                        //验证必填
+                        if (Trim($('#' + field).val()) == '' && $(this).attr('validtype') != 'number' && $(this).attr('validtype') != 'number1') {
+                            $(this).css('display', 'inline-block');
+                            result = false;
+                            break;
+                        }
+
+                        //验证数字为非负整数
+                        if (Trim($('#' + field).val()) != '' && $(this).attr('validtype') == 'number' && !(/^[0-9]*$/).test($('#' + field).val())) {
+                            $(this).css('display', 'inline-block');
+                            result = false;
+                            break;
+                        }
+
+                        //验证数字为小于100
+                        if (Trim($('#' + field).val()) != '' && $(this).attr('validtype') == 'number1' && (/^[0-9]*$/).test($('#' + field).val()) && $('#' + field).val() > 100) {
+                            $(this).css('display', 'inline-block');
+                            result = false;
+                            break;
+                        }
+                    }
+                }
+            });
+
+            if (!result) {
+                return;
+            }
+
+            var ReadingRate = parseInt($("#ReadingRate").val());
+            var DisscusRate = parseInt($("#DisscusRate").val());
+            var HomeWorkRate = parseInt($("#HomeWorkRate").val());
+            var QuestionRate = parseInt($("#QuestionRate").val());
+            var TestingRate = parseInt($("#TestingRate").val());
+            var CommentRate = parseInt($("#CommentRate").val());
+            var TotalRate = ReadingRate + DisscusRate + HomeWorkRate + QuestionRate + TestingRate + CommentRate;
+
+            //验证所有考核比例总和
+            if (TotalRate != 100) {
+                $("#TotalRate").css('display', 'inline-block');
+                result = false;
+            }
+
+            if (!result) {
+                return;
+            }
+            
+            $("#btnSubmit").attr("disabled", "false");
+            var obj = JSON.stringify({ TrainingId: TrainingId, ReadingRate: $("#ReadingRate").val(), DisscusRate: $("#DisscusRate").val(), HomeWorkRate: $("#HomeWorkRate").val(), QuestionRate: $("#QuestionRate").val(), TestingRate: $("#TestingRate").val(), CommentRate: $("#CommentRate").val() });
+            $.ajax({
+                cache: false,
+                type: 'post',
+                contentType: 'application/json',
+                url: '/CourseCreate/EditCourseDetail',
+                data: obj,
+                dataType: 'json',
+                success: function (data) {
+                    $('#modal-edit-status .modal-title').text(data.Msg);
+                    $('#modal-edit-status').modal({
+                        keyboard: false,
+                        backdrop: 'static'
+                    });
+                },
+                error: function () {
+                }
+            });
+            $("#btnSubmit").attr("disabled", "true");
+        });
+    });
+});

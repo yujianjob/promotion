@@ -1,0 +1,115 @@
+﻿@using Dianda.AP.Model.Course.CourseCreate;
+
+@{
+    ViewBag.Title = "增加阅读";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseActivityReading.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <div class="d-form">
+            <ol class="breadcrumb" style ="width:894px;">
+            <li><a href="CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">课程制作</a></li>
+            <li><a href="CourseActivityAdd?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">添加学习活动</a></li>
+            <li class="active">阅读文本</li>
+            </ol>
+            <div id="blk_ct_course_activity_reading" class="blk_ct_course_activity_reading">
+                <h4 class="text-center">添加学习活动 - 阅读文本（@ViewBag.TrainingInfo.Title）</h4>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <div class="form-group">
+                      <label class="control-label">标题<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtTitle">此项为必填内容</span></label>
+                      <input id ="txtTitle" type="text" class="form-control" maxlength="100">
+                    </div>
+                  </div>
+                  <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">上级单元 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="UnitId">此项为必填内容</span></label>
+			                <select id ="UnitId" class="form-control">
+                                @foreach (Course_ChapterSectionInfo item in ViewBag.AllChapterSectionInfo)
+                                {
+                                     <option value ="@item.Id">@item.Title</option>
+                                }
+			                </select>
+		                </div>
+	                </div>
+                  <div class="col-xs-3">
+		                <div class="form-group">
+			                <label class="control-label">排序 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtSort">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtSort" validtype="number">此项必须正整数</span></label>
+			                <input id ="txtSort" type="text" class="form-control" maxlength ="3">
+		                </div>
+	              </div>
+                  <div class="col-xs-3">
+                    <div class="form-group">
+                      <label class="control-label">预计时长 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtTimeLength">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtTimeLength" validtype="number">此项必须正整数</span></label>
+                      <input id ="txtTimeLength" type="text" class="form-control" maxlength="4" style="width:120px;"> 分钟
+                    </div>
+                  </div>
+	              <div class="col-xs-12 reading-content">
+		            <div class="form-group">
+			            <label class="control-label">内容 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;">此项为必填内容</span><span class="input-valid1" style="color:#ff0000;font-weight:normal;display:none;">此项内容最多输入4000个字符</span></label>
+			            <script name="areaContent" id="areaContent" type="text/plain" style="height: 200px;"></script>
+		            </div>
+	              </div>
+                  <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">开放日期 <span class="text-danger">*</span>
+                                <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterOpenDayNum">此项为必填内容</span>
+                                <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterOpenDayNum" validtype="number">此项必须正整数</span>
+                                <span id ="DateCompare" class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="comparedate">此项必须不大于截止日期</span>
+			                </label>
+			                <label class="chk" style="width:200px;">
+				                <input id ="radioAlreadyOpen" type="radio" name="OpenTime" value="1" checked> 始终开放
+			                </label>
+			                <label class="chk" style="width:200px;">
+				                <input id ="radioPartialOpen" type="radio" name="OpenTime" value="2"> 开班后 <input id ="txtAfterOpenDayNum" type="text" name="name" value="" style="width:50px;" maxlength ="3"> 天开放
+			                </label>
+		                </div>
+	                </div>
+                    <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">截止日期 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterEndDayNum">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterEndDayNum" validtype="number">此项必须正整数</span></label>
+			                <label class="chk" style="width:200px;">
+				                <input id ="radioAlreadyEnd" type="radio" name="EndTime" value="1" checked>无截止日期
+			                </label>
+			                <label class="chk" style="width:200px;">
+				                <input id = "radioPartialEnd" type="radio" name="EndTime" value="2"> 开班后 <input id ="txtAfterEndDayNum" type="text" name="name" value="" style="width:50px;" maxlength ="3"> 天截止
+			                </label>
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <hr>
+		                <button id = "btnSubmit" class="btn btn-success" style="width:150px;">提交</button>
+		                &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Course/CourseCreate/CourseActivityAdd?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">取消</a>
+	                </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    var TrainingId = "@ViewBag.TrainingId";
+
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    //UE.getEditor('preview');
+    window.UEDITOR_HOME_URL = "/Resources/ueditor1_3_6-utf8-net/";
+    var preview = UE.getEditor('areaContent', {
+        toolbars: [['source', 'link', 'attachment', 'unlink', 'insertimage', 'insertvideo']],
+        //toolbars: null,
+        //catchRemoteImageEnable: false,
+        textarea: 'editorValue',
+        //textarea: 'introduction'
+        //sourceEditor: "codemirror"
+        maximumWords: 2000,
+        focus: false,
+        readonly: false
+    });
+</script>

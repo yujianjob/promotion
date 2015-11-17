@@ -1,0 +1,136 @@
+﻿@using Dianda.AP.Model;
+@using Dianda.AP.Model.Course.CourseCreate;
+
+@{
+    ViewBag.Title = "课程制作";
+    IHtmlString Loading = @Html.Raw("<div style='left:400px;position:relative;font-size:15px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='left:400px;top:-7px;position:relative;font-size:15px'>没有课程信息……</div>");
+
+    Layout = "../Shared/_Layout.cshtml";
+    Course_CourseInfo Model = ViewBag.TrainingInfo as Course_CourseInfo;
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseDetail.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+      		<div id="blk_ct_course_info" class="d-course-info blk_ct_course_info">
+                <div class="course-i" style="height:195px;">
+	                <span class="thumb"><img src="@Model.Pic" width="200" height="125"></span>
+	                <span class="source">@Model.OrganName</span>
+	                <span class="title">@Model.Title</span>
+	                <div class="desc text-justify">
+		                @Model.Content
+	                </div>
+                </div>
+
+                <div class="course-d clearfix">
+	                <div class="pull-left h">工具条</div>
+	                <div class="pull-left b">
+		                <a href="CourseUnitAdd?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-plus"></span> 添加学习单元</a>
+		                <a href="CourseActivityAdd?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-plus"></span> 添加学习活动</a>
+		                <a href="CourseSetupRatio?TrainingId=@ViewBag.TrainingId"><span class="glyphicon glyphicon-wrench"></span> 设定考核比例</a>
+		                <a href="CoursePreViewLearn?TrainingId=@ViewBag.TrainingId" target="_blank"><span class="glyphicon glyphicon-globe"></span> 预览课程</a>
+	                </div>
+	                <div class="pull-right text-right c">
+		                <a href="javascript:;"><span class="glyphicon glyphicon-eye-close"></span>&nbsp;隐藏</a>
+	                </div>
+                </div>
+                <div id ="CourseInfo" class="course-t"></div>
+      		</div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div id ="ActivityModel" style ="display:none;">
+    <div class="topic" >
+	    <span class="status"><span class="dot"></span></span>
+	    <span id ="AcTitle" class="title"></span>
+	    <span id ="AcType" class="type"></span></span>
+	    <span class="duration"><span id ="AcTimeLength"></span>分钟</span>
+	    <span class="action">
+		    <a id ="ActivityEdit" href="javascript:void(0);">编辑</a>&nbsp;
+		    <a id ="ActivityDelete" href="javascript:void(0);">删除</a>
+            <a id ="ActivityDisplay" href ="javascript:void(0);">不显示</a>
+	    </span>
+    </div>
+</div>
+
+<div id ="SectionModel" style ="display:none;">
+    <div id = "SecLecture" class="lecture">
+        <div class="title">
+	        <span id ="SecTitle"></span>
+	        <span class="action">
+		        <a id ="SecEdit" href ="javascript:void(0);">编辑</a>&nbsp;
+		        <a id ="SecDelete" href ="javascript:void(0);">删除</a>
+                <a id ="SecDisplay" href ="javascript:void(0);">不显示</a>
+	        </span>
+        </div>
+        <div class="duration"></div>
+	    <div class="topiclist">
+		    <div class="line"></div>
+            <div id ="SectionActivity"></div>
+        </div>
+    </div>
+</div>
+
+<div id ="ChapterModel" style ="display:none;">
+    <div class="course-t">
+	    <div class="chapter">
+		    <div class="title">
+                <span id ="ChapTitle"></span>
+			    <span class="action">
+				    <a id ="ChapEdit" href ="javascript:void(0);">编辑</a>&nbsp;
+				    <a id ="ChapDelete" href ="javascript:void(0);">删除</a>
+                    <a id ="ChapterDisplay" href ="javascript:void(0);">不显示</a>
+			    </span>
+		    </div>
+		    <div id ="ChapContent" class="desc text-justify"></div>
+		    <div class="duration">预计<span id ="TotalTimeLength"></span>分钟</div>
+	    </div>
+        <div id = "ChapLecture" class="lecture">
+            <div class="topiclist">
+			    <div class="line"></div>
+                <div id ="ChapterActivity"></div>
+		    </div>
+        </div>
+		<div id ="SectionContent" class="title">
+		</div>
+	    <div class="action">
+		    <a href="javascript:void(0);" onclick="doHideLecture()"><span class="glyphicon glyphicon-chevron-up" onclick="doHideLecture()"></span>&nbsp;隐藏</a>
+	    </div>
+    </div>
+</div>
+
+<div id ="ExamModel" style ="display:none;">
+    <div class="course-t">
+	    <div class="lecture">
+		    <div id ="ExamTitle1" class="title">
+		    </div>
+		    <div class="duration">预计<span id ="ExamTimeLength"></span>分钟</div>
+		    <div class="topiclist">
+			    <div class="line"></div>
+			    <div class="topic">
+				    <span class="status"><span class="dot"></span></span>
+				    <span id ="ExamTitle2" class="title"></span>
+				    <span class="desc"><span id ="ExamQuesCnt"></span>道题目</span>
+				    <span class="action">
+					    <a id ="ExamEdit" href ="javascript:void(0);">编辑</a>&nbsp;
+					    <a id ="ExamDelete" href ="javascript:void(0);">删除</a>
+                        <a id ="ExamDisplay" href ="javascript:void(0);">不显示</a>
+				    </span>
+			    </div>
+		    </div>
+	    </div>
+    </div>
+</div>
+
+<script>
+    var Loading = "@Loading";
+    var noDataTip = "@noDataTip";
+    var TrainingId = "@ViewBag.TrainingId";
+    var ExamQuesCnt = "@ViewBag.ExamQuesCnt";
+</script>

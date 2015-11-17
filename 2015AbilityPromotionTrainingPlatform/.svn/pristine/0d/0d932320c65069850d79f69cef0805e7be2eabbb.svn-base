@@ -1,0 +1,77 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.BLL
+{
+    public class LearnMyCreditBLL
+    {
+        /// <summary>
+        /// 取得课程类型
+        /// </summary>
+        /// <returns></returns>
+        public List<Traning_Field> GetTrainingField()
+        {
+            return new Traning_FieldDAL().GetList("Delflag=0", "Id");
+        }
+
+        /// <summary>
+        /// 取得标准学时
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <returns></returns>
+        public List<Training_Credits> GetBaseCredit(int planId)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("Delflag=0 and Level=2 and PlanId=" + planId);
+            return new LearnMyCreditDAL().GetList(where.ToString(), "");
+        }
+
+        /// <summary>
+        /// 取得已获学分
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="planId"></param>
+        /// <returns></returns>
+        public List<Member_TrainingRedit> GetReceivedCredit(int accountId, int planId)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("Delflag=0 and AccountId=" + accountId + " and PlanId=" + planId);
+            return new Member_TrainingReditDAL().GetList(where.ToString(), "");
+        }
+
+        /// <summary>
+        /// 取得在学课程学分（非实践）
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public DataTable GetTrainingCredit(int accountId, int planId, int partitionId)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("A.Delflag=0 and A.Status=4 and A.AccountId=" + accountId + " and A.PlanId=" + planId + " and A.CurrentSchedule<A.TotalSchedule");
+            where.Append(" and B.Delflag=0 and B.Status=5 and B.PlanId=" + planId + " and B.PartitionId=" + partitionId);
+            where.Append(" and C.Delflag=0 and C.PartitionId=" + partitionId);
+            return new LearnMyCreditDAL().GetTrainingCredit(where.ToString());
+        }
+
+        /// <summary>
+        /// 取得在学实践学分
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="planId"></param>
+        /// <returns></returns>
+        public DataTable GetPracticeCredit(int accountId, int planId)
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("A.Delflag=0 and A.PlanId=" + planId);
+            where.Append("and B.Delflag=0 and B.AccountId=" + accountId + " and B.Status=1");
+            return new LearnMyCreditDAL().GetPracticeCredit(where.ToString());
+        }
+    }
+}

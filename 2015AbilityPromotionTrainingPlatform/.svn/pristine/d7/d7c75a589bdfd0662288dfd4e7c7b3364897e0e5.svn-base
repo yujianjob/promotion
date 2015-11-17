@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "设置考核比例";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseSetUpRatio.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <div class="d-form">
+            <ol class="breadcrumb">
+            <li><a href="CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">课程制作</a></li>
+            <li class="active">设定考核比例</li>
+            </ol>
+            <div id="blk_ct_course_setup_ratio" class="blk_ct_course_setup_ratio">
+                <h4 class="text-center">设定考核比例（@ViewBag.TrainingInfo.Title）</h4>
+                <div class="row">
+                  <div class="col-xs-12">
+		                <table class="table table-bordered">
+                      <tr>
+                        <td width="180" class="text-right">阅读、影音内容</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="ReadingRate" type="text" class="form-control" maxlength="30"> 
+                            }
+      			            else
+                            {
+                                <input id ="ReadingRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.ReadingRate"> 
+                            }
+                            %<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="ReadingRate">此项为必填内容</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="ReadingRate" validtype="number">此项必须为非负整数</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="ReadingRate" validtype="number1">此项必须小于等于100</span>
+                             <span id ="TotalRate" class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TotalRate">所有考核比例总和不等于100</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">讨论</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="DisscusRate" type="text" class="form-control" maxlength="30"> 
+                            }
+      			            else
+                            {
+                                <input id ="DisscusRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.DisscusRate"> 
+                            }
+                            %<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="DisscusRate">此项为必填内容</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="DisscusRate" validtype="number">此项必须为非负整数</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="DisscusRate" validtype="number1">此项必须小于等于100</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">作业</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="HomeWorkRate" type="text" class="form-control" maxlength="30"> 
+                            }
+      			            else
+                            {
+                                <input id ="HomeWorkRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.HomeWorkRate"> 
+                            }
+                            %<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="HomeWorkRate">此项为必填内容</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="HomeWorkRate" validtype="number">此项必须为非负整数</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="HomeWorkRate" validtype="number1">此项必须小于等于100</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">单元测试</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="QuestionRate" type="text" class="form-control" maxlength="30">  
+                            }
+      			            else
+                            {
+                                <input id ="QuestionRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.QuestionRate"> 
+                            }
+                            %<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="QuestionRate">此项为必填内容</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="QuestionRate" validtype="number">此项必须为非负整数</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="QuestionRate" validtype="number1">此项必须小于等于100</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">结业考试</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="TestingRate" type="text" class="form-control" maxlength="30">  
+                            }
+      			            else
+                            {
+                                <input id ="TestingRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.TestingRate"> 
+                            }
+                            %<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TestingRate">此项为必填内容</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TestingRate" validtype="number">此项必须为非负整数</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TestingRate" validtype="number1">此项必须小于等于100</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">教师评价</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="CommentRate" type="text" class="form-control" maxlength="30">  
+                            }
+      			            else
+                            {
+                                <input id ="CommentRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.CommentRate"> 
+                            }
+                            %<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="CommentRate">此项为必填内容</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="CommentRate" validtype="number">此项必须为非负整数</span>
+                             <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="CommentRate" validtype="number1">此项必须小于等于100</span>
+                        </td>
+                      </tr>
+                    </table>
+	                </div>
+	                <div class="col-xs-12">
+		                <hr>
+		                <button id ="btnSubmit" class="btn btn-success" style="width:150px;">提交</button>
+		                &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Course/CourseCreate/CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">取消</a>
+	                </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div id="modal-edit-status" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding:0;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-title"></div>
+        </div>
+    
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" onClick="location.href = '/Course/CourseCreate/CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)';">确认</button>
+        </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    TrainingId = "@ViewBag.TrainingId";
+</script>

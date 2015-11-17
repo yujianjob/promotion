@@ -1,0 +1,206 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Web.Code;
+using Dianda.AP.BLL;
+using Dianda.AP.Model;
+
+namespace Web.Areas.ClassDomain.Controllers
+{
+    //班级审核相关
+    public class ClassAuditController : Controller
+    {
+
+        //班级操作
+        public ActionResult ClassAction(string strAction, string Ids, int Val, string Remark)
+        {
+            try
+            {
+                var bll = new Class_DetailBLL();
+                var ids = Ids.Split(',');
+                foreach (var id in ids)
+                {
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        var model = bll.GetModel(id.ToInt());
+                        switch (strAction)
+                        {
+                            case "audit"://审核
+                                if (model.Status == 3)//已经通过的状态时，批量操作不再有效
+                                    continue;
+                                model.Status = Val == 1 ? 3 : 4;
+                                if (Val != 1)
+                                {
+                                    model.ApplyRemark = Remark;
+                                }
+                                //新建审核记录
+                                var apply = new Dianda.AP.Model.Class_ApplyApplication();
+                                apply.ClassId = id.ToInt();
+                                apply.AccountId = SiteCache.Instance.LoginInfo.UserId;
+                                apply.Remark = Remark;
+                                apply.CreateDate = DateTime.Now;
+                                var applyBll = new Class_ApplyApplicationBLL();
+                                applyBll.Add(apply);
+
+                                var manger=new PlatformManager_DetailBLL().GetModel(model.ManagerId,"");
+
+                                Code.MsgHelper.sendMsg(manger.AccountId, SiteCache.Instance.ManagerId, model.PartitionId, "班级审核", Val == 1 ? "班级审核通过" : "班级审核不通过");
+                                break;
+                        }
+                        bll.Update(model);
+                    }
+                }
+
+                return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Code = -1, Msg = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        //编辑班级
+        public JsonResult EditClass(string id, string Title, string TraningId, string PlanId, string SignUpStartTime, string SignUpEndTime
+            , string OpenClassFrom, string OpenClassTo, string ClassForm, string People, string LimitPeopleCnt, string Address
+            , string Content, string Subject, string StudyLevel, string TeachGrade, string TeachRank, string OrganRange
+            , string Status)
+        {
+            try
+            {
+                var bll = new Class_DetailBLL();
+                var model = bll.GetModel(id.ToInt());
+                model.Title = Title;
+                model.TraningId = TraningId.ToInt();
+                model.PlanId = PlanId.ToInt();
+                model.SignUpStartTime = SignUpStartTime.ToDateTime();
+                model.SignUpEndTime = SignUpEndTime.ToDateTime();
+                model.OpenClassFrom = OpenClassFrom.ToDateTime();
+                model.OpenClassTo = OpenClassTo.ToDateTime();
+                model.ClassForm = ClassForm.ToInt();
+                model.People = People.ToInt();
+                model.LimitPeopleCnt = LimitPeopleCnt.ToInt();
+                model.Address = Address;
+                model.Content = Content;
+                model.Subject = Subject == "0" ? true : false;
+                model.StudyLevel = StudyLevel == "0" ? true : false; ;
+                model.TeachGrade = TeachGrade == "0" ? true : false; ;
+                model.TeachRank = TeachRank;
+                model.OrganRange = OrganRange;
+                model.ManagerId = SiteCache.Instance.LoginInfo.UserId;
+                model.Status = Status.ToInt();
+                model.CreateDate = DateTime.Now;
+
+                bll.Update(model);
+                if (Status == "2")//为提交状态时，新建审核记录
+                {
+                    var apply = new Dianda.AP.Model.Class_ApplyApplication();
+                    apply.ClassId = id.ToInt();
+                    apply.AccountId = SiteCache.Instance.LoginInfo.UserId;
+                    apply.Remark = "提交审核";
+                    apply.CreateDate = DateTime.Now;
+                    var applyBll = new Class_ApplyApplicationBLL();
+                    applyBll.Add(apply);
+                }
+                return Json(new { Code = 0, Msg = "提交成功" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Code = -1, Msg = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        //班级列表
+        public ActionResult ClassAuditList(int? param_plan, int? param_subject, int? param_organ, int? param_status, string param_searchTxt, int pageIndex = 1)
+        {
+            int totalPage;
+            var fkBll = new Traning_InfoFkBLL();
+            var traningBll = new Training_PlanBLL();
+            var organBll = new Organ_DetailBLL();
+            ViewBag.PlanList = DataTableToListHelper<Dianda.AP.Model.Training_Plan>.ConvertToModel(traningBll.GetList("  Delflag=0 and Display=1 ").Tables[0]);
+
+            ViewBag.SubjectList = fkBll.GetList(" CategoryType=3 and Delflag=0 and Display=1 ", "Sort desc");
+            ViewBag.OrganList = new Organ_DetailBLL().GetListModel(" Delflag=0");
+            //市级管理员，可以查看所有班级信息。Delflag=0，display=1.status不为1和7的。
+            string where = " Delflag=0 and Display=1 and status not in(1,7) ";
+            if (param_plan.HasValue)//学期计划
+            {
+                where += " and PlanId =" + param_plan.Value;
+            }
+            if (param_subject.HasValue)//学科
+            {
+                where += " and TraningId =" + param_subject.Value;
+            }
+            if (param_organ.HasValue)//机构
+            {
+                where += " and OrganId =" + param_organ.Value;
+            }
+            if (param_status.HasValue)//状态
+            {
+                where += " and Status =" + param_status.Value;
+            }
+            if (!string.IsNullOrEmpty(param_searchTxt))//查询条件
+            {
+                where += " and( Title like '%" + param_searchTxt + "%' or exists( SELECT 1 FROM dbo.Traning_Detail WHERE Title LIKE '%"
+                    + param_searchTxt + "%' AND id=Class_Detail.TraningId))";
+            }
+            var list = DataTableToListHelper<Dianda.AP.Model.Class_Detail>.ConvertToModel(PagingQueryBll.GetPagingDataTable("Class_Detail", where, "id", pageIndex, out totalPage));
+
+            ViewBag.pageIndex = pageIndex;
+            ViewBag.totalPage = totalPage;
+            ViewBag.basecount = 10;
+            return View(list);
+        }
+
+        public ActionResult ClassAuditDetail(int id,string doaction)
+        {
+            var fkBll = new Traning_InfoFkBLL();
+            var traningBll = new Training_PlanBLL();
+            var traningDBll = new Traning_DetailBLL();
+            var bll = new Class_DetailBLL();
+            var model = bll.GetModel(id.ToInt());
+            var organ = new Organ_DetailBLL().GetModel(SiteCache.Instance.ManageOrganId);
+            if (organ.OType == 1)//培训机构职能选择自己机构开设的课程
+            {
+                ViewBag.CourseList = traningDBll.GetList(" OrganId =" + organ.Id + " and Delflag=0 and Display=1 ", "");
+            }
+            else//进修学院则可以选择自己机构开设的课程，也可以选择自己机构所属的区县下的所有课程。通过Traning_Detail.ParentOrganId。如果Range=2，则表面是市级共享课程。则可以无条件选择。
+            {
+                ViewBag.CourseList = traningDBll.GetList(" ((OrganId =" + organ.Id + " or ParentOrganId=" + organ.Id + ") or Range=2 ) and Delflag=0 and Display=1 ", "");
+            }
+            ViewBag.OrganId = SiteCache.Instance.ManageOrganId;
+            ViewBag.PartitionId = organ.PartitionId;
+            ViewBag.PlanList = DataTableToListHelper<Dianda.AP.Model.Training_Plan>.ConvertToModel(traningBll.GetList("  Delflag=0 and Display=1 ").Tables[0]);
+            ViewBag.ClassesList = fkBll.GetList(" CategoryType=5 and Delflag=0 and Display=1 ", "Sort desc");
+            ViewBag.SubjectList = fkBll.GetList(" CategoryType=3 and Delflag=0 and Display=1 ", "Sort desc");
+            ViewBag.Subject = model.Subject;
+            ViewBag.existSubjectList = new Class_TeachSubjectBLL().GetList(" Delflag=0 and ClassId=" + id, "");
+            ViewBag.StudyLevelList = fkBll.GetList(" CategoryType=4 and Delflag=0 and Display=1 ", "Sort desc");
+            ViewBag.StudyLevel = model.StudyLevel;
+            ViewBag.existStudyLevel = new Class_StudySectionBLL().GetList(" Delflag=0 and ClassId=" + id, "");
+            ViewBag.TeachGradeList = fkBll.GetList(" CategoryType=7 and Delflag=0 and Display=1 ", "Sort desc");
+            ViewBag.TeachGrade = model.TeachGrade;
+            ViewBag.existTeachGrade = new Class_TeachGradeBLL().GetList(" Delflag=0 and ClassId=" + id, "");
+            ViewBag.TeachRankList = fkBll.GetList(" CategoryType=8 and Delflag=0 and Display=1 ", "Sort desc");
+            ViewBag.TeachRank = model.TeachRank;
+
+            var course = new Traning_DetailBLL().GetModel(model.TraningId, "");
+            var organBll = new Organ_DetailBLL();
+            var list = new List<Organ_Detail>();
+            if (course.Range == 1) //区级
+            {
+                list = organBll.GetListModel("  OType IN ( 1, 2, 3 ) and PartitionId=" + course.PartitionId + " and ParentId=" + (course.OrganId.HasValue ? course.OrganId.Value : 0));
+            }
+            else//市级
+            {
+                list = organBll.GetShiOrganDetailList();
+            }
+            ViewBag.schoolList = list;
+            ViewBag.classId = id;
+            ViewBag.OrangRange = model.OrganRange.Split(',');
+            ViewBag.doaction = doaction;
+            return View(model);
+        } 
+    }
+}

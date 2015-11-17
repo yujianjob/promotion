@@ -1,0 +1,197 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+
+@model Traning_Detail
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_coursemarket_course" class="d-coursemarket-course blk_ln_coursemarket_course" data-km-htm="blk_ln_coursemarket_course.html">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <span class="coursename">@Model.Title</span>
+                            @{Organ_DetailBLL organ_DetailBLL = new Organ_DetailBLL();}
+                            <span class="source">@organ_DetailBLL.GetModel((int)Model.OrganId).Title</span>
+                            <span style="float: right; padding-right: 10px;"><a href="/Market/Coursemarket/CoursemarketSingleList">返回</a></span>
+                            <hr>
+                            @{Traning_FieldBLL traning_FieldBLL = new Traning_FieldBLL();}
+                            <div class="info"><span class="t">课程类别:</span>@traning_FieldBLL.GetModel((int)Model.TraingField, "").Title</div>
+                            <div class="info"><span class="t">课程课时:</span>@Model.TotalTime</div>
+                            @{Traning_InfoFkBLL traning_InfoFkBLL = new Traning_InfoFkBLL();
+                              string SubjectTitle = "";
+                              if (!string.IsNullOrEmpty(Model.Subject))
+                              {
+                                  if (Model.Subject.IndexOf('-') > -1)
+                                  {
+                                      SubjectTitle = "全部";
+                                  }
+                                  else
+                                  {
+                                      if (Model.Subject.IndexOf(',') > 0)
+                                      {
+                                          string[] Subjects = Model.Subject.Split(',');
+
+                                          foreach (string s in Subjects)
+                                          {
+                                              SubjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title + ",";
+                                          }
+                                      }
+                                      else
+                                      {
+                                          SubjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(Model.Subject), "").Title;
+                                      }
+                                  }
+                              }
+
+
+                              string StudyLevelTitle = "";
+                              if (!string.IsNullOrEmpty(Model.StudyLevel))
+                              {
+                                  if (Model.StudyLevel.IndexOf('-') > -1)
+                                  {
+                                      StudyLevelTitle = "全部";
+                                  }
+                                  else
+                                  {
+                                      if (Model.StudyLevel.IndexOf(',') > 0)
+                                      {
+                                          string[] StudyLevels = Model.StudyLevel.Split(',');
+
+                                          foreach (string s in StudyLevels)
+                                          {
+                                              StudyLevelTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title + ",";
+                                          }
+                                      }
+                                      else
+                                      {
+                                          StudyLevelTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(Model.StudyLevel), "").Title;
+                                      }
+                                  }
+                              }
+
+                              string TraningObjectTitle = "";
+                              if (!string.IsNullOrEmpty(Model.TraningObject))
+                              {
+                                  if (Model.TraningObject.IndexOf('-') > -1)
+                                  {
+                                      TraningObjectTitle = "全部";
+                                  }
+                                  else
+                                  {
+                                      if (Model.TraningObject.IndexOf(',') > 0)
+                                      {
+                                          string[] TraningObjects = Model.TraningObject.Split(',');
+
+                                          foreach (string s in TraningObjects)
+                                          {
+                                              TraningObjectTitle += traning_InfoFkBLL.GetModel(Convert.ToInt32(s), "").Title + ",";
+                                          }
+                                      }
+                                      else
+                                      {
+                                          if (Convert.ToInt32(Model.TraningObject) < 0)
+                                          {
+                                              TraningObjectTitle = "全部";
+                                          }
+                                          else
+                                          {
+                                              TraningObjectTitle = traning_InfoFkBLL.GetModel(Convert.ToInt32(Model.TraningObject), "").Title;
+                                          }
+                                      }
+                                  }
+                              }
+                            }
+                            <div class="info"><span class="t">适用学科:</span>@SubjectTitle.TrimEnd(',')</div>
+                            <div class="info"><span class="t">适用学段:</span>@StudyLevelTitle.TrimEnd(',')</div>
+                            @*<div class="info"><span class="t">适用对象:</span>@TraningObjectTitle.TrimEnd(',')</div>*@
+
+                            @{
+                                Member_ClassRegisterBLL member_ClassRegisterBLL = new Member_ClassRegisterBLL();
+                                System.Data.DataTable dt = member_ClassRegisterBLL.GetTable(" ClassId='" + Model.Id + "' and IsPass=1 and Delflag='false'", "");
+                                int people = 0;
+                                if (dt != null && dt.Rows.Count > 0)
+                                {
+                                    people = dt.Rows.Count;
+                                }
+                            }
+                            <div class="info"><span class="t">累计培训:</span>@people 人</div>
+                            <div class="lxcdesc">
+                                <span class="t">适用对象:</span>@TraningObjectTitle.TrimEnd(',')
+                                @*<p>@Model.Content</p>*@
+                            </div>
+                            <div class="h">课程简介</div>
+                            <div class="desc">
+                                <p>@Model.Content</p>
+                            </div>
+                            <div class="h">课程大纲</div>
+                            <div class="desc">
+                                <p>@Model.Outline</p>
+                            </div>
+
+                        </div>
+                        <div class="col-xs-5">
+                            <div class="cover">
+                                <img src="~/Resources/Images/1-432x259.png" alt="" />
+                            </div>
+                            <div class="h">课程讲师</div>
+                            <div class="teacher">
+                                @{Member_AccountBLL member_AccountBLL = new Member_AccountBLL();}
+                                <div class="name">@Model.TeacherName</div>
+                                @if (Model.TeacherTitle != null)
+                                {
+                                    <div class="title">@traning_InfoFkBLL.GetModel((int)Model.TeacherTitle, "").Title</div>
+                                }
+                                <div class="source">@Model.TeacherFrom</div>
+                                <div class="thumb">
+                                    <img src="@Model.TeacherPic" style="width:80px;height:80px;">
+                                </div>
+                            </div>
+
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#class1" data-toggle="tab" onclick="change(@Model.Id,1)">可报名的班级</a></li>
+                                <li><a href="#class2" data-toggle="tab" onclick="change(@Model.Id,2)">进行中的班级</a></li>
+                                <li><a href="#class3" data-toggle="tab" onclick="change(@Model.Id,3)">已结束的班级</a></li>
+                            </ul>
+
+                            <iframe id="showlist" name="showlist" src="CoursemarketTCList?Id=@Model.Id&Type=1" width="432.5px" height='100%' frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling="no"></iframe>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Resources/Scripts/Coursemarket/coursemarketSingleEnrollC.js"></script>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+        });
+    });
+</script>
+<style>
+    .lxcdesc {
+        position: relative;
+        display: inline-block;
+        padding: 5px 0 5px 100px;
+        min-width: 600px;
+    }
+
+        .lxcdesc .t {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 80px;
+        }
+</style>

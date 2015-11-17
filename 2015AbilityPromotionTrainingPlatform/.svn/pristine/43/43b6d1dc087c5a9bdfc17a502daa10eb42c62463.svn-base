@@ -1,0 +1,95 @@
+﻿@using System.Data;
+
+@{
+    ViewBag.Title = "Statistics";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">统计</div>
+                <div id="blk_ct_menu_class" class="blk_ct_menu_class">
+                    <div class="d-navmenu">
+                        <a id="d_courseteacher_class_progress" href="/Statistics/Statistics" class="i">详细信息</a>
+                        <a id="d_courseteacher_class_member" href="/Statistics/Statistics/Statistics" class="i active">统计数据</a>
+                    </div>
+                </div>
+                
+                <div class="d-datatable" style="min-height: 500px; height: auto; vertical-align: middle;">
+                    <table class="table table-bordered table-hover" style="font-size: 14px;">
+                        <thead style="text-align: center;">
+                            <tr>
+                                <th>区县</th>
+                                <th>总人数</th>
+                                <th>已测人数</th>
+                                <th>未测人数</th>
+                                <th>总评测数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                @if(Model == null)
+                                {
+                                    <tr>
+                                        <td nowrap colspan ="5">
+                                            <h4 class ="No_Content_Title">暂无信息</h4>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    int sumTP = 0, sumCP = 0, sumNP = 0, sumT = 0;
+                                    DataTable organList = Model.Tables[0];//机构列表
+                                    DataTable peopleList = Model.Tables[1];//总人数
+                                    DataTable times = Model.Tables[2];//评测次数
+                                    DataTable peoples = Model.Tables[3];//评测人数
+                                    foreach (DataRow row in organList.Rows)
+                                    {
+                                        DataRow[] tp = peopleList.Select("OrganId=" + row["Id"]);
+                                        int tpNum = tp.Count() == 0 ? 0 : Convert.ToInt32(tp[0]["UserCount"]);//总人数
+                                        sumTP += tpNum;
+
+                                        DataRow[] t = times.Select("OrganId=" + row["Id"]);
+                                        int tNum = t.Count() == 0 ? 0 : Convert.ToInt32(t[0]["UserCount"]);//评测次数
+                                        sumT += tNum;
+
+                                        DataRow[] cp = peoples.Select("OrganId=" + row["Id"]);
+                                        int cpNum = cp.Count() == 0 ? 0 : Convert.ToInt32(cp[0]["UserCount"]);//评测人数
+                                        sumCP += cpNum;
+
+                                        int npNum = tpNum - cpNum;//未评测人数   
+                                        sumNP += npNum;
+                                                                             
+                                        <tr>
+                                            @if (ViewBag.ParentId == 0)
+                                            {
+                                                <td><a href="/Statistics/Statistics/Statistics?organId=@Dianda.Common.QueryString.UrlEncrypt(row["Id"])">@row["Title"]</a></td>
+                                            }
+                                            else
+                                            {
+                                                <td>@row["Title"]</td>
+                                            }
+                                            <td>@tpNum</td>
+                                            <td>@cpNum</td>
+                                            <td>@npNum</td>
+                                            <td>@tNum</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td><b>总数</b></td>
+                                        <td><b>@sumTP</b></td>
+                                        <td><b>@sumCP</b></td>
+                                        <td><b>@sumNP</b></td>
+                                        <td><b>@sumT</b></td>
+                                    </tr>
+                                }
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

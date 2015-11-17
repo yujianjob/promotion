@@ -1,0 +1,620 @@
+﻿@using Dianda.AP.Model;
+@using Dianda.Common;
+@{
+    ViewBag.Title = "学期设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Training_Plan> list = ViewBag.GetList as List<Training_Plan>;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">
+                    学期设置
+               
+                    <div class="search form-inline">
+                        <div class="form-group">
+                            <button type="button" id="AddSemester" class="btn btn-success" style="margin-left: 20px;">新增学期</button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div id="blk_ac_setup_term" class="blk_ac_setup_term">
+                    <div class="d-datatable">
+                        @if(list.Count>0)
+                        {
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>学期</th>
+                                    <th>默认报名日期</th>
+                                    <th>默认开课日期</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < list.Count; i++)
+                                { 
+                                    <tr>
+                                    <td>@list[i].Title</td>
+                                    <td>@list[i].SignUpStartTime.ToString("yyyy-MM-dd")  --  @list[i].SignUpEndTime.ToString("yyyy-MM-dd")</td>
+                                    <td>@list[i].OpenClassFrom.ToString("yyyy-MM-dd")  --  @list[i].OpenClassTo.ToString("yyyy-MM-dd")</td>
+                                     @if (list[i].IsOpen)
+                                     {
+                                         <td><span class="text-primary">启用中</span></td>
+                                     }
+                                     else
+                                     { 
+                                        <td><span class="text-danger">禁用中</span></td>
+                                     }
+                                    
+                                    <td>
+                                        @if(list[i].IsOpen)
+                                        {
+                                            @*<a href="javascript:;" onclick="Disable(@list[i].Id,0,@list[i].PartitionId)">禁用</a>*@
+                                        }else
+                                        {
+                                            <a href="javascript:;" onclick="Disable(@list[i].Id,1,@list[i].PartitionId)">启用</a>
+                                        }
+                                        <a href="javascript:;" onclick="Edit(@list[i].Id)">编辑</a>
+@*                                        <a href="javascript:;" onclick="DelInfo(@list[i].Id)">删除</a>*@
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                        }else
+                        {
+                            <div style="text-align:center;">
+                                <span style="font-size:18px;">暂无学时</span>
+                            </div>
+                           <br />
+                           <br />
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            @if (@ViewData["pageCount"].ToString() == "0")
+                            {
+                                <span>总页数 1</span>
+                            }
+                            else
+                            {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                            }
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="/Prepare/Semester/Index?PageIndex=@QueryString.UrlEncrypt(1)">首页</a>
+
+                            <a id="OnPage" href="/Prepare/Semester/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) - 1)">上一页</a>
+
+                            <a id="NextPage" href="/Prepare/Semester/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) + 1)">下一页</a>
+
+                            <a id="LastPage" href="/Prepare/Semester/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageCount"].ToString()))">尾页</a>
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="blk_at_new_semester_add" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新增学期</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">学期名 <span class="text-danger">*</span><span id="PlanNameSpan" class="text-danger"></span></label>
+                            <input type="text" id="PlanName" class="form-control" maxlength="25">
+                        </div>
+                    </div>
+                    </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认开始报名日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="SignDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认结束报名日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="SignEndDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+                    </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认开始开课日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="StartDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认结束开课日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="EndDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+ @*                   <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">显示顺序 <span class="text-danger">*</span></label>
+                            <input type="text" id="Sort" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">状态 <span class="text-danger">*</span></label>
+                            <label class="chk" style="width:70px;">
+                                <input type="radio" name="a1" value="2" checked>
+                                启用
+                            </label>
+                            <label class="chk" style="width:70px;">
+                                <input type="radio" name="a1" value="3">
+                                禁用
+                            </label>
+                        </div>
+                    </div>*@
+
+@*                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">是否显示 <span class="text-danger">*</span></label>
+                            <input type="checkbox" id="DisPlay" maxlength="30">
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="Message" style="color:red; float:left;"> </span>
+                <button type="button" class="btn btn-success" onclick="doSemSubmit()" style="width: 150px;">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="blk_at_new_semester_edit" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改学期</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label">学期ID <span class="text-danger">*</span></label>
+                            <input type="text" id="EPlanId" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">学期名 <span class="text-danger">*</span></label>
+                            <input type="text" id="EPlanName" class="form-control" maxlength="25">
+                        </div>
+                    </div>
+                    </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认开始报名日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="ESignDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认结束报名日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="ESignEndDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+                    </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认开始开课日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="EStartDate" class="form-control input-date"maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">默认结束开课日期 <span class="text-danger">*</span></label>
+                            <input type="text" id="EEndDate" class="form-control input-date" maxlength="30">
+                        </div>
+                    </div>
+                   @* <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">显示顺序 <span class="text-danger">*</span></label>
+                            <input type="text" id="ESort" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">状态 <span class="text-danger">*</span></label>
+                            <label class="chk" style="width:70px;">
+                                <input type="radio" name="Ea1" value="true" checked>
+                                启用
+                            </label>
+                            <label class="chk" style="width:70px;">
+                                <input type="radio" name="Ea1" value="false">
+                                禁用
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">是否显示 <span class="text-danger">*</span></label>
+                            <input type="checkbox" id="EDisPlay" maxlength="30">
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="EMessage" style="color:red; float:left;"> </span>
+                <button type="button" class="btn btn-success" onclick="doEditSubmit()" style="width: 150px;">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+            $('input.input-date').datepicker({});
+        });
+    });
+    
+    function doSemSubmit()
+    {
+        $("#Message").text("");
+
+        var Title = $("#PlanName").val();
+        var SignDate = $("#SignDate").val();
+        var StartDate = $("#StartDate").val();
+        //var Status = $("input[name='a1']:checked").val();
+        //var DisPlay = $("#DisPlay").is(":checked");
+        //var Sort = $("#Sort").val();
+        var SignEndDate = $("#SignEndDate").val();
+        var EndDate = $("#EndDate").val();
+        if (Trim(Title) == "" || Trim(Title) == null)
+        {
+            $("#Message").text("请输入学期名称");
+            return false;
+        } else if (SignDate == "" || SignDate == null)
+        {
+            $("#Message").text("请输入默认开始报名时间");
+            return false;
+        } else if (SignEndDate == "" || SignEndDate == null)
+        {
+            $("#Message").text("请输入默认结束报名时间");
+            return false;
+        }
+        else if (StartDate == "" || StartDate == null) {
+            $("#Message").text("请输入默认开始开课时间");
+            return false;
+        } else if (EndDate == "" || EndDate == null)
+        {
+            $("#Message").text("请输入默认结束开课时间");
+            return false;
+        } else if (new Date(SignEndDate) < new Date(SignDate))
+        {
+            $("#Message").text("开始报名时间不能大于结束报名时间");
+            return false;
+        }
+        else if (new Date(EndDate) < new Date(StartDate)) {
+            $("#Message").text("开始开课时间不能大于结束开课时间");
+            return false;
+        }
+        if (new Date(SignDate) > new Date(StartDate))
+        {
+            $("#Message").text("默认开课时间不能小于默认报名时间");
+            return false;
+        }
+        if (new Date(StartDate) < new Date(SignEndDate)) {
+            $("#Message").text("开始开课时间不能小于报名结束时间");
+            return false;
+        }
+        //else if (Sort == "" || Sort == null) {
+        //    $("#Message").text("请输入显示顺序");
+        //    return false;
+        //}
+
+        $.ajax({
+            url: '@Url.Action("SemesterAdd")',
+            type: 'get',
+            data: { Title: Title, SignDate: SignDate, StartDate: StartDate, SignEndDate: SignEndDate, EndDate: EndDate },
+            cache: false,
+            datatype: 'text',
+            success: function (data) {
+                var res = data.split(':');
+                if (res[0] == 'yes') {
+                    alert(res[1]);
+                    window.location.href = '/Prepare/Semester/Index';
+                }
+                else if (res[0] == 'no') {
+                    Alert(res[1]);
+                    return false;
+                }
+                else {
+                    Alert('未知错误！');
+                    return false;
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    }
+
+    $("#GoBtn").click(function () {
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (pagecount == "0") {
+            pagecount = "1";
+        }
+        if (index == "0") {
+            Alert('请输入正确的页数！！！');
+            return false;
+        }
+        else if (parseInt(index) > parseInt(pagecount)) {
+            Alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            Alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = "/Prepare/Semester/Index?pageIndex=" + index + "";
+        }
+     })
+
+    $(document).ready(function () {
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10 || index == pagecount) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+    })
+
+
+    function Disable(id, type, PartitionId)
+    {
+        $.ajax({
+            url: '@Url.Action("SemesterDisable")',
+            type: 'get',
+            data: { id: id, type: type, PartitionId: PartitionId },
+            cache: false,
+            datatype: 'text',
+            success: function (data) {
+                var res = data.split(':');
+                if (res[0] == 'yes') {
+                    window.location.href = '/Prepare/Semester/Index';
+                }
+                else if (res[0] == 'no') {
+                    Alert(res[1]);
+                    return false;
+                }
+                else {
+                    Alert('未知错误！');
+                    return false;
+                }
+                    },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    }
+    
+    function Edit(id) {
+
+        $('#blk_at_new_semester_edit').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+
+        $.ajax({
+            url: '@Url.Action("SemesterGetModel")',
+            type: 'get',
+            data: { id: id },
+            cache: false,
+            datatype: 'text',
+            success: function (data) {
+                $("#EPlanName").val(data.Title);
+                $("#ESignDate").val(SplitDate(GetDateTime(data.SignUpStartTime)));
+                $("#EStartDate").val(SplitDate(GetDateTime(data.OpenClassFrom)));
+                //if (data.IsOpen) {
+                //    $("input[name='Ea1'][value='true']").click();
+                //} else {
+                //    $("input[name='Ea1'][value='false']").click();
+                //}
+                
+                $("#EPlanId").val(id);
+                $("#ESignEndDate").val(SplitDate(GetDateTime(data.SignUpEndTime)));
+                $("#EEndDate").val(SplitDate(GetDateTime(data.OpenClassTo)));
+                //if (data.DisPlay) {
+                //    $("#EDisPlay").attr("checked", "cheched");
+                //} else {
+                //    $("#EDisPlay").attr("checked", "");
+                //}
+                //var Sort = $("#ESort").val(data.Sort);
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+    }
+
+    $("#AddSemester").click(function () {
+        $('#blk_at_new_semester_add').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    })
+
+    $('#blk_at_new_semester_add').on('shown.bs.modal', function (e) {
+
+    });
+    $('#blk_at_new_semester_add').on('hidden.bs.modal', function (e) {
+
+    });
+
+    function doEditSubmit() {
+        $("#EMessage").text("");;
+
+        var Title = $("#EPlanName").val();
+        var SignDate = $("#ESignDate").val();
+        var StartDate = $("#EStartDate").val();
+        //var Status = $("input[name='Ea1']:checked").val();
+        //var DisPlay = $("#EDisPlay").is(":checked");
+        //var Sort = $("#ESort").val();
+        var id = $("#EPlanId").val();
+        var SignEndDate = $("#ESignEndDate").val();
+        var EndDate = $("#EEndDate").val();
+        if (Trim(Title) == "" || Trim(Title) == null) {
+            $("#EMessage").text("请输入学期名称");
+            return false;
+        } else if (SignDate == "" || SignDate == null) {
+            $("#EMessage").text("请输入默认开始报名时间");
+            return false;
+        } else if (SignEndDate == "" || SignEndDate == null) {
+            $("#EMessage").text("请输入默认报名结束时间");
+            return false;
+        } else if (StartDate == "" || StartDate == null) {
+            $("#EMessage").text("请输入默认开始开课时间");
+            return false;
+        } else if (EndDate == "" || EndDate == null) {
+            $("#EMessage").text("请输入默认结束开课时间");
+            return false;
+        }
+        else if (new Date(SignEndDate) < new Date(SignDate)) {
+            $("#EMessage").text("开始报名时间不能大于结束报名时间");
+            return false;
+        }
+        else if (new Date(EndDate) < new Date(StartDate)) {
+            $("#EMessage").text("开始开课时间不能大于结束开课时间");
+            return false;
+        }
+        if (new Date(SignDate) > new Date(StartDate)) {
+            $("#EMessage").text("默认开课时间不能小于默认报名时间");
+            return false;
+        }
+        if (new Date(StartDate) < new Date(SignEndDate))
+        {
+            $("#EMessage").text("开始开课时间不能小于报名结束时间");
+            return false;
+        }
+        //else if (Sort == "" || Sort == null) {
+        //    $("#EMessage").text("请输入显示顺序");
+        //    return false;
+        //}
+
+        $.ajax({
+            url: '@Url.Action("SemesterEdit")',
+            type: 'get',
+            data: { id: id, Title: Title, SignDate: SignDate, StartDate: StartDate,SignEndDate: SignEndDate, EndDate: EndDate },
+            cache: false,
+            datatype: 'text',
+            success: function (data) {
+                var res = data.split(':');
+                if (res[0] == 'yes') {
+                    alert(res[1]);
+                    window.location.href = '/Prepare/Semester/Index';
+                }
+                else if (res[0] == 'no') {
+                    Alert(res[1]);
+                    return false;
+                }
+                else {
+                    Alert('未知错误！');
+                    return false;
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+    }
+
+
+    function DelInfo(id)
+    {
+        if (confirm('确认删除吗？')) {
+            $.ajax({
+                url: '@Url.Action("SemesterDel")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var src = data.split(':');
+                    if (src[0] == "yes") {
+                        alert(src[1]);
+                        location.href = '/Prepare/Semester/Index';
+                    } else {
+                        alert(src[1]);
+                        location.href = '/Prepare/Semester/Index';
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    alert(errorMessage);
+                }
+            });
+        }
+        return false;
+    }
+
+
+    function GetDateTime(value)
+    {
+        if (value != null) {
+            var date = new Date(parseInt(value.replace("/Date(", "").replace(")/", ""), 10));
+            //月份为0-11，所以+1，月份小于10时补个0
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            return date.getFullYear() + "-" + month + "-" + currentDate;
+        }
+    }
+
+    function Trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+
+    function SplitDate(value)
+    {
+        var src = value.split(' ');
+        var data = src[0].split('-');
+        return data[1] + "/" + data[2] + "/" + data[0];
+    }
+</script>

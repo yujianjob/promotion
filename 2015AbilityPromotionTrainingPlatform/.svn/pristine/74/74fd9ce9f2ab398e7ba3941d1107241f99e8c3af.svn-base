@@ -1,0 +1,356 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using Dianda.AP.Model.API;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Transactions;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+
+namespace Web.Areas.Api.Controllers
+{
+    public class OutCourseController : Controller
+    {
+        //
+        // GET: /Api/OutCourse/
+
+        [Serializable]
+        internal class OutCourse
+        {
+            public string title { get; set; }
+            public string learningTime { get; set; }
+            public string remark { get; set; }
+            public string recordTime { get; set; }
+            public string score { get; set; }
+            public string isPassed { get; set; }
+            public string role { get; set; }
+        }
+
+        private static string aesKey = "nltswx05nltswx05";
+        private static string aesIV = "nltswx05nltswx05";
+
+        /// <summary>
+        /// 新增学习活动
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="classId"></param>
+        /// <param name="scoType">1：阅读 2：视频 3：测试 4：讨论 5：作业 6：考试 7：其他</param>
+        /// <param name="recordData"></param>
+        /// <param name="timestamp"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult addRecordInfo(string userId, string classId, int scoType, string recordData, string timestamp)
+        {
+            bool result;
+            string msg;
+
+            #region 验证参数
+            userId = this.Decrypt(userId, aesKey, aesIV);
+            if (string.IsNullOrEmpty(userId))
+            {
+                result = false;
+                msg = "参数：userId的加密格式错误";
+                return Json(new { Result = result, Msg = msg });
+            }
+            int uid;
+            if (!int.TryParse(userId.Replace("\\0", ""), out uid))
+            {
+                result = false;
+                msg = "参数：userId不是合法的整数类型";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            classId = this.Decrypt(classId, aesKey, aesIV);
+            if (string.IsNullOrEmpty(classId))
+            {
+                result = false;
+                msg = "参数：classId的加密格式错误";
+                return Json(new { Result = result, Msg = msg });
+            }
+            int cid;
+            if (!int.TryParse(classId.Replace("\\0", ""), out cid))
+            {
+                result = false;
+                msg = "参数：classId不是合法的整数类型";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            if (scoType < 1 || scoType > 7)
+            {
+                result = false;
+                msg = "参数：scoType不合法";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            recordData = this.Decrypt(recordData, aesKey, aesIV);
+            if (string.IsNullOrEmpty(recordData))
+            {
+                result = false;
+                msg = "参数：recordData的加密格式错误";
+                return Json(new { Result = result, Msg = msg });
+            }
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            OutCourse outcourse;
+            try
+            {
+                outcourse = jss.Deserialize<OutCourse>(recordData.Replace("\\0", ""));
+            }
+            catch (Exception)
+            {
+                result = false;
+                msg = "参数：recordData不是合法的Json格式";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            if (!Dianda.Common.StringSecurity.MD5Lib.Encrypt(
+                DateTime.Now.ToString("yyyyMMddHH") + uid + cid).Equals(timestamp, StringComparison.CurrentCultureIgnoreCase))
+            {
+                result = false;
+                msg = "参数：timestamp验证不通过";
+                return Json(new { Result = result, Msg = msg });
+            }
+            #endregion
+
+            Member_ClassRegisterBLL mcBLL = new Member_ClassRegisterBLL();
+            Member_ClassRegister mcModel = mcBLL.GetModel("Delflag=0 and ClassId=" + cid + " and AccountId=" + uid + " and PlanId=" + Code.SiteCache.Instance.PlanId);
+            if (mcModel == null)
+            {
+                result = false;
+                msg = "学员班级信息不存在";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            switch (scoType)
+            {
+                case 1:
+                    if (mcModel.ReadingScore == null)
+                        mcModel.ReadingScore = 1;
+                    else
+                        mcModel.ReadingScore += 1;
+                    break;
+
+                case 2:
+                    if (mcModel.ReadingScore == null)
+                        mcModel.ReadingScore = 1;
+                    else
+                        mcModel.ReadingScore += 1;
+                    break;
+
+                case 3:
+                    if (mcModel.TestingScore == null)
+                        mcModel.TestingScore = 1;
+                    else
+                        mcModel.TestingScore += 1;
+                    break;
+
+                case 4:
+                    if (mcModel.DiscussScore == null)
+                        mcModel.DiscussScore = 1;
+                    else
+                        mcModel.DiscussScore += 1;
+                    break;
+
+                case 5:
+                    if (mcModel.HomeWorkScore == null)
+                        mcModel.HomeWorkScore = 1;
+                    else
+                        mcModel.HomeWorkScore += 1;
+                    break;
+
+                case 6:
+                    if (mcModel.ExaminationScore == null)
+                        mcModel.ExaminationScore = 1;
+                    else
+                        mcModel.ExaminationScore += 1;
+                    break;
+
+                case 7:
+                    break;
+            }
+
+            Course_OutCourseRecordBLL bll = new Course_OutCourseRecordBLL();
+            Course_OutCourseRecord model = new Course_OutCourseRecord();
+            model.ClassId = cid;
+            model.TrainingId = mcModel.TrainingId;
+            model.AccountId = uid;
+            model.DataType = scoType;
+            model.Status = true;
+            model.Delflag = false;
+            ConvertModel(outcourse, model);
+
+            try
+            {
+                using (TransactionScope trans = new TransactionScope())
+                {
+                    bll.Add(model);
+                    mcBLL.Update(mcModel);
+                    trans.Complete();
+                    result = true;
+                    msg = "新增学习记录成功";
+                    return Json(new { Result = result, Msg = msg });
+                }
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(e);
+                result = true;
+                msg = "新增学习记录失败";
+                return Json(new { Result = result, Msg = msg });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult setEvaluation(string userId, string classId, int isPassed, string assessmentName, string remark, string timestamp)
+        {
+            bool result;
+            string msg;
+
+            #region 验证参数
+            userId = this.Decrypt(userId, aesKey, aesIV);
+            if (string.IsNullOrEmpty(userId))
+            {
+                result = false;
+                msg = "参数：userId的加密格式错误";
+                return Json(new { Result = result, Msg = msg });
+            }
+            int uid;
+            if (!int.TryParse(userId.Replace("\\0", ""), out uid))
+            {
+                result = false;
+                msg = "参数：userId不是合法的整数类型";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            classId = this.Decrypt(classId, aesKey, aesIV);
+            if (string.IsNullOrEmpty(classId))
+            {
+                result = false;
+                msg = "参数：classId的加密格式错误";
+                return Json(new { Result = result, Msg = msg });
+            }
+            int cid;
+            if (!int.TryParse(classId.Replace("\\0", ""), out cid))
+            {
+                result = false;
+                msg = "参数：classId不是合法的整数类型";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            if (!Dianda.Common.StringSecurity.MD5Lib.Encrypt(
+                DateTime.Now.ToString("yyyyMMddHH") + uid + cid).Equals(timestamp, StringComparison.CurrentCultureIgnoreCase))
+            {
+                result = false;
+                msg = "参数：timestamp验证不通过";
+                return Json(new { Result = result, Msg = msg });
+            }
+            #endregion
+
+            Member_ClassRegisterBLL mcBLL = new Member_ClassRegisterBLL();
+            Member_ClassRegister mcModel = mcBLL.GetModel("Delflag=0 and ClassId=" + cid + " and AccountId=" + uid + " and PlanId=" + Code.SiteCache.Instance.PlanId);
+            if (mcModel == null)
+            {
+                result = false;
+                msg = "学员班级信息不存在";
+                return Json(new { Result = result, Msg = msg });
+            }
+
+            if (isPassed == 1)
+                mcModel.Result = 1;
+            else
+                mcModel.Result = 0;
+
+            if (mcBLL.Update(mcModel))
+            {
+                result = true;
+                msg = "结业评价操作成功";
+            }
+            else
+            {
+                result = false;
+                msg = "结业评价操作失败";
+            }
+            return Json(new { Result = result, Msg = msg });
+        }
+
+        private void ConvertModel(OutCourse input, Course_OutCourseRecord output)
+        {
+            output.Title = input.title;
+
+            double learningTime;
+            if (double.TryParse(input.learningTime, out learningTime))
+                output.learningTime = learningTime;
+
+            output.Remark = input.remark;
+
+            DateTime recordTime;
+            if (DateTime.TryParse(input.recordTime, out recordTime))
+                output.CreateDate = recordTime;
+            else
+                output.CreateDate = DateTime.Now;
+
+            double score;
+            if (double.TryParse(input.score, out score))
+                output.Score = score;
+
+            bool isPassed;
+            if (bool.TryParse(input.isPassed, out isPassed))
+                output.IsPassed = isPassed;
+
+            int role;
+            if (int.TryParse(input.role, out role))
+                output.Role = role;
+        }
+        
+        private string Encrypt(string toEncrypt, string key, string iv)
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes(key);
+            byte[] ivArray = UTF8Encoding.UTF8.GetBytes(iv);
+            byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
+
+            RijndaelManaged rDel = new RijndaelManaged();
+            rDel.Key = keyArray;
+            rDel.IV = ivArray;
+            rDel.Mode = CipherMode.CBC;
+            rDel.Padding = PaddingMode.Zeros;
+
+            ICryptoTransform cTransform = rDel.CreateEncryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
+        }
+
+        private string Decrypt(string toDecrypt, string key, string iv)
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes(key);
+            byte[] ivArray = UTF8Encoding.UTF8.GetBytes(iv);
+            byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
+
+            RijndaelManaged rDel = new RijndaelManaged();
+            rDel.Key = keyArray;
+            rDel.IV = ivArray;
+            rDel.Mode = CipherMode.CBC;
+            rDel.Padding = PaddingMode.Zeros;
+
+            ICryptoTransform cTransform = rDel.CreateDecryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return UTF8Encoding.UTF8.GetString(resultArray);
+        }
+
+        private void WriteLog(Exception e)
+        {
+            string direct = HttpContext.Server.MapPath("~/Log/Api/");
+            if (!Directory.Exists(direct))
+                Directory.CreateDirectory(direct);
+            string file = direct + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
+            string content = DateTime.Now + " " + new string('-', 100) + "\r\n"
+                + e.Message + "\r\n";
+            System.IO.File.AppendAllText(file, content, Encoding.UTF8);
+        }
+    }
+}

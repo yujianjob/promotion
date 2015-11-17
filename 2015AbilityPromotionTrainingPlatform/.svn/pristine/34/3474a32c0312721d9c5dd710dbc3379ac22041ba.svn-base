@@ -1,0 +1,277 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model;
+using Dianda.AP.Model.Prepare.TrainingApply;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using XXW.Enum;
+
+namespace Dianda.AP.BLL
+{
+    public class PrepareTrainingApplyBLL
+    {
+        /// <summary>
+        /// 取得课程总数
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public int GetTrainingInfoCount(string where)
+        {
+            return new PrepareTrainingApplyDAL().GetTrainingInfoCount(where);
+        }
+
+        /// <summary>
+        /// 取得课程列表
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<TrainingInfo> GetTrainingInfoList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            return new PrepareTrainingApplyDAL().GetTrainingInfoList(pageSize, pageIndex, where, orderBy);
+        }
+
+        /// <summary>
+        /// 取得培训对象类型
+        /// </summary>
+        /// <returns></returns>
+        public List<Traning_InfoFk> GetTraningObject()
+        {
+            return new Traning_InfoFkBLL().GetList("Delflag=0 and CategoryType=2", "");
+        }
+
+        /// <summary>
+        /// 取得学科类型
+        /// </summary>
+        /// <returns></returns>
+        public List<Traning_InfoFk> GetSubject()
+        {
+            return new Traning_InfoFkBLL().GetList("Delflag=0 and CategoryType=3", "");
+        }
+
+        /// <summary>
+        /// 取得学段类型
+        /// </summary>
+        /// <returns></returns>
+        public List<Traning_InfoFk> GetStudyLevel()
+        {
+            return new Traning_InfoFkBLL().GetList("Delflag=0 and CategoryType=4", "");
+        }
+
+        /// <summary>
+        /// 取得讲师称谓类型
+        /// </summary>
+        /// <returns></returns>
+        public List<Traning_InfoFk> GetTeacherTitle()
+        {
+            return new Traning_InfoFkBLL().GetList("Delflag=0 and CategoryType=6", "");
+        }
+
+        /// <summary>
+        /// 取得培训形式类型
+        /// </summary>
+        /// <returns></returns>
+        public List<Traning_InfoFk> GetTrainingForm()
+        {
+            return new Traning_InfoFkBLL().GetList("Delflag=0 and CategoryType=5", "");
+        }
+
+        /// <summary>
+        /// 新增一条课程记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool AddTrainingDetail(Traning_Detail model)
+        {
+            return new Traning_DetailDAL().Add(model) > 0;
+        }
+
+        /// <summary>
+        /// 更新一条课程记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool UpdateTrainingDetail(Traning_Detail model)
+        {
+            return new Traning_DetailDAL().Update(model) > 0;
+        }
+
+        /// <summary>
+        /// 取得附件DataTable
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public DataTable GetAttachTable(string where, string orderBy)
+        {
+            return new Traning_AttachmentBLL().GetAttachTable(where, orderBy);
+        }
+
+        /// <summary>
+        /// 批量更新附件
+        /// </summary>
+        /// <param name="dt"></param>
+        public void BatchAttach(DataTable dt)
+        {
+            new PrepareTrainingApplyDAL().BatchAttach(dt);
+        }
+
+        /// <summary>
+        /// 取得课程大类
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Traning_Field> GetTrainingField(string where, string orderBy)
+        {
+            return new Traning_FieldBLL().GetList(where, orderBy);
+        }
+
+        /// <summary>
+        /// 取得课程小类
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Traning_Category> GetTrainingCategory(string where, string orderBy)
+        {
+            return new Traning_CategoryBLL().GetList(where, orderBy);
+        }
+
+        /// <summary>
+        /// 取得课程主题
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Traning_Topic> GetTrainingTopic(string where, string orderBy)
+        {
+            return new Traning_TopicBLL().GetList(where, orderBy);
+        }
+
+        /// <summary>
+        /// 新增一条课程审核记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool AddTrainingApply(Traning_ApplyApplication model)
+        {
+            return new Traning_ApplyApplicationDAL().Add(model) > 0;
+        }
+
+        /// <summary>
+        /// 更新一条审核记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool UpdateTrainingApply(Traning_ApplyApplication model)
+        {
+            return new Traning_ApplyApplicationDAL().Update(model) > 0;
+        }
+
+        /// <summary>
+        /// 取得一条课程审核记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public Traning_ApplyApplication GetTrainingApply(int id, string where)
+        {
+            return new Traning_ApplyApplicationDAL().GetModel(id, where);
+        }
+
+        /// <summary>
+        /// 取得一条记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public Traning_Detail GetTrainingDetail(int id, string where)
+        {
+            return new Traning_DetailDAL().GetModel(id, where);
+        }
+
+        /// <summary>
+        /// 取得课程讲师
+        /// </summary>
+        /// <param name="partitionId"></param>
+        /// <param name="organId"></param>
+        /// <returns></returns>
+        public DataTable GetTeacherList(int pageSize, int pageIndex, string where, int partitionId, int organId)
+        {
+            DataTable dt = new UtilsDAL().GetRecursion("Organ_Detail", "Id", "ParentId", organId);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("A.Delflag=0 and A.Status=2 and A.OrganId in (");
+            foreach (DataRow row in dt.Rows)
+            {
+                sb.Append(row["Id"] + ",");
+            }
+            sb.Append("0)");
+            sb.Append(" and B.Delflag=0 and B.Status=1 and B.PartitionId=" + partitionId + " and B.GroupId=" + (int)PlatformGroupEnum.TeacherCourse);
+            sb.Append(" and C.Delflag=0 and C.PartitionId=" + partitionId);
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" and " + where);
+            return new PrepareTrainingApplyDAL().GetTeacherList(pageSize, pageIndex, sb.ToString(), "B.Id");
+        }
+
+        /// <summary>
+        /// 取得课程讲师总数
+        /// </summary>
+        /// <param name="partitionId"></param>
+        /// <param name="organId"></param>
+        /// <returns></returns>
+        public int GetTeacherCount(int partitionId, int organId, string where)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("A.Delflag=0 and A.Status=2 and A.OrganId=" + organId);
+            sb.Append(" and B.Delflag=0 and B.Status=1 and B.PartitionId=" + partitionId + " and B.GroupId=" + (int)PlatformGroupEnum.TeacherCourse);
+            sb.Append(" and C.Delflag=0 and C.PartitionId=" + partitionId);
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" and " + where);
+            return new PrepareTrainingApplyDAL().GetTeacherCount(sb.ToString());
+        }
+
+        /// <summary>
+        /// 批量安排教师
+        /// </summary>
+        /// <param name="dt"></param>
+        public void BatchSelectTeacher(DataTable dt)
+        {
+            new PrepareTrainingApplyDAL().BatchSelectTeacher(dt);
+        }
+
+        /// <summary>
+        /// 取得上级机构Id
+        /// </summary>
+        /// <param name="organId"></param>
+        /// <returns></returns>
+        public int GetParentOrganId(int organId)
+        {
+            Organ_Detail model = new Organ_DetailDAL().GetModel(organId);
+            if (model != null && model.ParentId != null)
+            {
+                return Convert.ToInt32(model.ParentId);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// 取得外部课程类型
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Traning_OutCourseType> GetOutCourseType(string where, string orderBy)
+        {
+            return new Traning_OutCourseTypeBLL().GetList(where, orderBy);
+        }
+    }
+}

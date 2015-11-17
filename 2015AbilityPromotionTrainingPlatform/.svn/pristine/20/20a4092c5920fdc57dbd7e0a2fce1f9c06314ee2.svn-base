@@ -1,0 +1,283 @@
+﻿@{
+    ViewBag.Title = "Statistics";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/echarts-2.2.7/echarts-all.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">统计</div>
+                <div id="blk_ct_menu_class" class="blk_ct_menu_class">
+                    <div class="d-navmenu">
+                        <a href="/Statistics/Statistics" class="i">详细信息</a>
+                        <a href="/Statistics/Statistics/Statistics" class="i">统计数据</a>
+                        <div class="i active">图形统计</div>
+                    </div>
+                </div>
+                
+                <style type="text/css">
+                    .chart td{
+                        padding:5px 0;
+                    }
+                </style>
+
+                <div class="d-datatable" style="min-height: 500px; height: auto; vertical-align: middle;padding:0 10px;">
+                    @using (Html.BeginForm("Chart", "Statistics", FormMethod.Get))
+                    {
+                    <table class="chart">
+                        <tr>
+                            <td>省份：</td>
+                            <td>
+                                <select disabled="disabled">
+                                    <option selected="selected">上海市</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>地市：</td>
+                            <td>
+                                @Html.DropDownList("AreaId", ViewBag.AreaData as SelectList, "请选择")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>性别：</td>
+                            <td>
+                                @Html.DropDownList("SexId", ViewBag.SexData as SelectList, "请选择")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>年龄段：</td>
+                            <td>
+                                @Html.DropDownList("AgeRegionId", ViewBag.AgeRegionData as SelectList, "请选择")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>年级段：</td>
+                            <td>
+                                @Html.DropDownList("GradeRegionId", ViewBag.GradeRegionData as SelectList, "请选择")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>学校：</td>
+                            <td>
+                                @Html.DropDownList("SchoolId", ViewBag.SchoolData as SelectList, "请选择")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>学校所在区域：</td>
+                            <td>
+                                @Html.DropDownList("RegionId", ViewBag.RegionData as SelectList, "请选择")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>教学经验：</td>
+                            <td>
+                                <select>
+                                    <option selected="selected">上海市</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>职称：</td>
+                            <td>
+                                <select>
+                                    <option selected="selected">上海市</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>教学称号：</td>
+                            <td>
+                                <select>
+                                    <option selected="selected">上海市</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>最高学历：</td>
+                            <td>
+                                <select>
+                                    <option selected="selected">上海市</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>在校身份：</td>
+                            <td>
+                                <select>
+                                    <option selected="selected">上海市</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><input type="submit" class="btn btn-success" value="提交" /></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    }
+
+                    <div class="col-xs-6">
+                        <div id="RadarChart1" style ="height:280px;"></div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div id="ColumnChart1" style ="height:280px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var radarChart1 = echarts.init(document.getElementById('RadarChart1')).setOption({
+            title: {
+                text: '预算 vs 开销（Budget vs spending）',
+                subtext: '纯属虚构'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'right',
+                y: 'bottom',
+                data: ['预算分配（Allocated Budget）', '实际开销（Actual Spending）']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            polar: [
+               {
+                   indicator: [
+                       { text: '销售（sales）', max: 6000 },
+                       { text: '管理（Administration）', max: 16000 },
+                       { text: '信息技术（Information Techology）', max: 30000 },
+                       { text: '客服（Customer Support）', max: 38000 },
+                       { text: '研发（Development）', max: 52000 },
+                       { text: '市场（Marketing）', max: 25000 }
+                   ]
+               }
+            ],
+            calculable: true,
+            series: [
+                {
+                    name: '预算 vs 开销（Budget vs spending）',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [4300, 10000, 28000, 35000, 50000, 19000],
+                            name: '预算分配（Allocated Budget）'
+                        },
+                         {
+                             value: [5000, 14000, 28000, 31000, 42000, 21000],
+                             name: '实际开销（Actual Spending）'
+                         }
+                    ]
+                }
+            ]
+        });
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            $('#AreaId').change(function () {
+                $.ajax({
+                    url: 'AjaxRegion',
+                    type: 'get',
+                    data: { AreaId: $(this).val() },
+                    dataType: 'text',
+                    success: function (data) {
+                        var myData = $.parseJSON(data);
+                        $('#RegionId').empty();
+                        $('#RegionId').append('<option value>请选择</option>');
+                        $('#SchoolId').empty();
+                        $('#SchoolId').append('<option value>请选择</option>');
+                        for (var i = 0; i < myData.length; i++) {
+                            var item = myData[i];
+                            $('#RegionId').append('<option value="' + item.key + '">' + item.value + '</option>');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        if (XMLHttpRequest.status == 302) {
+                            eval(XMLHttpRequest.responseText);
+                        }
+                    }
+                });
+            });
+
+            $('#RegionId').change(function () {
+                $.ajax({
+                    url: 'AjaxSchool',
+                    type: 'get',
+                    data: { RegionId: $(this).val() },
+                    dataType: 'text',
+                    success: function (data) {
+                        var myData = $.parseJSON(data);
+                        $('#SchoolId').empty();
+                        $('#SchoolId').append('<option value>请选择</option>');
+                        for (var i = 0; i < myData.length; i++) {
+                            var item = myData[i];
+                            $('#SchoolId').append('<option value="' + item.key + '">' + item.value + '</option>');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        if (XMLHttpRequest.status == 302) {
+                            eval(XMLHttpRequest.responseText);
+                        }
+                    }
+                });
+            });
+
+            //var s1 = [1, 2, 3, 4, 5];
+            //var ticks1 = ['ajsahgasdasdasdasd', 'ajsahgasdasdasdasd', 'ajsahgasdasdasdasd', 'ajsahgasdasdasdasd', 'ajsahgasdasdasdasd'];
+            //var plot1 = $.jqplot('ColumnChart1', [s1], {
+            //    seriesDefaults: {
+            //        renderer: $.jqplot.BarRenderer,
+            //        pointLabels: { show: true }
+            //    },
+            //    seriesColors: ['#ff7300'],
+            //    axesDefaults: {
+            //        tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+            //        tickOptions: {
+            //            fontFamily: 'Georgia',
+            //            angle: -60,
+            //            fontSize: '10pt'
+            //        }
+            //    },
+            //    axes: {
+            //        xaxis: {
+            //            renderer: $.jqplot.CategoryAxisRenderer,
+            //            ticks: ticks1
+            //        }
+            //        //yaxis: {
+            //        //    min: 0
+            //        //}
+            //    },
+            //    highlighter: { show: false }
+            //});
+        });
+    });
+</script>

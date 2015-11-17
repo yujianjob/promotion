@@ -1,0 +1,383 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+using XXW.SiteUtils;
+using System.IO;
+using Dianda.AP.Model.Course.CourseCreate;
+using Dianda.AP.Model.Learn.LearnNote;
+
+namespace Web.Areas.Learn.Controllers
+{
+    public class LearnOnLinePreviewController : Controller
+    {
+        #region 在线学习 - 阅读
+
+        /// <summary>
+        /// 在线学习-阅读
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineReadingPreviewView()
+        {
+            var Model_Course_UnitContent = this.GetCourseUnitContentActivity();
+
+            return View();
+        }
+        #endregion
+
+        #region  在线学习 - 视频
+        /// <summary>
+        /// 在线学习-视频
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineVideoPreviewView()
+        {
+            var Model_Course_UnitContent = this.GetCourseUnitContentActivity();
+
+            return View();
+        }
+
+        #endregion
+
+        #region  在线学习 - 讨论
+
+        /// <summary>
+        /// 在线学习-讨论
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineDiscussPreviewView()
+        {
+            #region 讨论标题
+
+            var Model_Course_UnitContent = this.GetCourseUnitContentActivity();
+
+            #endregion
+
+            return View();
+        }
+
+        #endregion
+
+        #region  在线学习 - 作业
+
+        /// <summary>
+        /// 在线学习-作业
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineTaskPreviewView()
+        {
+            #region 作业标题
+            var Model_Course_UnitContent = this.GetCourseUnitContentActivity();
+            #endregion
+
+            return View();
+        }
+
+        #endregion
+
+        #region  在线学习 - 结业考试
+
+        /// <summary>
+        /// 在线学习-结业考试
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineExamPreviewView()
+        {
+            #region [结业考试]标题,答题规则
+            var Model_Course_UnitContent = this.GetCourseUnitContentActivity();
+            #endregion
+
+            #region [结业考试]题目信息
+
+            int iTrainingId = 0;
+            int.TryParse(Convert.ToString(Request["TrainingId"]), out iTrainingId);
+
+            this.GetExamCourseUnitTest(iTrainingId);
+            #endregion
+
+            ViewBag.ExamTimeLimit = Model_Course_UnitContent.TimeLimit.Value;
+
+            return View();
+        }
+
+        /// <summary>
+        /// 获取[结业考试]题目信息
+        /// </summary>
+        /// <returns></returns>
+        private List<Course_UnitTest> GetExamCourseUnitTest(int iTrainingId = 0)
+        {
+            var List_Course_UnitTest = new List<Course_UnitTest>();
+            var unitTestBll = new Course_UnitTestBLL();
+            var strOrderBy = "CreateDate";
+            var stbSqlWhere = new StringBuilder();
+            stbSqlWhere.Append("Display = 1 AND Delflag = 0");
+
+            List_Course_UnitTest = unitTestBll.GetList(stbSqlWhere.ToString(), strOrderBy);
+            ViewBag.List_Course_UnitTest = List_Course_UnitTest;
+            ViewBag.ExamRecordCount = List_Course_UnitTest.Count;
+            ViewBag.ExamTrainingId = List_Course_UnitTest == null || List_Course_UnitTest.Count <= 0 ? 0 : List_Course_UnitTest[0].TrainingId;
+            return List_Course_UnitTest;
+        }
+
+        #endregion
+
+        #region  在线学习 - 单元测试
+
+        /// <summary>
+        /// 在线学习-单元测试
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineQuizPreviewView()
+        {
+            #region [单元测试]标题,答题规则
+            var Model_Course_UnitContent = this.GetCourseUnitContentActivity();
+            #endregion
+
+            #region [单元测试]题目信息
+            this.GetQuizCourseUnitTest(Model_Course_UnitContent.Id);
+            #endregion
+
+            return View();
+        }
+
+        /// <summary>
+        /// 获取[单元测试]题目信息
+        /// </summary>
+        /// <returns></returns>
+        private List<Course_UnitQuestion> GetQuizCourseUnitTest(int iUnitContentId = 0)
+        {
+            var List_Course_UnitQuestion = new List<Course_UnitQuestion>();
+            var UnitQuestionBll = new Course_UnitQuestionBLL();
+            var strOrderBy = "CreateDate";
+            var stbSqlWhere = new StringBuilder();
+            stbSqlWhere.Append("Display = 1 AND Delflag = 0 AND UnitContent = " + iUnitContentId);
+
+            List_Course_UnitQuestion = UnitQuestionBll.GetList(stbSqlWhere.ToString(), strOrderBy);
+            ViewBag.List_Course_UnitQuestion = List_Course_UnitQuestion;
+            ViewBag.QuizQuestionCount = List_Course_UnitQuestion.Count;
+
+            return List_Course_UnitQuestion;
+        }
+
+        #endregion
+
+        #region 在线学习 - 课程评价
+
+        /// <summary>
+        /// 在线学习 - 课程评价
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LearnOnLineEvaluatePreviewView()
+        {
+            #region 获取[课程评价]题目信息
+
+            var List_Class_TraningCommentQuestion = new List<Class_TraningCommentQuestion>();
+            var TraningCommentBll = new Class_TraningCommentQuestionBLL();
+            var stbSqlWhere = new StringBuilder();
+            stbSqlWhere.Append("Display = 1 AND Delflag = 0");
+
+            List_Class_TraningCommentQuestion = TraningCommentBll.GetListModel(stbSqlWhere.ToString());
+
+            ViewBag.List_Class_TraningCommentQuestion = List_Class_TraningCommentQuestion;
+
+            #endregion
+
+            #region 获取 Traning_Detail Title
+            //根据 TrainingId 获取 Title
+            int iTrainingId = 0;
+            var DetailBll = new Traning_DetailBLL();
+            int.TryParse(Convert.ToString(Request["TrainingId"]), out iTrainingId);
+
+            var Model_Traning_Detail = DetailBll.GetModel(iTrainingId, string.Empty);
+
+            ViewBag.TraningDetailTitle = Model_Traning_Detail.Title;
+            #endregion
+
+            return View();
+        }
+
+        #endregion
+
+        #region 公共方法 - 读取活动到页面
+
+        /// <summary>
+        /// 获取页面活动的公共方法
+        /// </summary>
+        /// <returns></returns>
+        private Course_UnitContent GetCourseUnitContentActivity()
+        {
+            //获取所有的阅读信息
+            var courseBll = new Course_UnitContentBLL();
+            var DetailBll = new Traning_DetailBLL();
+            var List_Course_UnitContent = new List<Course_UnitContent>();
+            var Model_Course_UnitContent = new Course_UnitContent();
+            var stbSqlWhere = new StringBuilder();
+            var strOrderBy = "Sort";
+
+            int iClassId = 0, iTrainingId = 0, iAccountId = 0, iUnitContent = 0, iUnitId = 0;
+            int.TryParse(Convert.ToString(Request["TrainingId"]), out iTrainingId);
+            int.TryParse(Convert.ToString(Request["UnitContent"]), out iUnitContent);
+
+            stbSqlWhere.Append(" 1 = 1 ");
+            if (iTrainingId > 0)
+                stbSqlWhere.AppendFormat("AND Course_UnitDetail.TrainingId = {0}", iTrainingId);
+            if (iTrainingId > 0)
+                stbSqlWhere.AppendFormat("AND Course_UnitContent.Id = {0}", iUnitContent);
+
+            List_Course_UnitContent = courseBll.GetListOther(stbSqlWhere.ToString(), strOrderBy);
+            if (List_Course_UnitContent != null && List_Course_UnitContent.Count == 1)
+                Model_Course_UnitContent = List_Course_UnitContent[0];
+            //获取当前登录用户的班级和ID
+            this.GetClassAndAccountId(out iAccountId, out iClassId);
+
+            //根据 TrainingId 获取 Title            
+            var Model_Traning_Detail = DetailBll.GetModel(iTrainingId, string.Empty);
+
+            ViewBag.TraningDetailTitle = Model_Traning_Detail.Title;
+            ViewBag.AccountId = iAccountId;
+            ViewBag.ClassId = iClassId;
+            ViewBag.TrainingId = iTrainingId;
+            ViewBag.UnitContent = iUnitContent = Model_Course_UnitContent.Id;
+            ViewBag.Model_Course_UnitContent = Model_Course_UnitContent;
+
+            return Model_Course_UnitContent;
+        }
+
+        #endregion
+
+        #region 公共方法 - 页面切换活动
+
+        /// <summary>
+        /// 获取页面跳转的路径
+        /// </summary>
+        /// <param name="IsNext"></param>
+        /// <returns></returns>
+        public ActionResult RedirectedPage(int IsNext, int TrainingId, int UnitContent)
+        {
+            string strNewPagePath = string.Empty;
+
+            var Model_Course_UnitContent = this.GetCourseUnitContentIndex(TrainingId, UnitContent, IsNext == 1);
+
+            //1文本，2影音教材，3讨论，4作业 5测试，6结业考试 其他:课程评价
+            switch (Model_Course_UnitContent.UnitType)
+            {
+                case 1:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineReadingPreviewView";
+                    break;
+                case 2:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineVideoPreviewView";
+                    break;
+                case 3:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineDiscussPreviewView";
+                    break;
+                case 4:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineTaskPreviewView";
+                    break;
+                case 5:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineQuizPreviewView";
+                    break;
+                case 6:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineExamPreviewView";
+                    break;
+                default:
+                    strNewPagePath = "/Learn/LearnOnLinePreview/LearnOnLineEvaluatePreviewView";
+                    break;
+            }
+
+            strNewPagePath += string.Format("?TrainingId={0}&UnitContent={1}", TrainingId, Model_Course_UnitContent.Id);
+
+            return Json(new { Result = true, RedirectedPagePath = strNewPagePath }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// 上下页翻动时,获取 Course_UnitContent 对象
+        /// </summary>
+        /// <param name="iTrainingId"></param>
+        /// <param name="iUnitContentId"></param>
+        /// <param name="bolNext"></param>
+        /// <returns></returns>
+        private Course_UnitContent GetCourseUnitContentIndex(int iTrainingId, int iUnitContentId, bool bolNext)
+        {
+            var Model_Course_UnitContent = new Course_UnitContent();
+            int iClassId = 0, iAccountId = 0;
+
+            var List_Course_UnitContent = this.GetCourseUnitContentActivities(iTrainingId);
+
+            int iIndex = List_Course_UnitContent.FindIndex(x => x.Id == iUnitContentId);
+            int iCount = List_Course_UnitContent.Count;
+
+            if (bolNext)
+            {
+                if (iIndex < iCount - 1)
+                    Model_Course_UnitContent = List_Course_UnitContent[iIndex + 1];
+                else if (iIndex == iCount - 1)
+                    Model_Course_UnitContent = List_Course_UnitContent[0];
+            }
+            else
+            {
+                if (iIndex > 0 && iIndex == iCount - 1)
+                    Model_Course_UnitContent = List_Course_UnitContent[iIndex - 1];
+                else if (iIndex == iCount - 1)
+                    Model_Course_UnitContent = List_Course_UnitContent[0];
+                else if (iIndex == 0)
+                    Model_Course_UnitContent = List_Course_UnitContent[iCount - 1];
+            }
+
+            //获取当前登录的用户ID和其班级ID
+            this.GetClassAndAccountId(out iAccountId, out iClassId);
+
+            ViewBag.ClassId = iClassId;
+            ViewBag.AccountId = iAccountId;
+            ViewBag.Model_Course_UnitContent = Model_Course_UnitContent;
+
+            return Model_Course_UnitContent;
+        }
+
+        /// <summary>
+        /// 分页查询所有的活动信息
+        /// </summary>
+        /// <param name="iUnitContentId"></param>
+        /// <returns></returns>
+        private List<Course_UnitContent> GetCourseUnitContentActivities(int iTrainingId = 0)
+        {
+            var List_Course_UnitContent = new List<Course_UnitContent>();
+            var unitContentbll = new Course_UnitContentBLL();
+            var stbSqlWhere = new StringBuilder();
+            var strOrderBy = "Course_UnitDetail.Id,Course_UnitContent.Sort";
+
+            if (iTrainingId > 0)
+                stbSqlWhere.AppendFormat("Course_UnitDetail.TrainingId = {0}", iTrainingId);
+            List_Course_UnitContent = unitContentbll.GetListOther(stbSqlWhere.ToString(), strOrderBy);
+
+            //按照页面排列  章-节-活动
+
+            return List_Course_UnitContent;
+        }
+
+        #endregion
+
+        #region 公共方法
+        /// <summary>
+        /// 获取当前登录用户的班级和ID
+        /// </summary>
+        /// <param name="iAccountId"></param>
+        /// <param name="iClassId"></param>
+        private void GetClassAndAccountId(out int iAccountId, out int iClassId)
+        {
+            var grpBll = new Class_GroupBLL();
+            iAccountId = Code.SiteCache.Instance.LoginInfo.UserId;
+            iClassId = 0;
+            //获取当前登录用户的班级Id
+            if (grpBll.GetClassAndGroup(iAccountId) != null)
+            {
+                iClassId = grpBll.GetClassAndGroup(iAccountId).ClassId;
+            }
+        }
+
+        #endregion
+    }
+}

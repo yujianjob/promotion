@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Dianda.AP.Model.Learn.MyLearn.MyLearnInfo>
+
+@{
+    ViewBag.Title = "未开始的课程";
+    ViewBag.MenuId = "d_learner_course";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+}
+
+
+<div class="col-xs-9">
+    <div class="d-page-title">我的课程</div>
+    <div class="blk_ln_menu_course" id="blk_ln_menu_course">
+        <div class="d-navmenu">
+	        <a class="i" href="@Url.Action("InDate")" id="d_learner_coures_inprogress">学习中的课程</a>
+	        <a class="i active" href="@Url.Action("BeforeDate")" id="d_learner_coures_notstart">未开始的课程</a>
+	        <a class="i" href="@Url.Action("OutDate")" id="d_learner_coures_completed">已结束的课程</a>
+        </div>
+    </div>
+      			
+    <div class="d-courselist inprogress blk_ln_courselist_inprogress" id="blk_ln_courselist_inprogress">
+        @foreach (var item in Model)
+        {
+            double percent = item.CurrentSchedule / item.TotalTime;
+            <div class="i">
+                <a class="thumb" href="#"><img src="@item.Pic" width="200" height="125"></a>
+                <span class="source">@item.OrganName</span>
+                <a class="title" href="#">@item.TrainingName</a>
+                <div class="progress">
+	              <div style="width:@percent%;" role="progressbar" class="progress-bar progress-bar-success"></div>
+	            </div>
+                <div class="period clearfix">
+                    <div class="pull-left">@item.OpenClassFrom.ToString("yyyy-MM-dd")</div>
+  	                <div class="pull-right text-right">@item.OpenClassTo.ToString("yyyy-MM-dd")</div>
+                    
+                </div>
+                <div class="action">
+                    <a class="btn btn-success" href="/ClassDomain/ClassApply/ClassList">查看开班信息</a>
+                </div>
+                <span class="sign bg-sign orange">@item.FieldName.Substring(0 ,2)<span class="hour">@item.TotalTime 课时</span></span>
+            </div>
+        }
+
+
+        <hr>
+        @if (ViewBag.RecordCount > ViewBag.PageSize)
+{
+    @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+        new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+}
+
+    </div>
+</div>

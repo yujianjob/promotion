@@ -1,0 +1,290 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 结业考试";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId })" onclick="return confirm('确定放弃当前的结业考试么?');" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_exam" class="blk_ln_course_exam" data-km-htm="blk_ln_course_exam.html">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent modelContent = ViewBag.Model_Course_UnitContent;
+                        <h3>@modelContent.Title：@modelContent.Content</h3>
+                        <p class="text-danger">答题规则 : 共 @ViewBag.ExamRecordCount 道题目，答对 @modelContent.PassLine 题可以过关，限时 @modelContent.TimeLimit 分钟。</p>
+                    }
+                    <div class="text-danger">
+                        剩余时间 :
+                        <label id="timeCountDown"></label>
+                    </div>
+                    @*<input type="button" onclick="RemoveSess();" value="清除Session" />*@
+                    <hr>
+
+                    <div id="examItems">
+
+                        @if (ViewBag.List_Course_UnitTest != null && ViewBag.List_Course_UnitTest.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Course_UnitTest> List_Course_UnitTest = ViewBag.List_Course_UnitTest;
+                            for (int i = 1; i <= List_Course_UnitTest.Count; i++)
+                            {
+                                Dianda.AP.Model.Course_UnitTest UnitModel = List_Course_UnitTest[i - 1];
+
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var UnitTestQuestion = jr.Deserialize<List<Dianda.AP.Model.Course_UnitTestQuestion>>(UnitModel.Question);
+                                                                
+                            <div class="item">
+                                <div class="h">@i. @UnitModel.Content ( @UnitModel.Credit 分)</div>
+                                <div class="ques" id="unit_@UnitModel.Id">
+                                    <input type="hidden" value="@UnitModel.Id"/>
+                                    @if (UnitModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i">
+                                            <input name="a1_@UnitModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i">
+                                            <input name="a1_@UnitModel.Id" itemid="@Quitem.Id" class="chk" type="checkbox" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i">
+                                            <input name="a1_@UnitModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            }
+                        }
+
+
+                    </div>
+
+                    <div>
+                        <hr>
+                        <button class="btn btn-success" id="btnSubmit" style="width: 150px;">提交</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:" id="refash">重新做题</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //function RemoveSess() {
+    //    //页面倒计时显示        
+    //    $("#timeCountDown").text("0分0秒");
+    //    localStorage.removeItem("RestSecond");
+    //    localStorage.removeItem("CountDownOver");
+    //    Alert("结业考试时间已到!");
+    //    location.href = window.location.href;
+    //    return;
+    //}
+
+    $(function () {
+        $proto.init(function () {
+
+            /****************************************************** 考试倒计时 开始 ******************************************************/
+            //考试时间是否已结束
+            var CountDownOver = false;
+            if (localStorage.getItem("CountDownOver") == null) {
+                localStorage.setItem("CountDownOver", false);
+            }
+            else if (localStorage.getItem("CountDownOver") == "true") {
+                //页面倒计时显示
+                $("#timeCountDown").text("0分0秒");
+                localStorage.removeItem("RestSecond");
+                localStorage.setItem("RestSecond", null);
+                localStorage.removeItem("CountDownOver");
+                localStorage.setItem("CountDownOver", null);
+                Alert("结业考试时间已到!");
+                return;
+            }
+
+            var totalTimeMin = "@ViewBag.ExamTimeLimit";
+            //var totalTimeMin = 0.1;
+            var totalTimeSecond = totalTimeMin * 60;
+            $("#timeCountDown").text(totalTimeMin + "分");
+            //计时器开始
+            var InterValObj = window.setInterval(CountDown, 1000);
+
+            function CountDown() {
+                if (totalTimeSecond > 0) {
+                    //AJAX 每隔10分钟,异步刷新Session 防止页面Session过期
+                    if (totalTimeSecond % (10 * 60) == 0) {                    
+                        $.ajax({
+                            cache: false,
+                            async: true,
+                            url: '/LearnOnLine/LearnOnLineRefashSession',
+                            type: 'Post',
+                            contentType: "application/json; charset=utf-8",
+                            data: '[{}]',
+                            success: function (data) {
+                            },
+                            error: function () {
+                            }
+                        });
+                    }
+
+                    totalTimeSecond = totalTimeSecond - 1;
+                    //刷新页面或重新打开页面时,保证倒计时持续下行的逻辑处理
+                    if (localStorage.getItem("RestSecond") == null) {
+                        localStorage.setItem("RestSecond", totalTimeSecond);
+                    }
+                    else {
+                        //当页面刷新或重新打开页面时,读取缓存中的倒计时,保证倒计时不间断
+                        var RestSecond = localStorage.getItem("RestSecond");
+                        if (Number(RestSecond) != totalTimeSecond) {
+                            totalTimeSecond = Number(RestSecond) - 1;
+                            localStorage.setItem("RestSecond", totalTimeSecond);
+                        }
+                    }
+
+                    var second = Math.floor(totalTimeSecond % 60);       // 计算秒
+                    var minite = Math.floor((totalTimeSecond / 60) % 60);//计算分
+                    var showCountDownTime = minite + "分" + second + "秒";
+                    //页面倒计时显示
+                    $("#timeCountDown").text(showCountDownTime);
+                } else {
+                    //剩余时间小于或等于0的时候，就停止间隔函数
+                    window.clearInterval(InterValObj);
+                    //这里可以添加倒计时时间为0后需要执行的事件
+                    localStorage.setItem("CountDownOver", true);//考试时间已到
+
+                    Alert("结业考试时间已到!");
+                }
+            };
+            /****************************************************** 考试倒计时 结束 ******************************************************/
+
+
+            /****************************************************** 提交 开始 ******************************************************/
+            /* 页面加载后立即执行的代码写在这里 */
+            $("#btnSubmit").click(function () {
+                if (localStorage.getItem("CountDownOver") != null && localStorage.getItem("CountDownOver") == "true")
+                {
+                    Alert("试题提交失败。结业考试时间已到!");
+                    return;
+                }
+
+                //得到用户的考题答案
+                var arrExamResult = new Array();
+                var jsonData = "";
+                var parent = $("#examItems");
+                if (parent != null) {
+                    var inputs = parent.find('input');
+                    var iLen = inputs.length;
+                    for (i = 0; i < iLen; i++) {
+
+                        if ($("input:hidden")[i] == null) break;
+
+                        var unitId = $("input:hidden")[i].value;
+                        var quesChosenItems = $("#unit_" + unitId).find('input');//获取题目的选项
+
+                        var itemAnswer = "";
+                        for (var j = 0; j < quesChosenItems.length; j++) {
+                            var item = quesChosenItems[j];
+
+                            if (item.tagName == "INPUT" && item.type == "radio") {
+                                if (item.checked)
+                                    itemAnswer = $(item).attr("itemid");
+                            }
+                            else if (item.tagName == "INPUT" && item.type == "checkbox") {
+                                if (item.checked) {
+                                    if (itemAnswer == "")
+                                        itemAnswer = $(item).attr("itemid");
+                                    else
+                                        itemAnswer += "," + $(item).attr("itemid");
+                                }
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "text") {
+                                if (item.checked)
+                                    itemAnswer = $(item).attr("itemid");
+                            }
+
+                        }
+                        itemAnswer = itemAnswer == "" ? "-1" : itemAnswer;
+
+                        if (jsonData == "")
+                            jsonData = "{TrainingId:" +@ViewBag.ExamTrainingId +",UnitTestId:" + unitId + ",UnitTestAnswer:'" + itemAnswer + "',UnitContentId:'" +@ViewBag.UnitContentId +"'}";
+                        else
+                            jsonData += "," + "{TrainingId:" +@ViewBag.ExamTrainingId +",UnitTestId:" + unitId + ",UnitTestAnswer:'" + itemAnswer + "',UnitContentId:'" +@ViewBag.UnitContentId +"'}";
+                    }
+                }
+
+                jsonData = "[" + jsonData + "]";
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/LearnOnLineExamEdit',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        //清空计时器
+                        localStorage.removeItem("RestSecond");
+                        var ds = Alert(data.Msg);
+                        //location.href = window.location.href;
+                    },
+                    error: function () {
+                    }
+                });
+            });
+            /****************************************************** 提交 结束 ******************************************************/
+
+            /****************************************************** 重新做题 开始 ******************************************************/
+            //重新做题
+            $("#refash").click(function () {
+                if (confirm("重新做题将清空当前页面,确定继续么?")) {
+
+                    var parent = $("#examItems");
+                    if (parent != null) {
+                        var inputs = parent.find('input');
+                        for (var iLen = inputs.length, i = 0; i < iLen; i++) {
+                            if (inputs[i].tagName == "INPUT" && inputs[i].type == "text") {
+                                inputs[i].value = "";
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "radio") {
+
+                                $("input:radio").attr("checked", false);
+                                //$("input:radio[name='a1']").attr("checked", false);
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "checkbox") {
+                                $("input:checkbox").attr("checked", false);
+                                //$("input:checkbox[name='a1']").attr("checked", false);
+                            }
+                        }
+                    }
+
+                }
+            });
+            /******************************************************重新做题 结束******************************************************/
+        });
+    });
+</script>

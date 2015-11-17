@@ -1,0 +1,683 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Web.Code;
+using XXW.SiteUtils;
+using Dianda.Common.StringSecurity;
+using Dianda.Common;
+using Dianda.AP.Model;
+using Dianda.AP.BLL;
+using System.Web.Script.Serialization;
+using System.Data;
+
+namespace Web.Areas.Practice.Controllers
+{
+    public class PracticalCourseController : Controller
+    {
+        #region 教师--新增课程实践（单个）
+        /// <summary>
+        /// 教师--新增课程实践（单个）
+        /// </summary>
+        /// <param name="memberPCourseid"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public ActionResult PracticalCourseAddSingle(int? memberPCourseid)
+        {
+            //小类
+            Traning_CategoryBLL traning_CategoryBLL = new Traning_CategoryBLL();
+            ViewBag.TraingCategoryList = traning_CategoryBLL.GetList(" Field=3 and Delflag='false'  and Display='true'", " Sort");
+            //初始化model
+            PracticalCourse_DetailBLL pcBLL = new PracticalCourse_DetailBLL();
+            PracticalCourseEdit data = new PracticalCourseEdit();
+            PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+            if (memberPCourseid != null && memberPCourseid > 0)
+            {
+                ViewBag.Type = "update";
+                ViewBag.Title = "修改实践记录";
+                data = pcBLL.GetPracticeModel((int)memberPCourseid);
+                ViewBag.AttachData = practicalCourse_AttachmentBLL.GetTable("Delflag=0 and Display=1 and PracticalCourseId=" + data.Id, "");
+            }
+            else
+            {
+                ViewBag.Type = "insert";
+                ViewBag.Title = "新增实践记录";
+                ViewBag.AttachData = null;
+            }
+            return View(data);
+        }
+        #endregion
+
+        #region 教师--编辑课程实践（单个）
+        [ValidateInput(false)]
+        public ActionResult PracticalCourseEditSingle(int? memberPCourseid)
+        {
+            //小类
+            Traning_CategoryBLL traning_CategoryBLL = new Traning_CategoryBLL();
+            ViewBag.TraingCategoryList = traning_CategoryBLL.GetList(" Field=3 and Delflag='false'  and Display='true'", " Sort");
+            //初始化model
+            PracticalCourse_DetailBLL pcBLL = new PracticalCourse_DetailBLL();
+            PracticalCourseEdit data = new PracticalCourseEdit();
+            PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+            if (memberPCourseid != null && memberPCourseid > 0)
+            {
+                ViewBag.Type = "update";
+                ViewBag.Title = "修改实践记录";
+                data = pcBLL.GetPracticeModel((int)memberPCourseid);
+                ViewBag.AttachData = practicalCourse_AttachmentBLL.GetTable("Delflag=0 and Display=1 and PracticalCourseId=" + data.Id, "");
+            }
+
+            //Member_PracticalCourseApplicationBLL member_PracticalCourseApplicationBLL = new Member_PracticalCourseApplicationBLL();
+            //List<Member_PracticalCourseApplication> mPcaList = member_PracticalCourseApplicationBLL.GetList("Delflag='false' and FlowId='" + memberPCourseid + "'", "CreateDate");
+            //ViewBag.mPcaList = mPcaList;
+
+            return View(data);
+        }
+        #endregion
+
+
+        #region 教师--个人增加实践--方法
+        [ValidateInput(false)]
+        /// <summary>
+        /// 教师--个人增加实践
+        /// </summary>
+        /// <param name="Title"></param>
+        /// <param name="TraingField"></param>
+        /// <param name="CreatetraingCategory"></param>
+        /// <param name="CreatetraingTopic"></param>
+        /// <param name="Content"></param>
+        /// <param name="PlanId"></param>
+        /// <param name="Role"></param>
+        /// <returns></returns>
+        public ActionResult CreatePracticalCourseSingle(string Title, string TraingField, string CreatetraingCategory, string CreatetraingTopic, string Content, string createroleList, string AttachPathList, string createtraingNation)
+        {
+            try
+            {
+                PracticalCourse_Detail pCourseModel = new PracticalCourse_Detail();
+                pCourseModel.Title = Server.UrlDecode(Title);
+                pCourseModel.TraingField = TraingField.ToInt();
+                pCourseModel.TraingCategory = CreatetraingCategory.ToInt();
+                pCourseModel.TraingTopic = CreatetraingTopic.ToInt();
+                pCourseModel.Content = Content;
+                int length = Content.Length;
+                pCourseModel.IsBatch = false;
+                pCourseModel.OrganId = Code.SiteCache.Instance.OrganId;
+                pCourseModel.AccountId = Code.SiteCache.Instance.LoginInfo.UserId;
+                pCourseModel.PlanId = Code.SiteCache.Instance.PlanId;
+                pCourseModel.People = 1;
+                pCourseModel.Display = true;
+                pCourseModel.Delflag = false;
+                pCourseModel.CreateDate = DateTime.Now;
+                pCourseModel.NationalCoursId = Convert.ToInt32(createtraingNation);
+                PracticalCourse_DetailBLL practicalCourse_DetailBLL = new PracticalCourse_DetailBLL();
+
+                Member_PracticalCourseBLL member_PracticalCourseBLL = new Member_PracticalCourseBLL();
+                Member_PracticalCourse memPCourseModel = new Member_PracticalCourse();
+                Member_PracticalCourseApplication mpcamodel = new Member_PracticalCourseApplication();
+                //实践课程
+                memPCourseModel.PracticalCourseId = practicalCourse_DetailBLL.Add(pCourseModel);
+
+
+                PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+                if (!string.IsNullOrEmpty(AttachPathList))
+                {
+                    DataTable dt = practicalCourse_AttachmentBLL.GetTable("1=0", "");
+                    foreach (string s in AttachPathList.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        DataRow row = dt.NewRow();
+                        string[] file = s.Split(',');
+                        row["Id"] = file[0];
+                        row["PracticalCourseId"] = pCourseModel.Id;
+                        row["Title"] = file[1];
+                        row["Link"] = file[2];
+                        row["Sort"] = 50;
+                        row["Display"] = 1;
+                        row["Delflag"] = 0;
+                        row["CreateDate"] = DateTime.Now;
+                        dt.Rows.Add(row);
+                    }
+                    //实践课程附件表
+                    practicalCourse_AttachmentBLL.BatchAttach(dt);
+                }
+
+
+                memPCourseModel.AccountId = Code.SiteCache.Instance.LoginInfo.UserId;
+                memPCourseModel.OrganId = Code.SiteCache.Instance.OrganId;
+                memPCourseModel.Status = 1;
+                memPCourseModel.RoleId = Convert.ToInt32(createroleList);
+                memPCourseModel.Delflag = false;
+                memPCourseModel.CreateDate = DateTime.Now;
+                //用户实践课程申请表
+                mpcamodel.FlowId = member_PracticalCourseBLL.Add(memPCourseModel);
+                mpcamodel.Status = 1;
+                mpcamodel.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                mpcamodel.AccountId = Code.SiteCache.Instance.LoginInfo.UserId;
+                mpcamodel.CreateDate = DateTime.Now;
+                mpcamodel.Delflag = false;
+                if (mpcamodel.FlowId > 0)
+                {
+                    Member_PracticalCourseApplicationBLL member_PracticalCourseApplicationBLL = new Member_PracticalCourseApplicationBLL();
+                    //用户实践课程流程表
+                    member_PracticalCourseApplicationBLL.Add(mpcamodel);
+                }
+                TempData["Msg"] = "提交成功！";
+                return RedirectToAction("../../Learn/MyPractice/List");
+            }
+            catch (Exception)
+            {
+                TempData["Msg"] = "提交失败！";
+                return RedirectToAction("../../Learn/MyPractice/List");
+            }
+        }
+        #endregion
+
+
+        #region 教师--个人修改实践--方法
+        [ValidateInput(false)]
+        public ActionResult UpdatePracticalCourseSingle(int Id, int MemberPCourseid, string Title, string TraingField, string CreatetraingCategory, string CreatetraingTopic, string Content, string createroleList, string AttachPathList, string createtraingNation)
+        {
+            try
+            {
+                PracticalCourse_DetailBLL practicalCourse_DetailBLL = new PracticalCourse_DetailBLL();
+                PracticalCourse_Detail pCourseModel = new PracticalCourse_Detail();
+                pCourseModel = practicalCourse_DetailBLL.GetModel(Id, "");
+                pCourseModel.Title = Server.UrlDecode(Title);
+                pCourseModel.TraingField = TraingField.ToInt();
+                pCourseModel.TraingCategory = CreatetraingCategory.ToInt();
+                pCourseModel.TraingTopic = CreatetraingTopic.ToInt();
+                pCourseModel.Content = Content;
+                pCourseModel.NationalCoursId = Convert.ToInt32(createtraingNation);
+                practicalCourse_DetailBLL.Update(pCourseModel);
+
+                Member_PracticalCourseBLL member_PracticalCourseBLL = new Member_PracticalCourseBLL();
+                Member_PracticalCourseApplication mpcamodel = new Member_PracticalCourseApplication();
+                Member_PracticalCourse memPCourseModel = member_PracticalCourseBLL.GetModel(MemberPCourseid,"");
+                memPCourseModel.RoleId = Convert.ToInt32(createroleList);
+                memPCourseModel.Status = 1;
+                member_PracticalCourseBLL.Update(memPCourseModel);
+
+
+                //实践课程
+
+                PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+                DataTable dt = practicalCourse_AttachmentBLL.GetTable("Delflag=0  and Display=1 and PracticalCourseId=" + Id, "");
+                List<string> attachIdList = new List<string>();
+                if (!string.IsNullOrEmpty(AttachPathList))
+                {
+                    foreach (string s in AttachPathList.Split(':'))
+                    {
+
+                        string[] file = s.Split('|');
+                        if (file[0] == "0")
+                        {
+                            DataRow row = dt.NewRow();
+                            row["Id"] = file[0];
+                            row["PracticalCourseId"] = pCourseModel.Id;
+                            row["Title"] = file[1].Replace("'", "''");
+                            row["Link"] = file[2];
+                            row["Sort"] = 50;
+                            row["Display"] = 1;
+                            row["Delflag"] = 0;
+                            row["CreateDate"] = DateTime.Now;
+                            dt.Rows.Add(row);
+                        }
+                        else
+                        {
+                            attachIdList.Add(file[0]);
+                        }
+                    }
+                }
+                //实践课程附件表
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row.RowState == DataRowState.Unchanged && !attachIdList.Contains(row["Id"].ToString()))
+                        row.Delete();
+                }
+                practicalCourse_AttachmentBLL.BatchAttach(dt);
+                TempData["Msg"] = "提交成功！";
+                return RedirectToAction("../../Learn/MyPractice/List");
+            }
+            catch (Exception ex)
+            {
+                TempData["Msg"] = "提交失败！";
+                return RedirectToAction("../../Learn/MyPractice/List");
+            }
+        }
+        #endregion
+
+
+        #region 学校--审核课程实践列表
+        /// <summary>
+        /// 学校--审核课程实践列表
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="searchTitle"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public ActionResult PracticalCourseList(int? pageIndex, string searchTitle, string state)
+        {
+            ViewBag.Title = "实践课程管理";
+            int i = TypeConverter.ObjectToInt(pageIndex, 1);
+            PracticalCourseSearchModel psmodel = new PracticalCourseSearchModel();
+            psmodel.SearchTitle = Utils.ChkSQL(searchTitle);
+            psmodel.State = TypeConverter.StrToInt(state, -1);
+            Member_PracticalCourseBLL mpcBLL = new Member_PracticalCourseBLL();
+            int total = 0;
+            var data = mpcBLL.GetMPCourseList(psmodel, i, 10, out total);
+            ViewData["pc_searchTitle"] = string.IsNullOrEmpty(searchTitle) ? "" : searchTitle;
+            ViewData["pc_state"] = psmodel.State;
+            ViewBag.pageIndex = i;
+            ViewBag.totalPage = total;
+            return View(data);
+        }
+        #endregion
+
+        #region 学校--批量增加课程实践
+        /// <summary>
+        /// 学校--批量增加课程实践
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PracticalCourseAdd()
+        {
+            //小类
+            Traning_CategoryBLL traning_CategoryBLL = new Traning_CategoryBLL();
+            ViewBag.TraingCategoryList = traning_CategoryBLL.GetList(" Field=3 and Delflag='false'  and Display='true'", " Sort");
+            //初始化model
+            Member_PracticalCourseBLL mpcBLL = new Member_PracticalCourseBLL();
+            var data = new MPracticalCourseModel();
+
+            ViewBag.Title = "新增实践记录";
+            return View(data);
+        }
+        #endregion
+
+        #region 学校--批量新增实践-选择教师
+        /// <summary>
+        /// 学校--批量新增实践-选择教师
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="organId"></param>
+        /// <param name="searchName"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public ActionResult ChooseMembers(int? pageIndex, int organId, string searchName)
+        {
+            ViewData["organId"] = Code.SiteCache.Instance.OrganId;
+            int i = TypeConverter.ObjectToInt(pageIndex, 1);
+            Member_AccountBLL member_AccountBLL = new Member_AccountBLL();
+            List<Member_AccountBaseInfo> member_AccBaseInfoList = new List<Member_AccountBaseInfo>();
+            int total = 0;
+            string where = " Status='2' and Delflag='false' and OrganId=" + organId;
+            if (!string.IsNullOrEmpty(searchName)) { where += " and Nickname like '%" + searchName + "'"; }
+            //string where = " status=2 and delflag='false' and OrganId='" + OrganId + "'";
+            member_AccBaseInfoList = member_AccountBLL.GetMABListPractice(9, i, where, "Id", out total);
+            ViewBag.pageIndex = i;
+            ViewBag.totalPage = total;
+            return View(member_AccBaseInfoList);
+        }
+        #endregion
+
+        #region 学校--批量创建实践--方法
+        /// <summary>
+        /// 学校--批量创建实践
+        /// </summary>
+        /// <param name="Title"></param>
+        /// <param name="TraingField"></param>
+        /// <param name="CreatetraingCategory"></param>
+        /// <param name="CreatetraingTopic"></param>
+        /// <param name="Content"></param>
+        /// <param name="PlanId"></param>
+        /// <param name="Members"></param>
+        /// <param name="Roles"></param>
+        /// <returns></returns>
+        public ActionResult CreatePracticalCourse(string Title, string TraingField, string CreatetraingCategory, string CreatetraingTopic, string Content, string Members, string Roles, string AttachPathList, string createtraingNation)
+        {
+            try
+            {
+                string[] sMembers = Members.Trim(',').Split(',');
+                string[] sRoles = Roles.Trim(',').Split(',');
+                PracticalCourse_Detail pCourseModel = new PracticalCourse_Detail();
+                pCourseModel.Title = Title;
+                pCourseModel.TraingField = TraingField.ToInt();
+                pCourseModel.TraingCategory = CreatetraingCategory.ToInt();
+                pCourseModel.TraingTopic = CreatetraingTopic.ToInt();
+                pCourseModel.Content = Content;
+                pCourseModel.IsBatch = true;
+                pCourseModel.OrganId = Code.SiteCache.Instance.OrganId;
+                pCourseModel.PlanId = Code.SiteCache.Instance.PlanId;
+                pCourseModel.People = sMembers.Length;
+                pCourseModel.Display = true;
+                pCourseModel.Delflag = false;
+                pCourseModel.CreateDate = DateTime.Now;
+                pCourseModel.NationalCoursId = Convert.ToInt32(createtraingNation);
+                PracticalCourse_DetailBLL practicalCourse_DetailBLL = new PracticalCourse_DetailBLL();
+
+
+                //实践课程
+                int PracticalCourseId = practicalCourse_DetailBLL.Add(pCourseModel);
+
+
+                PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+                if (!string.IsNullOrEmpty(AttachPathList))
+                {
+                    DataTable dt = practicalCourse_AttachmentBLL.GetTable("1=0", "");
+                    foreach (string s in AttachPathList.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        DataRow row = dt.NewRow();
+                        string[] file = s.Split('|');
+                        row["Id"] = file[0];
+                        row["PracticalCourseId"] = pCourseModel.Id;
+                        row["Title"] = file[1].Replace("'", "''");
+                        row["Link"] = file[2];
+                        row["Sort"] = 50;
+                        row["Display"] = 1;
+                        row["Delflag"] = 0;
+                        row["CreateDate"] = DateTime.Now;
+                        dt.Rows.Add(row);
+                    }
+                    //实践课程附件表
+                    practicalCourse_AttachmentBLL.BatchAttach(dt);
+                }
+
+                for (int i = 0; i < sMembers.Length; i++)
+                {
+
+                    Member_PracticalCourseBLL member_PracticalCourseBLL = new Member_PracticalCourseBLL();
+                    Member_PracticalCourse memPCourseModel = new Member_PracticalCourse();
+                    Member_PracticalCourseApplication mpcamodel = new Member_PracticalCourseApplication();
+                    memPCourseModel.PracticalCourseId = PracticalCourseId;
+                    memPCourseModel.AccountId = Convert.ToInt32(sMembers[i]);
+                    memPCourseModel.OrganId = Code.SiteCache.Instance.OrganId;
+                    memPCourseModel.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                    memPCourseModel.Status = 2;
+                    memPCourseModel.RoleId = Convert.ToInt32(sRoles[i]);
+                    memPCourseModel.Delflag = false;
+                    memPCourseModel.CreateDate = DateTime.Now;
+                    //用户实践课程申请表
+                    mpcamodel.FlowId = member_PracticalCourseBLL.Add(memPCourseModel);
+                    mpcamodel.Status = 2;
+                    mpcamodel.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                    mpcamodel.AccountId = Convert.ToInt32(sMembers[i]);
+                    mpcamodel.CreateDate = DateTime.Now;
+                    mpcamodel.Delflag = false;
+                    if (mpcamodel.FlowId > 0)
+                    {
+                        Member_PracticalCourseApplicationBLL member_PracticalCourseApplicationBLL = new Member_PracticalCourseApplicationBLL();
+                        //用户实践课程流程表
+                        member_PracticalCourseApplicationBLL.Add(mpcamodel);
+                    }
+                    //用户培训计划课程大类学时表
+                    Member_TrainingReditBLL member_TrainingReditBLL = new Member_TrainingReditBLL();
+                    List<Member_TrainingRedit> Listmember_TrainingRedit = new List<Member_TrainingRedit>();
+                    Listmember_TrainingRedit = member_TrainingReditBLL.GetList(" TrainingField=3 and Delflag='false' and PlanId='" + Code.SiteCache.Instance.PlanId + "' and AccountId='" + Convert.ToInt32(sMembers[i]) + "' ", "");
+                    if (Listmember_TrainingRedit == null || Listmember_TrainingRedit.Count == 0)
+                    {
+                        Member_TrainingRedit member_TrainingRedit = new Member_TrainingRedit();
+                        member_TrainingRedit.TrainingField = 3;
+                        member_TrainingRedit.PlanId = Code.SiteCache.Instance.PlanId;
+                        member_TrainingRedit.AccountId = Convert.ToInt32(sMembers[i]);
+                        PracticalCourse_RoleCreditsBLL practicalCourse_RoleCreditsBLL = new PracticalCourse_RoleCreditsBLL();
+                        member_TrainingRedit.Credits = practicalCourse_RoleCreditsBLL.GetList(" TraingField=3 and TraingCategory='" + CreatetraingCategory.ToInt() + "' and TraingTopic='" + CreatetraingTopic.ToInt() + "' and RoleId='" + Convert.ToInt32(sRoles[i]) + "'", "")[0].Credits;
+                        member_TrainingRedit.Delflag = false;
+                        member_TrainingRedit.CreateDate = DateTime.Now;
+                        member_TrainingReditBLL.Add(member_TrainingRedit);
+                    }
+                    else
+                    {
+                        Member_TrainingRedit member_TrainingRedit = Listmember_TrainingRedit[0];
+                        PracticalCourse_RoleCreditsBLL practicalCourse_RoleCreditsBLL = new PracticalCourse_RoleCreditsBLL();
+                        member_TrainingRedit.Credits += practicalCourse_RoleCreditsBLL.GetList(" TraingField=3 and TraingCategory='" + CreatetraingCategory.ToInt() + "' and TraingTopic='" + CreatetraingTopic.ToInt() + "' and RoleId='" + Convert.ToInt32(sRoles[i]) + "'", "")[0].Credits;
+                        member_TrainingReditBLL.Update(member_TrainingRedit);
+                    }
+
+                }
+                TempData["Msg"] = "提交成功！";
+                return RedirectToAction("PracticalCourseList");
+            }
+            catch (Exception ex)
+            {
+                TempData["Msg"] = "提交失败！";
+                return RedirectToAction("PracticalCourseList");
+            }
+        }
+        #endregion
+
+        #region 学校--实践审核弹跳页面
+        /// <summary>
+        /// 学校--实践审核弹跳页面
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public ActionResult Verify(int Id)
+        {
+            ViewBag.Id = Id;
+            return View();
+        }
+        #endregion
+
+        #region 学校--审核
+        [ValidateInput(false)]
+        /// <summary>
+        /// 学校--审核
+        /// </summary>
+        /// <param name="Statue"></param>
+        /// <param name="Id"></param>
+        /// <param name="Content"></param>
+        /// <returns></returns>
+        public ActionResult MyVerify(int Status, int mpId, string verifycontent)
+        {
+            try
+            {
+                Member_PracticalCourseBLL member_PracticalCourseBLL = new Member_PracticalCourseBLL();
+                Member_PracticalCourse member_PracticalCourse = new Member_PracticalCourse();
+                PracticalCourse_DetailBLL practicalCourse_DetailBLL = new PracticalCourse_DetailBLL();
+                PracticalCourse_Detail practicalCourse_Detail = new PracticalCourse_Detail();
+                member_PracticalCourse = member_PracticalCourseBLL.GetModel(mpId, "");
+                practicalCourse_Detail = practicalCourse_DetailBLL.GetPracticeModel((int)member_PracticalCourse.PracticalCourseId);
+
+                //用户培训计划课程大类学时表
+                if (member_PracticalCourse.Status == 1 && Status == 2 || member_PracticalCourse.Status == 3 && Status == 2)
+                {
+                    Member_TrainingReditBLL member_TrainingReditBLL = new Member_TrainingReditBLL();
+                    List<Member_TrainingRedit> Listmember_TrainingRedit = new List<Member_TrainingRedit>();
+                    Listmember_TrainingRedit = member_TrainingReditBLL.GetList(" TrainingField=3 and Delflag='false' and PlanId='" + practicalCourse_Detail.PlanId + "' and AccountId='" + member_PracticalCourse.AccountId + "' ", "");
+                    if (Listmember_TrainingRedit == null || Listmember_TrainingRedit.Count == 0)
+                    {
+                        Member_TrainingRedit member_TrainingRedit = new Member_TrainingRedit();
+                        member_TrainingRedit.TrainingField = 3;
+                        member_TrainingRedit.PlanId = practicalCourse_Detail.PlanId;
+                        member_TrainingRedit.AccountId = member_PracticalCourse.AccountId;
+                        PracticalCourse_RoleCreditsBLL practicalCourse_RoleCreditsBLL = new PracticalCourse_RoleCreditsBLL();
+                        member_TrainingRedit.Credits = practicalCourse_RoleCreditsBLL.GetList(" TraingField=3 and TraingCategory='" + practicalCourse_Detail.TraingCategory.ToInt() + "' and TraingTopic='" + practicalCourse_Detail.TraingTopic.ToInt() + "' and RoleId='" + Convert.ToInt32(member_PracticalCourse.RoleId) + "'", "")[0].Credits;
+                        member_TrainingRedit.Delflag = false;
+                        member_TrainingRedit.CreateDate = DateTime.Now;
+                        member_TrainingReditBLL.Add(member_TrainingRedit);
+                    }
+                    else
+                    {
+                        Member_TrainingRedit member_TrainingRedit = Listmember_TrainingRedit[0];
+                        PracticalCourse_RoleCreditsBLL practicalCourse_RoleCreditsBLL = new PracticalCourse_RoleCreditsBLL();
+                        member_TrainingRedit.Credits += practicalCourse_RoleCreditsBLL.GetList(" TraingField=3 and TraingCategory='" + practicalCourse_Detail.TraingCategory.ToInt() + "' and TraingTopic='" + practicalCourse_Detail.TraingTopic.ToInt() + "' and RoleId='" + Convert.ToInt32(member_PracticalCourse.RoleId) + "'", "")[0].Credits;
+                        member_TrainingReditBLL.Update(member_TrainingRedit);
+                    }
+                }
+                else if (member_PracticalCourse.Status == 2 && Status == 3)
+                {
+                    Member_TrainingReditBLL member_TrainingReditBLL = new Member_TrainingReditBLL();
+                    List<Member_TrainingRedit> Listmember_TrainingRedit = new List<Member_TrainingRedit>();
+                    Listmember_TrainingRedit = member_TrainingReditBLL.GetList(" TrainingField=3 and Delflag='false' and PlanId='" + practicalCourse_Detail.PlanId + "' and AccountId='" + member_PracticalCourse.AccountId + "' ", "");
+
+                    Member_TrainingRedit member_TrainingRedit = Listmember_TrainingRedit[0];
+                    PracticalCourse_RoleCreditsBLL practicalCourse_RoleCreditsBLL = new PracticalCourse_RoleCreditsBLL();
+                    member_TrainingRedit.Credits -= practicalCourse_RoleCreditsBLL.GetList(" TraingField=3 and TraingCategory='" + practicalCourse_Detail.TraingCategory.ToInt() + "' and TraingTopic='" + practicalCourse_Detail.TraingTopic.ToInt() + "' and RoleId='" + Convert.ToInt32(member_PracticalCourse.RoleId) + "'", "")[0].Credits;
+                    member_TrainingReditBLL.Update(member_TrainingRedit);
+                }
+
+                member_PracticalCourse.Status = Status;
+                member_PracticalCourse.ApplyRemark = verifycontent;
+                member_PracticalCourseBLL.Update(member_PracticalCourse);
+
+                Member_PracticalCourseApplicationBLL member_PracticalCourseApplicationBLL = new Member_PracticalCourseApplicationBLL();
+                Member_PracticalCourseApplication member_PracticalCourseApplication = new Member_PracticalCourseApplication();
+                member_PracticalCourseApplication.FlowId = mpId;
+                member_PracticalCourseApplication.Status = Status;
+                member_PracticalCourseApplication.Remark = verifycontent;
+                member_PracticalCourseApplication.Creater = Code.SiteCache.Instance.LoginInfo.UserId;
+                member_PracticalCourseApplication.AccountId = member_PracticalCourse.AccountId;
+                member_PracticalCourseApplication.Delflag = false;
+                member_PracticalCourseApplication.CreateDate = DateTime.Now;
+                member_PracticalCourseApplicationBLL.Add(member_PracticalCourseApplication);
+
+                TempData["Msg"] = "提交成功！";
+                return RedirectToAction("../../Practice/PracticalCourse/PracticalCourseList");
+            }
+            catch (Exception)
+            {
+                TempData["Msg"] = "提交失败！";
+                return RedirectToAction("../../Practice/PracticalCourse/PracticalCourseList");
+            }
+        }
+        #endregion
+
+
+        #region 学校--查看课程实践
+        /// <summary>
+        /// 教师--新增课程实践
+        /// </summary>
+        /// <param name="memberPCourseid"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public ActionResult PracticalCourseCheck(int? memberPCourseid)
+        {
+            //小类
+            Traning_CategoryBLL traning_CategoryBLL = new Traning_CategoryBLL();
+            ViewBag.TraingCategoryList = traning_CategoryBLL.GetList(" Field=3 and Delflag='false'  and Display='true'", " Sort");
+            //初始化model
+            PracticalCourse_DetailBLL pcBLL = new PracticalCourse_DetailBLL();
+            PracticalCourseEdit data = new PracticalCourseEdit();
+            PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+            if (memberPCourseid != null && memberPCourseid > 0)
+            {
+                ViewBag.Title = "查看实践记录";
+                data = pcBLL.GetPracticeModel((int)memberPCourseid);
+                ViewBag.AttachData = practicalCourse_AttachmentBLL.GetTable("Delflag=0 and Display=1 and PracticalCourseId=" + data.Id, "");
+            }
+            else {
+                return RedirectToAction("PracticalCourseList", "PracticalCourse", new { area = "Practice" });
+            }
+            return View(data);
+        }
+        #endregion
+
+
+        public ActionResult PracticalCourseVerifyPage(int memberPCourseid)
+        {
+            ViewBag.Title = "实践审核";
+            //小类
+            Traning_CategoryBLL traning_CategoryBLL = new Traning_CategoryBLL();
+            ViewBag.TraingCategoryList = traning_CategoryBLL.GetList(" Field=3 and Delflag='false'  and Display='true'", " Sort");
+            //初始化model
+            PracticalCourse_DetailBLL pcBLL = new PracticalCourse_DetailBLL();
+            PracticalCourseEdit data = new PracticalCourseEdit();
+            PracticalCourse_AttachmentBLL practicalCourse_AttachmentBLL = new PracticalCourse_AttachmentBLL();
+            if ( memberPCourseid > 0)
+            {
+                ViewBag.Title = "实践审核";
+                data = pcBLL.GetPracticeModel((int)memberPCourseid);
+                ViewBag.AttachData = practicalCourse_AttachmentBLL.GetTable("Delflag=0 and Display=1 and PracticalCourseId=" + data.Id, "");
+            }
+            else
+            {
+                return RedirectToAction("PracticalCourseList", "PracticalCourse", new { area = "Practice" });
+            }
+            return View(data);
+        }
+
+
+        #region 方法--根据教师的id获取信息
+        /// <summary>
+        /// 根据教师的id获取信息
+        /// </summary>
+        /// <param name="tCategory"></param>
+        /// <returns></returns>
+        public string CreateMembers(string members)
+        {
+            //主题
+            Member_AccountBLL member_AccountBLL = new Member_AccountBLL();
+            members = members.TrimStart(',').TrimEnd(',');
+            List<Member_Account> list = member_AccountBLL.GetList(" Id in (" + members + ") and  Delflag='false'", " Id");
+
+            return (new JavaScriptSerializer()).Serialize(list);
+        }
+        #endregion
+
+
+        public class TopicAndNation
+        {
+            public List<Traning_Topic> topic { get; set; }
+            public List<NationalAbility_Course> nation { get; set; }
+        }
+
+
+        #region 方法--根据小类获取主题
+        /// <summary>
+        /// 根据小类获取主题
+        /// </summary>
+        /// <param name="Category"></param>
+        /// <returns></returns>
+        public ActionResult GetTopicByCategory(int tCategory)
+        {
+            //主题
+            Traning_TopicBLL traning_TopicBLL = new Traning_TopicBLL();
+            List<Traning_Topic> listT = traning_TopicBLL.GetList(" CategoryId=" + tCategory + " and  Delflag='false' and Display='true'", " Sort desc");
+
+            List<NationalAbility_Course> listN = new NationalAbility_CourseBLL().GetList2("Delflag=0 and Display=1 and TCategoryId=" + tCategory, "Sort");
+            TopicAndNation topicAndNation = new TopicAndNation();
+            topicAndNation.topic = listT;
+            topicAndNation.nation = listN;
+            return Json(topicAndNation, JsonRequestBehavior.AllowGet); 
+
+            //return (new JavaScriptSerializer()).Serialize(list);
+        }
+        #endregion
+
+        #region 方法--根据主题获取角色
+        /// <summary>
+        /// 根据主题获取角色
+        /// </summary>
+        /// <param name="Role"></param>
+        /// <returns></returns>
+        public string GetRoleByTopic(int tTopic)
+        {
+            //角色
+            PracticalCourse_RoleBLL practicalCourse_RoleBLL = new PracticalCourse_RoleBLL();
+            List<PracticalCourse_Role> list = practicalCourse_RoleBLL.GetRoleListByTopic(" TraingTopic=" + tTopic + " and  Delflag='false'", " Id");
+
+            return (new JavaScriptSerializer()).Serialize(list);
+        }
+        #endregion
+
+        #region 方法--上传附件
+        //上传附件
+        public ActionResult UploadAttach()
+        {
+            HttpPostedFileBase file = Request.Files[0];
+            string msg = "";
+            string filePath = "";
+            filePath = Code.UploadCore.UploadAttach(file, ref msg);
+            if (filePath == "")
+            {
+                return Json(new { Result = false, Msg = msg }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { Result = true, Msg = filePath }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+        #endregion
+    }
+}

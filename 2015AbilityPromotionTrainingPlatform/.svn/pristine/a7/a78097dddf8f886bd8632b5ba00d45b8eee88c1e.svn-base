@@ -1,0 +1,43 @@
+﻿function saveVerify(id, status) {
+    var content = $("#content").val();
+
+    if (checklength(content)) {
+        $.ajax({
+            type: 'get',
+            url: '/Market/Coursemarket/MyVerify',
+            data: {
+                Status: status, Id: id, Content: content
+            },
+            contentType: 'application/json',
+            dataType: "text",
+            success: function (data) {
+                var result = $.parseJSON(data);
+                if (result.Code == 0) {
+                    Alert(result.Msg);
+                }
+                else {
+                    Alert(result.Msg);
+                }
+                window.parent.location.reload();
+            },
+            error: function () {
+                alert('服务器错误！');
+            }
+        });
+    }
+}
+
+function checklength(verifycontent) {
+    if (verifycontent.length > 500) {
+        //alert("审核备注不能超过500字符");
+        $("#content").next("span").text("实践内容不能超过500字符");
+        return false;
+    }
+    return true;
+}
+
+
+//$("#close_Iframe").click(function () {
+//    //var index = parent.layer.getFrameIndex(window.name);
+//    //parent.layer.close(index);
+//});

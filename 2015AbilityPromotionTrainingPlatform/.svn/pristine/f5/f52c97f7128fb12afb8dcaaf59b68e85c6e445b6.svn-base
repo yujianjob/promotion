@@ -1,0 +1,4 @@
+﻿function search() {
+    var url = $('#url').val();
+    window.location.href = url + "&searchTitle=" + $('#searchTitle').val() + "&organId=" + $('#organId').val();
+}

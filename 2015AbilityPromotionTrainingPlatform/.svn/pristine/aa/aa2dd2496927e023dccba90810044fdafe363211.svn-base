@@ -1,0 +1,56 @@
+using System;
+
+namespace Dianda.AP.Model
+{
+	public partial class Member_Course_UnitContentTestAnswerResult
+	{
+		public int Id { get; set; }
+
+		public string Verson { get; set; }
+
+		public int UnitContent { get; set; }
+
+		public int ClassId { get; set; }
+
+		public double Score { get; set; }
+
+		public int? QuestionCnt { get; set; }
+
+		public int? RightAnswer { get; set; }
+
+		public int? WrongAnswer { get; set; }
+
+		public bool Result { get; set; }
+
+		public int AccountId { get; set; }
+
+		public bool Delflag { get; set; }
+
+		public DateTime CreateDate { get; set; }
+
+	}
+
+    public partial class TestAnswerResultOther
+    {
+        /// <summary>
+        /// Course_UnitTest TrainingId
+        /// </summary>
+        public int TrainingId { get; set; }
+        /// <summary>
+        /// 班级Id
+        /// </summary>
+        public int ClassId { get; set; }
+        /// <summary>
+        /// Course_UnitContent Id
+        /// </summary>
+        public int UnitContentId { get; set; }
+        /// <summary>
+        /// Course_UnitTest Id
+        /// </summary>
+        public int UnitTestId { get; set; }
+        /// <summary>
+        /// 用户做题的结果集合
+        /// </summary>
+        public string UnitTestAnswer { get; set; }
+    }
+}

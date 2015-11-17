@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.DAL
+{
+    public partial class Member_AccountDAL
+    {
+        public DataTable GetAccountByMannagerGroup(int PartitionId, int OrganId, int GroupId)
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"SELECT  a.*,d.id as PlatformManager_Id
+        FROM    dbo.Member_Account a
+        JOIN dbo.PlatformManager_Detail d ON d.AccountId = a.Id
+        JOIN dbo.PlatformManager_Groups g ON d.GroupId = g.Id ");
+            strSql.Append(" WHERE   d.PartitionId = "+PartitionId);
+            //strSql.Append(" and   d.OrganId = " + OrganId);
+            strSql.Append(" and   d.GroupId = " + GroupId);
+            strSql.Append(" and   d.Delflag = 0");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(strSql.ToString()).Tables[0];
+        }
+    }
+
+}

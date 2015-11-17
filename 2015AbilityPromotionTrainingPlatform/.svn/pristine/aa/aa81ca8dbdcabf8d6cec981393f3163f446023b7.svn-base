@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Dianda.AP.Model.Learn.MyLearn.MyPracticeInfo>
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+@{
+    ViewBag.Title = "我的实践";
+    ViewBag.MenuId = "d_learner_practice";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+}
+
+
+<div class="col-xs-9">
+    <div class="d-page-title">我的实践 <a href="/Practice/PracticalCourse/PracticalCourseAddSingle" class="btn btn-success" style="float: right;">新增实践记录</a></div>
+    <hr />
+
+    <div class="d-practice">
+
+        @foreach (var item in Model)
+        {
+            <div class="i">
+                <a class="title" href="/Practice/PracticalCourse/PracticalCourseEditSingle?memberPCourseid=@item.MpcId">@item.Title</a>
+                <div class="metadata">
+                    @{Member_AccountBLL member_AccountBLL = new Member_AccountBLL();
+                      string name = item.AccountName;
+                      if (item.Creater != -1)
+                      {
+                          name = member_AccountBLL.GetModel(item.Creater, "").Nickname;
+                      }
+                    }
+                    <span class="date">@item.CreateDate.ToString("yyyy-MM-dd")</span> 由 <span class="owner">@name</span>  上传
+                                                                                                                                     
+
+                </div>
+                <div class="action">
+                    @if (item.Status == 1)
+                    {
+                        <span class="status bg-info">学校方&nbsp;<span class="glyphicon glyphicon-time"></span></span>
+                    }
+                    else if (item.Status == 2)
+                    {
+                        <span class="status bg-success">学校方&nbsp;<span class="glyphicon glyphicon-ok"></span></span>
+                    }
+                    else if (item.Status == 3)
+                    {
+                        <span class="status bg-danger">学校方&nbsp;<span class="glyphicon glyphicon-remove"></span></span>
+                    }
+                </div>
+                <span class="sign bg-sign green">实践<span class="hour">@item.Credits 课时</span></span>
+            </div>
+        }
+
+        <hr>
+        @if (ViewBag.RecordCount > ViewBag.PageSize)
+{
+    @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+        new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+}
+
+    </div>
+
+
+</div>
+
+<script>
+    $(function () {
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            var msg = '@TempData["Msg"]';
+            if (msg != '') {
+                Alert(msg);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,185 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Data;
+using System.Data.SqlClient;
+using Dianda.AP.Model;
+using Dianda.AP.BLL;
+using Dianda.Common.StringSecurity;
+using System.Text.RegularExpressions;
+using Dianda.Common;
+
+namespace Web.Areas.Prepare.Controllers
+{
+    public class UserListController : Controller
+    {
+        //
+        // GET: /Prepare/UserList/
+        UserBLL bll = new UserBLL();
+
+        public ActionResult Index()
+        {
+            int GroupId = Code.SiteCache.Instance.GroupId;
+            string where = " and a.OrganId = " + Code.SiteCache.Instance.ManageOrganId + " ";
+            int pageIndex = 1, pageSize = 10, pageCount, recordCount;
+            if (!String.IsNullOrEmpty(Request["PageIndex"]))
+                int.TryParse(QueryString.Decrypt(Request["PageIndex"]), out pageIndex);
+            List<UserModel> list = new List<UserModel>();
+            if (!string.IsNullOrEmpty(Request["where"]))
+            {
+                where += " and NickName like '%" + Request["where"].ToString().Replace("'", "%").Replace("\\", "%").Replace("[]", "[\\]") + "%' ";
+            }
+
+            list = bll.GetList(pageSize, pageIndex, where, "a.Id desc", out recordCount);
+            ViewBag.GetList = list;
+            pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            ViewData["pageSize"] = pageSize;
+            ViewData["pageIndex"] = pageIndex;
+            ViewData["pageCount"] = pageCount;
+            ViewData["recordCount"] = recordCount;
+            ViewData["where"] = Request["where"] == null ? "" : Request["where"];
+            ViewData["GroupId"] = GroupId;
+            return View();
+        }
+
+        public ActionResult UserAdd(string UserName, string PassWord, string ConfirmPass, string NickName,string Email, int Status,int UserGroup)
+        {
+            string emailStr=@"^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,5})+$";
+
+            Regex emailreg = new Regex(emailStr);
+            if (!emailreg.IsMatch(Email.Trim()))
+            {
+                return Content("no:邮箱格式不正确！！！");
+            }
+            if (bll.CountUser(UserName,0) > 0)
+            {
+                return Content("no:用户名重复！！！");
+            }
+            if (bll.UserAdd(UserName, MD5Lib.Encrypt(PassWord).ToUpper(), ConfirmPass, NickName, Email, Status,Code.SiteCache.Instance.ManageOrganId,Code.SiteCache.Instance.LoginInfo.PartitionId,UserGroup))
+            {
+                return Content("yes:添加成功！！！");
+            }
+            else
+            {
+                return Content("no:添加失败！！！");
+            }
+        }
+
+        public ActionResult UserAddXJ(string UserName, string PassWord, string ConfirmPass, string NickName, string Email, int Status)
+        {
+            string emailStr = @"^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,5})+$";
+
+            Regex emailreg = new Regex(emailStr);
+            if (!emailreg.IsMatch(Email.Trim()))
+            {
+                return Content("no:邮箱格式不正确！！！");
+            }
+            if (bll.CountUser(UserName,0) > 0)
+            {
+                return Content("no:用户名重复！！！");
+            }
+            if (bll.UserAddXJ(UserName, MD5Lib.Encrypt(PassWord).ToUpper(), ConfirmPass, NickName, Email, Status, Code.SiteCache.Instance.ManageOrganId))
+            {
+                return Content("yes:添加成功！！！");
+            }
+            else
+            {
+                return Content("no:添加失败！！！");
+            }
+        }
+
+        public ActionResult UserEdit(int id, string UserName, string NickName, string Email, int Status, int UserGroup)
+        {
+            if (bll.CountUser(UserName,id) > 0)
+            {
+                return Content("no:用户名重复！！！");
+            }
+            if (bll.UserEdit(id, UserName, NickName, Email, Status) && bll.UpdGroup(id, Code.SiteCache.Instance.LoginInfo.PartitionId, Code.SiteCache.Instance.ManageOrganId, UserGroup))
+                {
+                    return Content("yes:修改成功！！！");
+                }
+                else
+                {
+                    return Content("no:修改失败！！！");
+                }
+        }
+
+        public ActionResult UserEditXJ(int id, string UserName, string NickName, string Email, int Status)
+        {
+            if (bll.CountUser(UserName, id) > 0)
+            {
+                return Content("no:用户名重复！！！");
+            }
+            if (bll.UserEdit(id, UserName, NickName, Email, Status))
+            {
+                return Content("yes:修改成功！！！");
+            }
+            else
+            {
+                return Content("no:修改失败！！！");
+            }
+        }
+
+        public ActionResult GetModel(int id)
+        {
+            int UserGroup = bll.GetGroup(id, Code.SiteCache.Instance.LoginInfo.PartitionId);
+            return Content("yes:" + bll.GetModel(id) + ":" + UserGroup);
+        }
+
+        public ActionResult GetModelXJ(int id)
+        {
+            return Content("yes:" + bll.GetModel(id));
+        }
+        
+        public ActionResult UpdPass(int id,string PassWord)
+        {
+            if (bll.UpdPass(id,MD5Lib.Encrypt(PassWord).ToUpper()))
+            {
+                return Content("yes:修改成功！！！");
+            }
+            else
+            {
+                return Content("no:修改失败！！！");
+            }
+        }
+
+        public ActionResult CloseUser(int id)
+        {
+            if (bll.UpdUserStatus(id, "Status = 3 "))
+            {
+                return Content("yes:成功！！！");
+            }
+            else
+            {
+                return Content("no:失败！！！");
+            }
+            
+        }
+
+        public ActionResult OpenUser(int id)
+        {
+            if (bll.UpdUserStatus(id, "Status = 2 "))
+            {
+                return Content("yes:成功！！！");
+            }
+            else
+            {
+                return Content("no:失败！！！");
+            }
+        }
+
+        public ActionResult DelUser(int id)
+        {
+            if (bll.UpdUserStatus(id, " Delflag = 1 "))
+            {
+                return Content("yes:成功！！！");
+            }
+            else
+            {
+                return Content("no:失败！！！");
+            }
+        }
+    }
+}

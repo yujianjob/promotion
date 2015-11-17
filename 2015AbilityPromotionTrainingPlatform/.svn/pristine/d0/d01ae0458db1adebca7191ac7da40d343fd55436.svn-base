@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/bootstrap.min.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/uploadify/uploadify.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/app.css")">
+    @*<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/app.min.css")">*@
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/bootstrap-datepicker3.min.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/ymPrompt.css")">
+
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/ymPrompt.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/jquery-1.11.2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/uploadify/jquery.uploadify.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/ie10-viewport-bug-workaround.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/km.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/proto.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/bootstrap-datepicker.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/bootstrap-datepicker.zh-CN.min.js")"></script>
+    @*<script type="text/javascript" src="@Url.Content("/Resources/ueditor1_3_6-utf8-net/flproto0.1.0.js")"></script>*@
+    <script type="text/javascript" src="@Url.Content("~/resources/ueditor1_3_6-utf8-net/ueditor.config.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/resources/ueditor1_3_6-utf8-net/ueditor.all.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/resources/ueditor1_3_6-utf8-net/lang/zh-cn/zh-cn.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/site.js")"></script>
+    @*<script type="text/javascript" src="@Url.Content("/Resources/ueditor1_3_6-utf8-net/lang/zh-cn/zh-cn.js")"></script>*@
+</head>
+<body>
+    <div class="d-h d-h-top">
+        <div id="blk_ct_top" class="d-top blk_ct_top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-4">
+                        @{
+                            List<Dianda.AP.Model.Entrance.Home.PlatformGroups> list = (List<Dianda.AP.Model.Entrance.Home.PlatformGroups>)(Web.Code.SiteCache.Instance.PlatformGroups);
+                            int groupId = Web.Code.SiteCache.Instance.GroupId;
+                        }
+                        <span class="txt">当前身份：@list.FirstOrDefault(t => t.Id == groupId).Title</span>
+                        <span class="i">
+	                        更换&nbsp;<span class="caret"></span>
+	                        <div class="menu">
+		                        <div class="sub">
+                                    @foreach (var item in list.Where(t => t.Id != groupId))
+                                    {
+                                        <a href="/Entrance/Home/Index?GroupId=@item.Id">@item.Title</a>
+                                    }
+		                        </div>
+	                        </div>
+                        </span>
+
+                    </div>
+                    <div class="col-xs-8 text-right">
+                        <a href="/Prepare/AccountEdit/List" class="i">设置</a>
+                        <span class="vline">｜</span>
+                        <a href="/Entrance/Login/DoLogout" class="i">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @RenderBody()
+
+    @RenderSection("scripts", required: false)
+    <footer>
+        <div class="d-h">
+            <div id="blk_footer" class="blk_footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="b clearfix">
+                                <div class="pull-left">客服：021-25653066 工作日（8:00—20:00）双休日（8:00—16:40）</div>
+                                <div class="pull-right text-right">
+                                    上海教育软件发展有限公司承建<br>
+                                    上海市电化教育馆主管<br>
+                                    2015 © 版权所有<br>
+                                    沪ICP备09022178号<br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

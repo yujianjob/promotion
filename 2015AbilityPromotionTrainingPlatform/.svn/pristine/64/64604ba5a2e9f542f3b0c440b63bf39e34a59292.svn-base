@@ -1,0 +1,46 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model.Learn.MyLearn;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.BLL
+{
+    public class LearnMyCourseBLL
+    {
+        LearnMyCourseDAL dal = new LearnMyCourseDAL();
+        /// <summary>
+        /// 取得我的选课记录数
+        /// </summary>
+        /// <param name="where">[B.Status] 学习中：5或6；未开始：3；已结束：6 [C.PartitionId] 当前分区Id</param>
+        /// <returns></returns>
+        public int GetMyCourseCount(string where)
+        {
+            return dal.GetMyCourseCount(where);
+        }
+
+        /// <summary>
+        /// 取得我的选课分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where">B.Status 学习中：5或6；未开始：3；已结束：6     C.PartitionId:当前分区Id</param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<MyCourseInfo> GetMyCourseList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            return dal.GetMyCourseList(pageSize, pageIndex, where, orderBy);
+        }
+
+        /// <summary>
+        /// 放弃选课
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteCourse(int id)
+        {
+            dal.DeleteCourse(id);
+        }
+    }
+}

@@ -1,0 +1,214 @@
+﻿@{
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId })" class="title">云服务在课堂教育中的应用</a>
+                    <span class="action">
+                        <a href="javascript:;" onclick="showNote(this)">隐藏笔记</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-8">
+                <div id="blk_ln_course_reading" class="blk_ln_course_reading" data-km-htm="blk_ln_course_reading.html">
+                    <div class="content">
+                        @using (Html.BeginForm("LearnOnLineReadingView", "LearnOnLineController", FormMethod.Post))
+                        {
+                            Dianda.AP.Model.Course_UnitContent CourseModel = ViewBag.Model_Course_UnitContent;
+                            <h3 class="text-center">@CourseModel.Title</h3>
+                            <hr>
+                            <div class="text-left">@Html.Raw(@CourseModel.Content)</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="d_note" class="col-xs-4">
+                <div class="d-note">
+                    <div id="blk_ln_course_note" class="blk_ln_course_note" data-km-htm="blk_ln_course_note.html">
+                        <div class="h">
+                            我的笔记
+	                        <a href="javascript:;" class="add" onclick="$('#d_new').show()">
+                                <span class="glyphicon glyphicon-plus"></span>&nbsp;新建笔记
+                            </a>
+                        </div>
+
+                        <div id="d_new" class="new">
+                            <div class="ta">
+                                <textarea class="form-control" style="height: 150px; margin-bottom: 10px;" id="newText"></textarea>
+                                <button type="button" class="btn btn-success" onclick="EditSave('')">保存</button>&nbsp;&nbsp;<a href="javascript:;" onclick="$('#d_new').hide();">取消</a>
+                            </div>
+                        </div>
+
+                        @foreach (Dianda.AP.Model.Member_ClassContentNote itemMember in ViewBag.List_Member_ClassContentNote)
+                        {
+                            <div class="i" id="NoteList_@itemMember.Id">
+                                <pre id="divNote_@itemMember.Id" class="content">@Html.Raw(itemMember.Content.Length > 100 ? itemMember.Content.Substring(0, 100) + "..." : itemMember.Content)</pre>
+                                <div class="date">@itemMember.CreateDate.ToString("yyyy-MM-dd HH:mm")</div>
+                                <div class="action">
+                                    <a href="javascript:;" class="del" onclick="DelMember('@itemMember.Id')">删除</a>&nbsp;
+                                    <a href="javascript:;" class="edit" onclick="EditMember('@itemMember.Id')">编辑</a>
+                                </div>
+                            </div>
+                            
+                            <div id="editNote_@itemMember.Id" class="new" style="display:none;">
+                                <div class="ta">
+                                    <textarea class="form-control" style="height: 150px; margin-bottom: 10px;" id="editText_@itemMember.Id"></textarea>
+                                    <button type="button" class="btn btn-success" onclick="EditSave('@itemMember.Id')">保存</button>&nbsp;&nbsp;
+                                    <a href="javascript:;" onclick="$('#editNote_@itemMember.Id').hide();$('#NoteList_@itemMember.Id').show();">取消</a>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-pagination clearfix">
+                            <div class="pull-center text-center">
+                                <a href="@Url.Action("LearnOnLineReadingView", new { TrainingId = ViewBag.TrainingId, PageIndex = 1 })">首页</a>
+                                <a href="@Url.Action("LearnOnLineReadingView", new { TrainingId = ViewBag.TrainingId, PageIndex = ViewBag.PageIndex - 1 })">上一页</a>
+                                <a href="@Url.Action("LearnOnLineReadingView", new { TrainingId = ViewBag.TrainingId, PageIndex = ViewBag.PageIndex + 1 })">下一页</a>
+                                <a href="@Url.Action("LearnOnLineReadingView", new { TrainingId = ViewBag.TrainingId, PageIndex = ViewBag.PageCount })">尾页</a>
+                                <input class="form-control input-sm" type="text" id="InputPageTo" /><button class="btn btn-sm" id="BtnPageTo">跳转» </button>
+                                <script type="text/javascript">
+                                    $('#BtnPageTo').click(function () {
+                                        window.location.href = 'LearnOnLineReadingView?TrainingId=@ViewBag.TrainingId&ArticlePageIndex=' + $('#InputPageTo').val();
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav fixed">
+        <a href="@Url.Action("LearnOnLineReadingView", new { TrainingId = ViewBag.TrainingId, ArticlePageIndex = ViewBag.ArticlePageIndex - 1 })" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="@Url.Action("LearnOnLineReadingView", new { TrainingId = ViewBag.TrainingId, ArticlePageIndex = ViewBag.ArticlePageIndex + 1 })" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+<script>
+    $(function () {
+        var jsonData = JSON.stringify({});
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $('#d_new').hide();
+        })
+    });
+
+    function showNote(eo) {
+        if ($('#d_note').css('display') == 'none') {
+            $(eo).text('隐藏笔记');
+            $('#d_note').show();
+            $('#blk_ln_course_reading').parent().attr('class', 'col-xs-8');
+        } else {
+            $(eo).text('显示笔记');
+            $('#d_note').hide();
+            $('#blk_ln_course_reading').parent().attr('class', 'col-xs-12');
+        }
+    }
+
+    //删除
+    function DelMember(delId) {
+        if (confirm('你确定要删除该条记录吗?')) {
+            var jsonData = JSON.stringify({ Id: delId });
+            $.ajax({
+                cache: false,
+                url: '/LearnOnLine/DelContentNote',
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (data) {
+                    Alert(data.Msg);
+                    location.href = window.location.href;
+                },
+                error: function () {
+                }
+            });
+        }
+    }
+
+    //编辑
+    function EditMember(editId) {
+    
+        if ($('#editNote_' + editId).css('display') == 'none') {
+            $('#NoteList_' + editId).hide();//隐藏笔记文本显示
+            $('#editText_' + editId).text($("#divNote_" + editId).html());
+            $('#editNote_' + editId).show();
+        }
+    }
+
+    //[修改],[新增]保存
+    function EditSave(editId) {
+        var txtContent = editId == '' ? $('#newText').val().trim() : $('#editText_' + editId).val().trim();
+        var IsNew = editId == '' ? true : false;
+        editId = editId == '' ? "0" : editId;
+
+        if (txtContent.length <= 0)
+        {
+            Alert('笔记内容不能为空!');
+            if (editId == "0") {
+                $('#newText').focus();
+            } else {
+                $('#editText_' + editId).focus();
+            }
+            return;
+        }
+
+        if (txtContent.length > 8000) {
+            Alert('输入的字数不能大于8000.');
+            if (editId == "0") {
+                $('#newText').focus();
+            } else {
+                $('#editText_' + editId).focus();
+            }
+            return;
+        }
+
+        var jsonData = JSON.stringify({
+            Id: editId,
+            Content: txtContent,
+            ClassId: "@ViewBag.ClassId",
+            TrainingId: "@ViewBag.TrainingId",
+            AccountId: "@ViewBag.AccountId",
+            UnitContent: "@ViewBag.UnitContent"
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/EditContentNote',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                Alert(data.Msg);
+                if (IsNew) {
+                    $('#d_new').hide();
+                }
+                else {
+                    $('#editNote_' + editId).hide();
+                    $('#NoteList_' + editId).show();
+                }
+                //location.href = "/Learn/LearnOnLine/LearnOnLineReadingView";
+                location.href = window.location.href;
+            },
+            error: function () {
+            }
+        });
+    }
+
+</script>
+
+
+
+

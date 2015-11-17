@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edge>
+	<!--<proxy level="1">rtmp://localhost/</proxy>-->
+<!-- 	<proxy level="3">rtmp://localhost/vod/ovideo</proxy> -->
+	<!--<proxy level="2">playerdata/media/174231366707.flv</proxy>-->
+	<!--
+	<proxy level="1">rtmp://192.168.62.215/</proxy>
+	-->
+	<!--
+	<proxy level="0">192.168.62.215</proxy>
+	-->
+	<!-- 
+	<proxy level="1或2">rtmp://192.168.62.215/?rtmp://192.168.62.214/</proxy>
+	-->
+<!-- 	<proxy level="2">rtmp://10.0.0.9/?rtmp://10.0.0.2/vod+sample1_150kbps.f4v</proxy> -->
+	<proxy level="2">rtmp//21.90.90.99/?rtmp://21.90.1.204/vod/</proxy>
+</edge>

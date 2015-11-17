@@ -1,0 +1,19 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+@model  XXW.CommonModels.LogBrowse
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Play</title>
+    <script src="~/Default1/AC_RunActiveContent.js"></script>
+</head>g
+<body>
+    <div id="videoContainer">
+
+   <div id='swfplayerDiv'></div><div id='ovideoplayerDiv' style='overflow:hidden;width:680px;height:480px;z-index:99;position:relative;'></div><div id='ov_payitem_div'></div><script>var player_w = 680, player_h = 480; var fcode = '@Model.TempCode'; var fuid = 0; var onlyplayer = 0; function show_video() { showplayer('ovideoplayerDiv', player_w, player_h, 'hidebar=true&unicode=0&playindex=0&rolladplayback=0&rollad=0&c=@Model.TempCode&auto=0&sn=1169446548&s=&config=http://api.shlll.net/system_config.xml&page=http://api.shlll.net/VideoList?c=@Model.TempCode&rnd=53661&name=FLVPlayer.swf', 'oPlayer'); }; show_video();</script>
+            </div>
+</body>
+</html>

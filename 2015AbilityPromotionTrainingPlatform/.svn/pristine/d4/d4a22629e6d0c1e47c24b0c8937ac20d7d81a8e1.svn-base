@@ -1,0 +1,15 @@
+﻿@{
+    int classId = (int)PageData["classId"];
+
+}
+<div class="d-navmenu">
+    <a class="i " href="@Url.Action("ClassProgress", "ClassTeacher", new { classId =classId})" id="d_courseteacher_class_progress">学习进度</a>
+    <a class="i " href="@Url.Action("ClassGroup", "ClassTeacher", new { classId = classId })" id="d_courseteacher_class_member">班级学员</a>
+    <a class="i "  href="@Url.Action("ClassTask", "ClassTeacher", new { classId = classId })" id="d_courseteacher_class_task">作业批改</a>
+    <a class="i "  href="@Url.Action("ClassDiscuss", "ClassTeacher", new { classId = classId })" id="d_courseteacher_class_discuss">小组讨论</a>
+    <a class="i "  href="@Url.Action("ClassQuiz", "ClassTeacher", new { classId = classId })" id="d_courseteacher_class_quiz">测试成绩</a>
+    <a class="i " href="@Url.Action("ClassExam", "ClassTeacher", new { classId = classId })" id="d_courseteacher_class_exam">考试批改</a>
+    <a class="i active"  href="@Url.Action("ClassGraduate", "ClassTeacher", new { classId = classId })" id="d_courseteacher_class_graduate">结业评价</a>
+    
+    <a class="i"  href="@Url.Action("Index", "Message", new { classId = classId,area="Prepare" })" id="d_courseteacher_class_notify">班级通知</a>
+</div>

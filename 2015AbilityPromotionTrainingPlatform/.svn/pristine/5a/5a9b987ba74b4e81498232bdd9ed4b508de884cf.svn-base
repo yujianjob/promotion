@@ -1,0 +1,348 @@
+﻿using Dianda.AP.Model;
+using Dianda.AP.Model.API;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.DAL
+{
+    public class APIDAL
+    {
+        #region 学校
+        public int AddOrgan(Organ_Detail model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("insert into [dbo].[Organ_Detail] ([Title],[ParentId],[OType],[Remark],[Delflag],[CreateDate],[PartitionId],[StudyRegionId],[OutSourceId])");
+            sql.Append(" values (@Title,@ParentId,@OType,@Remark,@Delflag,@CreateDate,@PartitionId,@StudyRegionId,@OutSourceId)");
+            sql.Append(" set @Id=@@IDENTITY");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@Title", SqlDbType.VarChar, 200) { Value = model.Title },
+				new SqlParameter("@ParentId", SqlDbType.Int, 4) { Value = model.ParentId },
+				new SqlParameter("@OType", SqlDbType.Int, 4) { Value = model.OType },
+				new SqlParameter("@Remark", SqlDbType.VarChar, 50) { Value = model.Remark },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@PartitionId", SqlDbType.Int, 4) { Value = model.PartitionId },
+				new SqlParameter("@StudyRegionId", SqlDbType.Int, 4) { Value = model.StudyRegionId },
+				new SqlParameter("@OutSourceId", SqlDbType.Int, 4) { Value = model.OutSourceId }
+			};
+            int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+            model.Id = Convert.ToInt32(cmdParams[0].Value);
+            return result;
+        }
+
+        public int UpdateOrgan(Organ_Detail model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Organ_Detail] set ");
+            sql.Append("[Title]=@Title,[ParentId]=@ParentId,[OType]=@OType,[Remark]=@Remark,[Delflag]=@Delflag,[CreateDate]=@CreateDate,[PartitionId]=@PartitionId,[StudyRegionId]=@StudyRegionId,[OutSourceId]=@OutSourceId");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@Title", SqlDbType.VarChar, 200) { Value = model.Title },
+				new SqlParameter("@ParentId", SqlDbType.Int, 4) { Value = model.ParentId },
+				new SqlParameter("@OType", SqlDbType.Int, 4) { Value = model.OType },
+				new SqlParameter("@Remark", SqlDbType.VarChar, 50) { Value = model.Remark },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@PartitionId", SqlDbType.Int, 4) { Value = model.PartitionId },
+				new SqlParameter("@StudyRegionId", SqlDbType.Int, 4) { Value = model.StudyRegionId },
+				new SqlParameter("@OutSourceId", SqlDbType.Int, 4) { Value = model.OutSourceId }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        public int DeleteOrgan(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Organ_Detail] set Delflag=1 where Id=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        public Organ_Detail GetOrganByOutId(int outId)
+        {
+            string sql = "select * from [dbo].[Organ_Detail] where [OutSourceId]=@OutId and Delflag=0";
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@OutId", SqlDbType.Int, 4) { Value = outId }
+			};
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                if (reader.Read())
+                {
+                    Organ_Detail model = new Organ_Detail();
+                    ConvertToModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private void ConvertToModel(IDataReader reader, Organ_Detail model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["Title"] != DBNull.Value)
+                model.Title = reader["Title"].ToString();
+            if (reader["ParentId"] != DBNull.Value)
+                model.ParentId = Convert.ToInt32(reader["ParentId"]);
+            if (reader["OType"] != DBNull.Value)
+                model.OType = Convert.ToInt32(reader["OType"]);
+            if (reader["Remark"] != DBNull.Value)
+                model.Remark = reader["Remark"].ToString();
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["PartitionId"] != DBNull.Value)
+                model.PartitionId = Convert.ToInt32(reader["PartitionId"]);
+            if (reader["StudyRegionId"] != DBNull.Value)
+                model.StudyRegionId = Convert.ToInt32(reader["StudyRegionId"]);
+            if (reader["OutSourceId"] != DBNull.Value)
+                model.OutSourceId = Convert.ToInt32(reader["OutSourceId"]);
+        }
+        #endregion
+
+        #region 教师
+        public int AddMemberAccount(Member_Account model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("insert into [dbo].[Member_Account] ([UserName],[Password],[Email],[Status],[RegisterIP],[OrganId],[Pic],[Nickname],[IsRealName],[originUserId],[origin],[OriginUserName],[IsNeedReName],[Delflag],[CreateDate],[OutSourceId])");
+            sql.Append(" values (@UserName,@Password,@Email,@Status,@RegisterIP,@OrganId,@Pic,@Nickname,@IsRealName,@originUserId,@origin,@OriginUserName,@IsNeedReName,@Delflag,@CreateDate,@OutSourceId)");
+            sql.Append(" set @Id=@@IDENTITY");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@UserName", SqlDbType.VarChar, 50) { Value = model.UserName },
+				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = model.Password },
+				new SqlParameter("@Email", SqlDbType.VarChar, 200) { Value = model.Email },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@RegisterIP", SqlDbType.VarChar, 20) { Value = model.RegisterIP },
+				new SqlParameter("@OrganId", SqlDbType.Int, 4) { Value = model.OrganId },
+				new SqlParameter("@Pic", SqlDbType.VarChar, 200) { Value = model.Pic },
+				new SqlParameter("@Nickname", SqlDbType.VarChar, 20) { Value = model.Nickname },
+				new SqlParameter("@IsRealName", SqlDbType.Bit, 1) { Value = model.IsRealName },
+				new SqlParameter("@originUserId", SqlDbType.VarChar, 50) { Value = model.originUserId },
+				new SqlParameter("@origin", SqlDbType.Int, 4) { Value = model.origin },
+				new SqlParameter("@OriginUserName", SqlDbType.VarChar, 50) { Value = model.OriginUserName },
+				new SqlParameter("@IsNeedReName", SqlDbType.Bit, 1) { Value = model.IsNeedReName },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@OutSourceId", SqlDbType.Int, 4) { Value = model.OutSourceId }
+			};
+            int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+            model.Id = Convert.ToInt32(cmdParams[0].Value);
+            return result;
+        }
+
+        public int AddMemberBaseInfo(MemberBaseInfo model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("insert into [dbo].[Member_BaseInfo] ([AccountId],[TeacherNo],[GroupId],[RealName],[Mobile],[Phone],[Address],[PostCode],[CredentialsType],[CredentialsNumber],[Sex],[Birthday],[Nation],[PoliticalStatus],[Delflag],[CreateDate],[RegionId],[StudySection],[Organid],[Job],[WorkRank],[TeachDate],[TeachStudySection],[TeachSubject],[TeachGrade],[TraningType],[TraningObject],[EduLevel],[EduDegree],[EduMajor],[EduMajorOhter],[GraduateSchool],[GraduateTime])");
+            sql.Append(" values (@AccountId,@TeacherNo,@GroupId,@RealName,@Mobile,@Phone,@Address,@PostCode,@CredentialsType,@CredentialsNumber,@Sex,@Birthday,@Nation,@PoliticalStatus,@Delflag,@CreateDate,@RegionId,@StudySection,@Organid,@Job,@WorkRank,@TeachDate,@TeachStudySection,@TeachSubject,@TeachGrade,@TraningType,@TraningObject,@EduLevel,@EduDegree,@EduMajor,@EduMajorOhter,@GraduateSchool,@GraduateTime)");
+            sql.Append(" set @Id=@@IDENTITY");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = model.AccountId },
+				new SqlParameter("@TeacherNo", SqlDbType.VarChar, 20) { Value = model.TeacherNo },
+				new SqlParameter("@GroupId", SqlDbType.Int, 4) { Value = model.GroupId },
+				new SqlParameter("@RealName", SqlDbType.VarChar, 120) { Value = model.RealName },
+				new SqlParameter("@Mobile", SqlDbType.VarChar, 30) { Value = model.Mobile },
+				new SqlParameter("@Phone", SqlDbType.VarChar, 30) { Value = model.Phone },
+				new SqlParameter("@Address", SqlDbType.VarChar, 300) { Value = model.Address },
+				new SqlParameter("@PostCode", SqlDbType.VarChar, 10) { Value = model.PostCode },
+				new SqlParameter("@CredentialsType", SqlDbType.Int, 4) { Value = model.CredentialsType },
+				new SqlParameter("@CredentialsNumber", SqlDbType.VarChar, 30) { Value = model.CredentialsNumber },
+				new SqlParameter("@Sex", SqlDbType.Int, 4) { Value = model.Sex },
+				new SqlParameter("@Birthday", SqlDbType.DateTime, 8) { Value = model.Birthday },
+				new SqlParameter("@Nation", SqlDbType.Int, 4) { Value = model.Nation },
+				new SqlParameter("@PoliticalStatus", SqlDbType.Int, 4) { Value = model.PoliticalStatus },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@RegionId", SqlDbType.Int, 4) { Value = model.RegionId },
+				new SqlParameter("@StudySection", SqlDbType.VarChar, 200) { Value = model.StudySection },
+				new SqlParameter("@Organid", SqlDbType.Int, 4) { Value = model.Organid },
+				new SqlParameter("@Job", SqlDbType.Int, 4) { Value = model.Job },
+				new SqlParameter("@WorkRank", SqlDbType.Int, 4) { Value = model.WorkRank },
+				new SqlParameter("@TeachDate", SqlDbType.DateTime, 8) { Value = model.TeachDate },
+				new SqlParameter("@TeachStudySection", SqlDbType.VarChar, 200) { Value = model.TeachStudySection },
+				new SqlParameter("@TeachSubject", SqlDbType.VarChar, 200) { Value = model.TeachSubject },
+				new SqlParameter("@TeachGrade", SqlDbType.VarChar, 200) { Value = model.TeachGrade },
+				new SqlParameter("@TraningType", SqlDbType.Int, 4) { Value = model.TraningType },
+				new SqlParameter("@TraningObject", SqlDbType.Int, 4) { Value = model.TraningObject },
+				new SqlParameter("@EduLevel", SqlDbType.Int, 4) { Value = model.EduLevel },
+				new SqlParameter("@EduDegree", SqlDbType.Int, 4) { Value = model.EduDegree },
+				new SqlParameter("@EduMajor", SqlDbType.Int, 4) { Value = model.EduMajor },
+				new SqlParameter("@EduMajorOhter", SqlDbType.VarChar, 200) { Value = model.EduMajorOhter },
+				new SqlParameter("@GraduateSchool", SqlDbType.VarChar, 200) { Value = model.GraduateSchool },
+				new SqlParameter("@GraduateTime", SqlDbType.DateTime, 8) { Value = model.GraduateTime }
+			};
+            int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+            model.Id = Convert.ToInt32(cmdParams[0].Value);
+            return result;
+        }
+
+        public int UpdateMemberAccount(Member_Account model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Member_Account] set ");
+            sql.Append("[UserName]=@UserName,[Password]=@Password,[Email]=@Email,[Status]=@Status,[RegisterIP]=@RegisterIP,[OrganId]=@OrganId,[Pic]=@Pic,[Nickname]=@Nickname,[IsRealName]=@IsRealName,[originUserId]=@originUserId,[origin]=@origin,[OriginUserName]=@OriginUserName,[IsNeedReName]=@IsNeedReName,[Delflag]=@Delflag,[CreateDate]=@CreateDate,[OutSourceId]=@OutSourceId");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@UserName", SqlDbType.VarChar, 50) { Value = model.UserName },
+				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = model.Password },
+				new SqlParameter("@Email", SqlDbType.VarChar, 200) { Value = model.Email },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@RegisterIP", SqlDbType.VarChar, 20) { Value = model.RegisterIP },
+				new SqlParameter("@OrganId", SqlDbType.Int, 4) { Value = model.OrganId },
+				new SqlParameter("@Pic", SqlDbType.VarChar, 200) { Value = model.Pic },
+				new SqlParameter("@Nickname", SqlDbType.VarChar, 20) { Value = model.Nickname },
+				new SqlParameter("@IsRealName", SqlDbType.Bit, 1) { Value = model.IsRealName },
+				new SqlParameter("@originUserId", SqlDbType.VarChar, 50) { Value = model.originUserId },
+				new SqlParameter("@origin", SqlDbType.Int, 4) { Value = model.origin },
+				new SqlParameter("@OriginUserName", SqlDbType.VarChar, 50) { Value = model.OriginUserName },
+				new SqlParameter("@IsNeedReName", SqlDbType.Bit, 1) { Value = model.IsNeedReName },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@OutSourceId", SqlDbType.Int, 4) { Value = model.OutSourceId }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        public int UpdateMemberBaseInfo(MemberBaseInfo model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Member_BaseInfo] set ");
+            sql.Append("[AccountId]=@AccountId,[TeacherNo]=@TeacherNo,[GroupId]=@GroupId,[RealName]=@RealName,[Mobile]=@Mobile,[Phone]=@Phone,[Address]=@Address,[PostCode]=@PostCode,[CredentialsType]=@CredentialsType,[CredentialsNumber]=@CredentialsNumber,[Sex]=@Sex,[Birthday]=@Birthday,[Nation]=@Nation,[PoliticalStatus]=@PoliticalStatus,[Delflag]=@Delflag,[CreateDate]=@CreateDate,[RegionId]=@RegionId,[StudySection]=@StudySection,[Organid]=@Organid,[Job]=@Job,[WorkRank]=@WorkRank,[TeachDate]=@TeachDate,[TeachStudySection]=@TeachStudySection,[TeachSubject]=@TeachSubject,[TeachGrade]=@TeachGrade,[TraningType]=@TraningType,[TraningObject]=@TraningObject,[EduLevel]=@EduLevel,[EduDegree]=@EduDegree,[EduMajor]=@EduMajor,[EduMajorOhter]=@EduMajorOhter,[GraduateSchool]=@GraduateSchool,[GraduateTime]=@GraduateTime");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = model.AccountId },
+				new SqlParameter("@TeacherNo", SqlDbType.VarChar, 20) { Value = model.TeacherNo },
+				new SqlParameter("@GroupId", SqlDbType.Int, 4) { Value = model.GroupId },
+				new SqlParameter("@RealName", SqlDbType.VarChar, 120) { Value = model.RealName },
+				new SqlParameter("@Mobile", SqlDbType.VarChar, 30) { Value = model.Mobile },
+				new SqlParameter("@Phone", SqlDbType.VarChar, 30) { Value = model.Phone },
+				new SqlParameter("@Address", SqlDbType.VarChar, 300) { Value = model.Address },
+				new SqlParameter("@PostCode", SqlDbType.VarChar, 10) { Value = model.PostCode },
+				new SqlParameter("@CredentialsType", SqlDbType.Int, 4) { Value = model.CredentialsType },
+				new SqlParameter("@CredentialsNumber", SqlDbType.VarChar, 30) { Value = model.CredentialsNumber },
+				new SqlParameter("@Sex", SqlDbType.Int, 4) { Value = model.Sex },
+				new SqlParameter("@Birthday", SqlDbType.DateTime, 8) { Value = model.Birthday },
+				new SqlParameter("@Nation", SqlDbType.Int, 4) { Value = model.Nation },
+				new SqlParameter("@PoliticalStatus", SqlDbType.Int, 4) { Value = model.PoliticalStatus },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@RegionId", SqlDbType.Int, 4) { Value = model.RegionId },
+				new SqlParameter("@StudySection", SqlDbType.VarChar, 200) { Value = model.StudySection },
+				new SqlParameter("@Organid", SqlDbType.Int, 4) { Value = model.Organid },
+				new SqlParameter("@Job", SqlDbType.Int, 4) { Value = model.Job },
+				new SqlParameter("@WorkRank", SqlDbType.Int, 4) { Value = model.WorkRank },
+				new SqlParameter("@TeachDate", SqlDbType.DateTime, 8) { Value = model.TeachDate },
+				new SqlParameter("@TeachStudySection", SqlDbType.VarChar, 200) { Value = model.TeachStudySection },
+				new SqlParameter("@TeachSubject", SqlDbType.VarChar, 200) { Value = model.TeachSubject },
+				new SqlParameter("@TeachGrade", SqlDbType.VarChar, 200) { Value = model.TeachGrade },
+				new SqlParameter("@TraningType", SqlDbType.Int, 4) { Value = model.TraningType },
+				new SqlParameter("@TraningObject", SqlDbType.Int, 4) { Value = model.TraningObject },
+				new SqlParameter("@EduLevel", SqlDbType.Int, 4) { Value = model.EduLevel },
+				new SqlParameter("@EduDegree", SqlDbType.Int, 4) { Value = model.EduDegree },
+				new SqlParameter("@EduMajor", SqlDbType.Int, 4) { Value = model.EduMajor },
+				new SqlParameter("@EduMajorOhter", SqlDbType.VarChar, 200) { Value = model.EduMajorOhter },
+				new SqlParameter("@GraduateSchool", SqlDbType.VarChar, 200) { Value = model.GraduateSchool },
+				new SqlParameter("@GraduateTime", SqlDbType.DateTime, 8) { Value = model.GraduateTime }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        public int DeleteMemberAccount(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Member_Account] set [Delflag]=1 where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        public int DeleteMemberBaseInfo(int accountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Member_BaseInfo] set [Delflag]=1 where [AccountId]=@AccountId");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = accountId }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        public Member_Account GetMemberAccountByOutId(int outId)
+        {
+            string sql = "select * from [dbo].[Member_Account] where [OutSourceId]=@OutId and Delflag=0";
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@OutId", SqlDbType.Int, 4) { Value = outId }
+			};
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                if (reader.Read())
+                {
+                    Member_Account model = new Member_Account();
+                    ConvertToModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private void ConvertToModel(IDataReader reader, Member_Account model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+            if (reader["Password"] != DBNull.Value)
+                model.Password = reader["Password"].ToString();
+            if (reader["Email"] != DBNull.Value)
+                model.Email = reader["Email"].ToString();
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["RegisterIP"] != DBNull.Value)
+                model.RegisterIP = reader["RegisterIP"].ToString();
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+            if (reader["Nickname"] != DBNull.Value)
+                model.Nickname = reader["Nickname"].ToString();
+            if (reader["IsRealName"] != DBNull.Value)
+                model.IsRealName = Convert.ToBoolean(reader["IsRealName"]);
+            if (reader["originUserId"] != DBNull.Value)
+                model.originUserId = reader["originUserId"].ToString();
+            if (reader["origin"] != DBNull.Value)
+                model.origin = Convert.ToInt32(reader["origin"]);
+            if (reader["OriginUserName"] != DBNull.Value)
+                model.OriginUserName = reader["OriginUserName"].ToString();
+            if (reader["IsNeedReName"] != DBNull.Value)
+                model.IsNeedReName = Convert.ToBoolean(reader["IsNeedReName"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["OutSourceId"] != DBNull.Value)
+                model.OutSourceId = Convert.ToInt32(reader["OutSourceId"]);
+        }
+        #endregion
+
+    }
+}

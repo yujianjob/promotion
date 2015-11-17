@@ -1,0 +1,58 @@
+﻿//教师个人报名
+function classRegister(_classid, People, LimitPeopleCnt) {
+    if (check(People, LimitPeopleCnt)) {
+        var _data = {
+            ClassId: _classid
+        };
+        $.ajax({
+            url: '/Market/Coursemarket/ClassRegister',
+            type: 'GET',
+            data: _data,
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'text',
+            error: function (m) {
+                var z = m;
+            },
+            success: function (data) {
+                var result = $.parseJSON(data);
+                if (result.Code == 0) {
+                    Alert(result.Msg, 'window.location = \'/Market/Coursemarket/CoursemarketSingleList\'');
+                }
+                else {
+                    Alert(result.Msg);
+                }
+               
+            },
+            error: function () {
+                Alert('服务器错误！');
+            }
+        });
+    }
+}
+
+//验证时间和人数
+function check( People, LimitPeopleCnt) {
+    var myDate = new Date();
+    var myStart = new Date($("#hidsignstart").val());
+    var myEnd = new Date($("#hidsignend").val());
+    var myplanStart = new Date($("#hidplansignstart").val());
+    var myplanEnd = new Date($("#hidplansignend").val());
+
+    var myPeople = Number(People);
+    var myLimitPeopleCnt = Number(LimitPeopleCnt);
+    if (myStart > myDate || myplanStart > myDate) {
+        Alert("未到报名时间");
+        return false;
+    }
+    if (myEnd < myDate || myplanEnd < myDate) {
+        Alert("已过报名时间");
+        return false;
+    }
+    if (myLimitPeopleCnt > 0) {
+        if (myLimitPeopleCnt <= myPeople) {
+            Alert("报名人数已满");
+            return false;
+        }
+    }
+    return true;
+}

@@ -1,0 +1,161 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-h d-h-header">
+    <div id="blk_ac_header" class="d-header blk_ac_header">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-3">
+                    <a href="#" class="logo">
+                        <img src="/Resources/Images/logo.png">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th-list"></span>&nbsp;
+			      	            <span>目录</span>
+                                </div>
+                                <input type="text" class="form-control" style="width: 240px;">
+                                <div class="input-group-addon bg-white">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-xs-5 text-right">
+                    @{
+                        List<Dianda.AP.Model.Entrance.Home.PlatformMenu> menuList = (List<Dianda.AP.Model.Entrance.Home.PlatformMenu>)(Web.Code.SiteCache.Instance.PlatformMenus);
+                    }
+                    @foreach (var item in menuList)
+                    {
+                        if (item.ParentId == 0)
+                        {
+                            if (!item.IsFolder)
+                            {
+                                if (item.MenuPath != "")
+                                {
+                                    string[] menuArray = item.MenuPath.Split('/');
+                                    <a href="@Url.Action(menuArray[2], menuArray[1], new { area = menuArray[0] })" class="i">@item.MenuText</a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="i">@item.MenuText&nbsp;<span class="caret"></span>
+                                    <div class="menu">
+                                        <div class="sub">
+                                            @foreach (var subitem in menuList.Where(t => t.ParentId == item.Id))
+                                            {
+                                                if (subitem.MenuPath != "")
+                                                {
+                                                    string[] submenuArray = subitem.MenuPath.Split('/');
+                                                    <a href="@Url.Action(submenuArray[2], submenuArray[1], new { area = submenuArray[0] })">@subitem.MenuText</a>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </span>
+                            }
+                        }
+                        
+                    }
+
+                    <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                    <a class="ba" href="@Url.Action("Index", "Message", new { area = "Prepare" })">@Web.Code.SiteCache.Instance.NotifyCount</a>
+                    @*@switch (Web.Code.SiteCache.Instance.GroupId)
+                    {
+                        //市级管理员--1
+                        case (int)XXW.Enum.PlatformGroupEnum.ManagerCity:
+                        <a href="@Url.Action("Index", "News", new { area = "Prepare" })" class="i">培训公告</a>
+                        <span class="i">管理功能&nbsp;<span class="caret"></span>
+                            <div class="menu">
+                                <div class="sub">
+                                    <a href="@Url.Action("List", "TrainingCheck", new { area = "Prepare" })">课程审核</a>
+                                    <a href="@Url.Action("ClassAuditList", "ClassAudit", new { area = "ClassDoMain" })">班级审核</a>
+                                    <a href="#">证书管理</a>
+                                    <a href="@Url.Action("Index", "Semester", new { area = "Prepare" })">学期设置</a>
+                                    <a href="@Url.Action("setup_period", "Standard_Setting", new { area = "Prepare" })">标准设定-学时设定</a>
+                                    <a href="#">标准设定-必选课程设定</a>
+                                    <a href="@Url.Action("Index", "Exemption", new { area = "Prepare" })">免修学分导入</a>
+                                </div>
+                            </div>
+                        </span>
+                        <a href="#" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                        <a class="ba" href="@Url.Action("Index", "Message", new { area = "Prepare" })">@Web.Code.SiteCache.Instance.NotifyCount</a>
+                            ; break;
+                        //区级管理员--2
+                        case (int)XXW.Enum.PlatformGroupEnum.ManagerArea:
+                       <a href="@Url.Action("List", "TrainingApply", new { area = "Prepare" })" class="i">课程上报</a>
+                        <a href="@Url.Action("ClassList", "ClassApply", new { area = "ClassDomain" })" class="i">班级开班</a>
+                        <span class="i">管理功能&nbsp;<span class="caret"></span>
+                            <div class="menu">
+                                <div class="sub">
+                                    <a href="apply-list.html">报名审核</a>
+                                     <a href="@Url.Action("setup_period", "Standard_Setting", new { area = "Prepare" })">标准设定-学时设定</a>
+                                    <a href="setup-range.html">标准设定-选课范围设定</a>
+                                </div>
+                            </div>
+                        </span>
+                        <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                            ; break;
+                        //培训机构管理员--3
+                        case (int)XXW.Enum.PlatformGroupEnum.ManagerTraining:
+                        <a href="@Url.Action("Index", "UserList", new { area = "Prepare" })" class="i">用户管理</a>
+                        <a href="@Url.Action("List", "TrainingApply", new { area = "Prepare" })" class="i">课程上报</a>
+                        <a href="@Url.Action("ClassList", "ClassApply", new { area = "ClassDomain" })" class="i">班级开班</a>
+                        <a href="#" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                        <a class="ba" href="@Url.Action("Index", "Message", new { area = "Prepare" })">@Web.Code.SiteCache.Instance.NotifyCount</a>
+                            ; break;
+                        //学校管理员--4
+                        case (int)XXW.Enum.PlatformGroupEnum.ManagerSchool:
+                         <a class="i" href="@Url.Action("Index", "News", new { area = "Prepare" })">培训公告</a>
+                        <a href="@Url.Action("CoursemarketSingleList", "Coursemarket", new { area = "Market" })" class="i">课程超市</a>
+                        <span class="i">管理功能&nbsp;<span class="caret"></span>
+                            <div class="menu">
+                                <div class="sub">
+                                    <a href="teacher-list.html">教师信息管理</a>
+                                    <a href="teacher-transfer-list.html">教师调动管理</a>
+                                    <a href="@Url.Action("CoursemarketVerify", "Coursemarket", new { area = "Market" })">教师报名管理</a>
+                                    <a href="@Url.Action("PracticalCourseList", "PracticalCourse", new { area = "Practice" })">实践课程管理</a>
+                                    <a href="teacher-credit-list.html">教师学分管理</a>
+                                </div>
+                            </div>
+                        </span>
+                        <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                            ; break;
+                        //课程教师--5
+                        case (int)XXW.Enum.PlatformGroupEnum.TeacherCourse:
+                        <a href="/Course/CourseCreate/CourseList" class="i">课程制作</a>
+                        <a href="/ClassDomain/ClassApply/ClassList" class="i">班级教学</a>
+                        <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                            ; break;
+                        //课程辅导员--6
+                        case (int)XXW.Enum.PlatformGroupEnum.TeacherInstructor:
+                        <a href="/Course/CourseCreate/CourseList" class="i">课程制作</a>
+                        <a href="/ClassDomain/ClassApply/ClassList" class="i">班级教学</a>
+                        <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                            ; break;
+                        //普通教师--7
+                        case (int)XXW.Enum.PlatformGroupEnum.TeacherGeneral:
+                        <a class="i" href="@Url.Action("Index", "News", new { area = "Prepare" })">培训公告</a>
+                        <a class="i" href="@Url.Action("CoursemarketSingleList", "Coursemarket", new { area = "Market" })">课程超市</a>
+                        <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                        <a class="ba" href="@Url.Action("Index", "Message", new { area = "Prepare" })">@Web.Code.SiteCache.Instance.NotifyCount</a>
+                            ; break;
+                        //区县进修学校--9
+                        case (int)XXW.Enum.PlatformGroupEnum.School:
+                        <a href="/Course/CourseCreate/CourseList" class="i">课程制作</a>
+                        <a href="/ClassDomain/ClassApply/ClassList" class="i">班级教学</a>
+                        <a href="@Url.Action("InDate", "MyLearn", new { area = "Learn" })" class="i b">@Web.Code.SiteCache.Instance.NickName</a>
+                            ; break;
+                    }*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@RenderBody()

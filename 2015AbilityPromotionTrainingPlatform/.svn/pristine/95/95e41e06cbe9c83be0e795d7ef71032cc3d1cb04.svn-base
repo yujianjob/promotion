@@ -1,0 +1,48 @@
+﻿using Dianda.AP.BLL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Areas.Learn.Controllers
+{
+    public class MyPracticeController : Controller
+    {
+        // 我的实践
+        // GET: /Learn/MyPractice/
+
+        public ActionResult List()
+        {
+            LearnMyPracticeBLL bll = new LearnMyPracticeBLL();
+
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            int accountId = cache.LoginInfo.UserId;
+            int planId = cache.PlanId;
+            int recordCount = bll.GetMyPracticeCount(accountId, planId);
+
+            int pageSize = 8, pageIndex;
+            int pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            int.TryParse(Request["PageIndex"], out pageIndex);
+            if (pageCount == 0)
+            {
+                pageIndex = 0;
+            }
+            else
+            {
+                if (pageIndex < 1)
+                    pageIndex = 1;
+                else if (pageIndex > pageCount)
+                    pageIndex = pageCount;
+            }
+            ViewBag.RecordCount = recordCount;
+            ViewBag.PageCount = pageCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(bll.GetMyPracticeList(pageSize, pageIndex, "A.Id desc", accountId, planId));
+        }
+
+    }
+}

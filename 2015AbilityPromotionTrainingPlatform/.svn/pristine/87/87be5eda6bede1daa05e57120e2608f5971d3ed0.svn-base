@@ -1,0 +1,62 @@
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>学期</th>
+				<th>默认报名日期</th>
+				<th>默认开课日期</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>2015秋季</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-primary">启动中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">禁用  编辑</a>
+				</td>
+			</tr>
+			<tr>
+				<td>2015秋季</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-danger">禁用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">禁用  编辑</a>
+				</td>
+			</tr>
+			<tr>
+				<td>2015秋季</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-danger">禁用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">禁用  编辑</a>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

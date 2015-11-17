@@ -1,0 +1,101 @@
+﻿.classinfo {
+    position: relative;
+    border-bottom: 1px dotted #ccc;
+    padding: 20px 100px 20px 0;
+      width: 432.5px;
+}
+.classinfo .name {
+  display: block;
+  padding: 0 0 10px 0;
+}
+{
+  color: #009dd9;
+}
+.classinfo .student-num {
+  display: inline-block;
+  margin-right: 10px;
+}
+.classinfo .sign-num {
+  display: inline-block;
+  margin-right: 10px;
+}
+.classinfo .action {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    text-align: right;
+}
+.classinfo .action .btn {
+  width: 80px;
+}
+
+.i {
+  float:left;
+  display: block;
+  position: relative;
+  padding: 6px 7px 6px 92px;
+  margin: 0 20px 20px 0;
+  height: 82px;
+  cursor: pointer;
+  font-weight: normal;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  width:274px;
+}
+
+.i .name {
+  display: inline-block;
+  font-size: 16px;
+}
+
+.i .title {
+  display: inline-block;
+  color: #999;
+}
+
+.i .unit {
+  padding: 4px 0;
+}
+
+.trim {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.i .glyphicon {
+  display: inline-block;
+  padding: 3px 2px;
+  color: #999;
+}
+
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.i .thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  background-color: #eee;
+  overflow: hidden;
+}
+
+.i .int {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 8px;
+}

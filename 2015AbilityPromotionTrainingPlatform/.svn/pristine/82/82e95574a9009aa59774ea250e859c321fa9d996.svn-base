@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using Dianda.AP.Model;
+using Dianda.AP.DAL;
+
+namespace Dianda.AP.BLL
+{
+    public class CertificateBLL
+    {
+        CertificateDAL dal = new CertificateDAL();
+
+        public DataTable GetTrainingFie()
+        {
+            return dal.GetTrainingFie();
+        }
+
+        public DataTable GetList(int pageSize, string where)
+        {
+            return dal.GetList(pageSize, where);
+        }
+    }
+}

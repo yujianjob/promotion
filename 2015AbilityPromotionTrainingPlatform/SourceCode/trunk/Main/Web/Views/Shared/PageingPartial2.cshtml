@@ -1,0 +1,91 @@
+﻿@{
+    int pageindex = (int)PageData["pageindex2"];
+    int totalcount = (int)(PageData["pagecount2"]);
+
+    int pagecount = 0;
+    var count = (int)(PageData["pagecount2"]);
+    if (count != 0)
+    {
+        var mod = count % 10;
+        if (mod == 0)
+        { pagecount = count / 10;}
+        else
+        {  pagecount = count / 10 + 1;}
+    }
+}
+
+@functions{
+    public static string GetUrl(int index)
+    {
+        System.Collections.Specialized.NameValueCollection querystring = HttpContext.Current.Request.QueryString;
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.Append("?").AppendFormat("pageIndex2=" + index);
+        foreach (string key in querystring.Keys)
+        {
+            if (key != "pageIndex2")
+                sb.AppendFormat("&{0}={1}", key, HttpContext.Current.Server.UrlEncode(querystring[key]));
+        }
+        return sb.ToString();
+    }
+}
+<div class="d-pagination clearfix">
+    <div class="pull-center">
+        当前页<span>@pageindex</span>
+        总页数<span>@pagecount</span>
+    </div>
+    <div class="pull-right text-center">
+        @if (pageindex > 2)
+        {
+            <a href="@GetUrl(1)">首页</a>
+        }
+        @if (pageindex > 1)
+        {
+            <a href="@GetUrl(pageindex - 1)">上一页</a>
+        }
+        @if (pageindex < pagecount)
+        {
+            <a href="@GetUrl(pageindex + 1)">下一页</a>
+        }
+        @if (pageindex < pagecount - 1)
+        {
+            <a href="@GetUrl(pagecount)">尾页</a>
+        }
+        跳转到第<input id="gourl2" value="@pageindex" type="text" class="form-control input-sm">页
+	
+         <button onclick="redirect()" class="btn btn-sm">» </button>
+
+    </div>
+
+</div>
+<script type="text/javascript">
+
+    function redirect() {
+        var num = $("#gourl2").val();
+        var pagecount = parseInt('@pagecount');
+
+        if (pagecount < num || num < 1) {
+            alert("页码不存在。");
+            return;
+        }
+        else {
+            var url = window.location.href;
+            if (url.indexOf('pageIndex2') == -1) {
+                window.location.href = url + "&pageInde2x=" + num;
+            }
+            else {
+                var paramIndex = url.indexOf('?');
+                var prefix = url.substring(0, paramIndex) + "?";
+                var surfix = "";
+                var param = url.substring(paramIndex + 1, url.length);
+                var paraArr = param.split('&');
+                for (var i = 0; i < paraArr.length; i++) {
+                    if (paraArr[i].indexOf('pageIndex2') == -1) {
+                        surfix += "&" + paraArr[i];
+                    }
+                }
+                prefix += "pageIndex2=" + num + surfix;
+                window.location.href = prefix;
+            }
+        }
+    }
+</script>

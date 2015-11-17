@@ -1,0 +1,75 @@
+﻿@using Dianda.AP.Model;
+@{
+    ViewBag.Title = "班级通知列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Class_Notice> list = ViewBag.List as List<Class_Notice>;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">班级通知</div>
+                <div id="blk_ln_notification_unread" class="d-notificationlist unread blk_ln_notification_unread">
+                    @for (int i = 0; i < list.Count; i++)
+                    { 
+                        <div class="i">
+                        <a href="@Url.Action("Details", "ClassMessage", new { id=list[i].Id })"><span class="title">@list[i].Title</span></a>
+                        <span class="date">@list[i].CreateDate.ToString("yyyy-MM-dd")</span>
+                        <div class="content">@list[i].Content</div>
+                    </div>
+                    }
+                    <hr>
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            总页数<span>@ViewData["pageCount"]</span>
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="@Url.Action("List", "ClassMessage", new { PageIndex = 1 })">首页</a>
+                            <a id="OnPage" href="@Url.Action("List", "ClassMessage", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) - 1 })">上一页</a>
+                            <a id="NextPage" href="@Url.Action("List", "ClassMessage", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) + 1 })">下一页</a>
+                            <a id="LastPage" href="@Url.Action("List", "ClassMessage", new { PageIndex = int.Parse(ViewData["pageCount"].ToString()) })">尾页</a>
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (index == count) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+    });
+
+    $("#GoBtn").click(function () {      //输入页数跳转页面
+        var index = $("#GoPageIndex").val();
+        if (index == "" || index == null) {
+            alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = '/Prepare/News/Index?pageIndex=@ViewData["pageIndex"]';
+        }
+       });
+</script>

@@ -1,0 +1,40 @@
+using System;
+
+namespace Dianda.AP.Model
+{
+	public partial class Class_Group
+	{
+		public int Id { get; set; }
+
+		public int ClassId { get; set; }
+
+		public string Title { get; set; }
+
+		public bool Display { get; set; }
+
+		public bool Delflag { get; set; }
+
+		public DateTime CreateDate { get; set; }
+
+	}
+
+    [Serializable]
+    public partial class Class_GroupAll
+    {
+        public int AccountId { get; set; }        
+
+        public int IdentityId { get; set; }
+
+        public string Identity { get; set; }
+
+        public int OrganDetailId { get; set; }
+
+        public string OrganDetailTitle { get; set; }
+
+        public string TeacherName { get; set; }
+
+        public string LecturerForeignPic { get; set; }
+
+        public Member_Account Model_Member_Account { get; set; }
+    }
+}

@@ -1,0 +1,532 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using Dianda.AP.Model;
+using Dianda.AP.Model.Course.CourseCreate;
+
+namespace Dianda.AP.DAL
+{
+	public class Course_DetailDAL
+	{
+		/// <summary>
+		/// 新增一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Add(Course_Detail model)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("insert into [dbo].[Course_Detail] ([TrainingId],[AccountId],[OrganId],[Status],[IsGen],[GenTime],[Display],[Sort],[Delflag],[CreateDate],[ReadingRate],[DisscusRate],[HomeWorkRate],[QuestionRate],[TestingRate],[CommentRate])");
+			sql.Append(" values (@TrainingId,@AccountId,@OrganId,@Status,@IsGen,@GenTime,@Display,@Sort,@Delflag,@CreateDate,@ReadingRate,@DisscusRate,@HomeWorkRate,@QuestionRate,@TestingRate,@CommentRate)");
+			sql.Append(" set @Id=@@IDENTITY");
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = model.TrainingId },
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = model.AccountId },
+				new SqlParameter("@OrganId", SqlDbType.Int, 4) { Value = model.OrganId },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@IsGen", SqlDbType.Bit, 1) { Value = model.IsGen },
+				new SqlParameter("@GenTime", SqlDbType.DateTime, 8) { Value = model.GenTime },
+				new SqlParameter("@Display", SqlDbType.Bit, 1) { Value = model.Display },
+				new SqlParameter("@Sort", SqlDbType.Int, 4) { Value = model.Sort },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@ReadingRate", SqlDbType.Float, 8) { Value = model.ReadingRate },
+				new SqlParameter("@DisscusRate", SqlDbType.Float, 8) { Value = model.DisscusRate },
+				new SqlParameter("@HomeWorkRate", SqlDbType.Float, 8) { Value = model.HomeWorkRate },
+				new SqlParameter("@QuestionRate", SqlDbType.Float, 8) { Value = model.QuestionRate },
+				new SqlParameter("@TestingRate", SqlDbType.Float, 8) { Value = model.TestingRate },
+				new SqlParameter("@CommentRate", SqlDbType.Float, 8) { Value = model.CommentRate }
+			};
+			int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+			model.Id = Convert.ToInt32(cmdParams[0].Value);
+			return result;
+		}
+
+		/// <summary>
+		/// 更新一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Update(Course_Detail model)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("update [dbo].[Course_Detail] set ");
+			sql.Append("[TrainingId]=@TrainingId,[AccountId]=@AccountId,[OrganId]=@OrganId,[Status]=@Status,[IsGen]=@IsGen,[GenTime]=@GenTime,[Display]=@Display,[Sort]=@Sort,[Delflag]=@Delflag,[CreateDate]=@CreateDate,[ReadingRate]=@ReadingRate,[DisscusRate]=@DisscusRate,[HomeWorkRate]=@HomeWorkRate,[QuestionRate]=@QuestionRate,[TestingRate]=@TestingRate,[CommentRate]=@CommentRate");
+			sql.Append(" where [Id]=@Id");
+			SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = model.TrainingId },
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = model.AccountId },
+				new SqlParameter("@OrganId", SqlDbType.Int, 4) { Value = model.OrganId },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@IsGen", SqlDbType.Bit, 1) { Value = model.IsGen },
+				new SqlParameter("@GenTime", SqlDbType.DateTime, 8) { Value = model.GenTime },
+				new SqlParameter("@Display", SqlDbType.Bit, 1) { Value = model.Display },
+				new SqlParameter("@Sort", SqlDbType.Int, 4) { Value = model.Sort },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@ReadingRate", SqlDbType.Float, 8) { Value = model.ReadingRate },
+				new SqlParameter("@DisscusRate", SqlDbType.Float, 8) { Value = model.DisscusRate },
+				new SqlParameter("@HomeWorkRate", SqlDbType.Float, 8) { Value = model.HomeWorkRate },
+				new SqlParameter("@QuestionRate", SqlDbType.Float, 8) { Value = model.QuestionRate },
+				new SqlParameter("@TestingRate", SqlDbType.Float, 8) { Value = model.TestingRate },
+				new SqlParameter("@CommentRate", SqlDbType.Float, 8) { Value = model.CommentRate }
+			};
+			return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+		}
+
+		/// <summary>
+		/// 取得一条记录
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="where"></param>
+		/// <returns></returns>
+		public Course_Detail GetModel(int id, string where)
+		{
+			string sql = "select * from [dbo].[Course_Detail] where [Id]=@Id";
+			if (!string.IsNullOrEmpty(where))
+				sql += " and " + where;
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+			{
+				if (reader.Read())
+				{
+					Course_Detail model = new Course_Detail();
+					ConvertToModel(reader, model);
+					return model;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 获取数据集
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public List<Course_Detail> GetList(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from [dbo].[Course_Detail]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			List<Course_Detail> list = new List<Course_Detail>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Course_Detail model = new Course_Detail();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取分页数据集
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public List<Course_Detail> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Course_Detail]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Course_Detail]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			List<Course_Detail> list = new List<Course_Detail>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Course_Detail model = new Course_Detail();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取DataTable
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public DataTable GetTable(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select [Id],[TrainingId],[AccountId],[OrganId],[Status],[IsGen],[GenTime],[Display],[Sort],[Delflag],[CreateDate],[ReadingRate],[DisscusRate],[HomeWorkRate],[QuestionRate],[TestingRate],[CommentRate] from [dbo].[Course_Detail]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		/// <summary>
+		/// 获取分页DataTable
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Course_Detail]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select [Id],[TrainingId],[AccountId],[OrganId],[Status],[IsGen],[GenTime],[Display],[Sort],[Delflag],[CreateDate],[ReadingRate],[DisscusRate],[HomeWorkRate],[QuestionRate],[TestingRate],[CommentRate],ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Course_Detail]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		private void ConvertToModel(IDataReader reader, Course_Detail model)
+		{
+			if (reader["Id"] != DBNull.Value)
+				model.Id = Convert.ToInt32(reader["Id"]);
+			if (reader["TrainingId"] != DBNull.Value)
+				model.TrainingId = Convert.ToInt32(reader["TrainingId"]);
+			if (reader["AccountId"] != DBNull.Value)
+				model.AccountId = Convert.ToInt32(reader["AccountId"]);
+			if (reader["OrganId"] != DBNull.Value)
+				model.OrganId = Convert.ToInt32(reader["OrganId"]);
+			if (reader["Status"] != DBNull.Value)
+				model.Status = Convert.ToInt32(reader["Status"]);
+			if (reader["IsGen"] != DBNull.Value)
+				model.IsGen = Convert.ToBoolean(reader["IsGen"]);
+			if (reader["GenTime"] != DBNull.Value)
+				model.GenTime = Convert.ToDateTime(reader["GenTime"]);
+			if (reader["Display"] != DBNull.Value)
+				model.Display = Convert.ToBoolean(reader["Display"]);
+			if (reader["Sort"] != DBNull.Value)
+				model.Sort = Convert.ToInt32(reader["Sort"]);
+			if (reader["Delflag"] != DBNull.Value)
+				model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+			if (reader["CreateDate"] != DBNull.Value)
+				model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+			if (reader["ReadingRate"] != DBNull.Value)
+				model.ReadingRate = Convert.ToDouble(reader["ReadingRate"]);
+			if (reader["DisscusRate"] != DBNull.Value)
+				model.DisscusRate = Convert.ToDouble(reader["DisscusRate"]);
+			if (reader["HomeWorkRate"] != DBNull.Value)
+				model.HomeWorkRate = Convert.ToDouble(reader["HomeWorkRate"]);
+			if (reader["QuestionRate"] != DBNull.Value)
+				model.QuestionRate = Convert.ToDouble(reader["QuestionRate"]);
+			if (reader["TestingRate"] != DBNull.Value)
+				model.TestingRate = Convert.ToDouble(reader["TestingRate"]);
+			if (reader["CommentRate"] != DBNull.Value)
+				model.CommentRate = Convert.ToDouble(reader["CommentRate"]);
+		}
+
+        /// <summary>
+        /// 取得学科信息
+        /// </summary>
+        /// <returns></returns>
+        public List<Course_SubjectInfo> GetSubjectInfoList()
+        {
+            List<Course_SubjectInfo> list = new List<Course_SubjectInfo>();
+            string sql = "select Id,Title from Traning_InfoFk as A where Delflag=0 and CategoryType=3";
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql))
+            {
+                while (reader.Read())
+                {
+                    Course_SubjectInfo mode = new Course_SubjectInfo();
+                    if (reader["Id"] != DBNull.Value)
+                        mode.Id = Convert.ToInt32(reader["Id"]);
+                    if (reader["Title"] != DBNull.Value)
+                        mode.Name = reader["Title"].ToString();
+                    list.Add(mode);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 取得课程总数
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public int GetTrainingInfoCount(string where)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from [dbo].[Traning_Detail]");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" where " + where);
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+        }
+
+        /// <summary>
+        /// 将结果集转化为Model
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="model"></param>
+        /// <param name="Type"></param>
+        private void ConvertToModel(IDataReader reader, Course_CourseInfo model, int Type)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["Title"] != DBNull.Value)
+                model.Title = reader["Title"].ToString();
+            if (reader["Content"] != DBNull.Value)
+                model.Content = reader["Content"].ToString();
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+            if (reader["Creater"] != DBNull.Value)
+                model.Creater = Convert.ToInt32(reader["Creater"]);
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["TraingField"] != DBNull.Value)
+                model.TraingField = Convert.ToInt32(reader["TraingField"]);
+            if (reader["TraingCategory"] != DBNull.Value)
+                model.TraingCategory = Convert.ToInt32(reader["TraingCategory"]);
+            if (reader["TraingTopic"] != DBNull.Value)
+                model.TraingTopic = Convert.ToInt32(reader["TraingTopic"]);
+            if (reader["TraningObject"] != DBNull.Value)
+                model.TraningObject = reader["TraningObject"].ToString();
+            if (reader["Subject"] != DBNull.Value)
+                model.Subject = reader["Subject"].ToString();
+            if (reader["StudyLevel"] != DBNull.Value)
+                model.StudyLevel = reader["StudyLevel"].ToString();
+            if (reader["TotalTime"] != DBNull.Value)
+                model.TotalTime = Convert.ToDouble(reader["TotalTime"]);
+            if (reader["TrainingForm"] != DBNull.Value)
+                model.TrainingForm = Convert.ToInt32(reader["TrainingForm"]);
+            if (reader["TeacherTitle"] != DBNull.Value)
+                model.TeacherTitle = Convert.ToInt32(reader["TeacherTitle"]);
+            if (reader["TeacherName"] != DBNull.Value)
+                model.TeacherName = reader["TeacherName"].ToString();
+            if (reader["TeacherFrom"] != DBNull.Value)
+                model.TeacherFrom = reader["TeacherFrom"].ToString();
+            if (reader["TeacherPic"] != DBNull.Value)
+                model.TeacherPic = reader["TeacherPic"].ToString();
+            if (reader["Outline"] != DBNull.Value)
+                model.Outline = reader["Outline"].ToString();
+            if (reader["PartitionId"] != DBNull.Value)
+                model.PartitionId = Convert.ToInt32(reader["PartitionId"]);
+            if (reader["OutSideType"] != DBNull.Value)
+                model.OutSideType = Convert.ToInt32(reader["OutSideType"]);
+            if (reader["OutSideLink"] != DBNull.Value)
+                model.OutSideLink = reader["OutSideLink"].ToString();
+            if (reader["Range"] != DBNull.Value)
+                model.Range = Convert.ToInt32(reader["Range"]);
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["ApplyRemark"] != DBNull.Value)
+                model.ApplyRemark = reader["ApplyRemark"].ToString();
+            if (reader["Display"] != DBNull.Value)
+                model.Display = Convert.ToBoolean(reader["Display"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["ParentOrganId"] != DBNull.Value)
+                model.ParentOrganId = Convert.ToInt32(reader["ParentOrganId"]);
+            if (reader["OrganName"] != DBNull.Value)
+                model.OrganName = reader["OrganName"].ToString();
+            if (Type == 1)
+            {
+                if (reader["Trainers"] != DBNull.Value)
+                    model.Trainers = Convert.ToInt32(reader["Trainers"]);
+                if (reader["TeacherTitleName"] != DBNull.Value)
+                    model.TeacherTitleName = reader["TeacherTitleName"].ToString();
+            }
+        }
+
+        /// <summary>
+        /// 取得课程列表
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Course_CourseInfo> GetTrainingInfoList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select *,");
+            sql.Append("(select count(1) from Traning_ApplyApplication where Delflag=0 and Status=2 and TraningId=T.Id) as Trainers,");
+            sql.Append("(select Title from Organ_Detail where Delflag=0 and Id=T.OrganId) as OrganName,");
+            sql.Append("(select Title from Traning_InfoFk where Delflag=0 and CategoryType=6 and Id=T.TeacherTitle) as TeacherTitleName");
+            sql.Append(" from (select A.*,ROW_NUMBER() over (order by " + orderBy + " desc) as [RowNum] from [dbo].[Traning_Detail] as A,[dbo].[Traning_Teacher] as B,dbo.PlatformManager_Detail as C");
+            sql.Append(" where B.PlatformManagerId = C.Id and A.Id = B.TraningId and C.Delflag =0 and B.Delflag = 0 and A.Delflag=0");
+            
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" and " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<Course_CourseInfo> list = new List<Course_CourseInfo>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Course_CourseInfo model = new Course_CourseInfo();
+                    ConvertToModel(reader, model, 1);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 判断指定课程的是否存在
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public bool IsExistsCourseInfo(int Id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from [dbo].[Course_Detail] where TrainingId=@TrainingId and delflag =0");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = Id }
+			};
+
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString(), cmdParams))
+            {
+                if (reader.Read())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 取得指定课程的课程信息
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public Course_CourseInfo GetTrainingInfoById(int Id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select *,");
+            sql.Append("(select Title from Organ_Detail where Delflag=0 and Id=T.OrganId) as OrganName");
+            sql.Append(" from (select * from [dbo].[Traning_Detail]");
+            sql.Append(" where Id = " + Id.ToString() + ") as T");
+
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                if (reader.Read())
+                {
+                    Course_CourseInfo model = new Course_CourseInfo();
+                    ConvertToModel(reader, model, 2);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private void ConvertToTestRateModel(IDataReader reader, Course_TestRate model)
+        {
+            if (reader["TrainingId"] != DBNull.Value)
+                model.TrainingId = Convert.ToInt32(reader["TrainingId"]);
+            if (reader["ReadingRate"] != DBNull.Value)
+                model.ReadingRate = Convert.ToDouble(reader["ReadingRate"]);
+            if (reader["DisscusRate"] != DBNull.Value)
+                model.DisscusRate = Convert.ToDouble(reader["DisscusRate"]);
+            if (reader["HomeWorkRate"] != DBNull.Value)
+                model.HomeWorkRate = Convert.ToDouble(reader["HomeWorkRate"]);
+            if (reader["QuestionRate"] != DBNull.Value)
+                model.QuestionRate = Convert.ToDouble(reader["QuestionRate"]);
+            if (reader["TestingRate"] != DBNull.Value)
+                model.TestingRate = Convert.ToDouble(reader["TestingRate"]);
+            if (reader["CommentRate"] != DBNull.Value)
+                model.CommentRate = Convert.ToDouble(reader["CommentRate"]);
+        }
+
+        /// <summary>
+        /// 取得一条考核比例记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public Course_TestRate GetTestRateModel(int TrainingId, string where)
+        {
+            string sql = "select * from [dbo].[Course_Detail] where [TrainingId]=@TrainingId";
+            if (!string.IsNullOrEmpty(where))
+                sql += " and " + where;
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = TrainingId }
+			};
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                if (reader.Read())
+                {
+                    Course_TestRate model = new Course_TestRate();
+                    ConvertToTestRateModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新一条考核比例记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int UpdateTestRate(Course_TestRate model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Course_Detail] set ");
+            sql.Append("[ReadingRate]=@ReadingRate,[DisscusRate]=@DisscusRate,[HomeWorkRate]=@HomeWorkRate,[QuestionRate]=@QuestionRate,[TestingRate]=@TestingRate,[CommentRate]=@CommentRate");
+            sql.Append(" where [TrainingId]=@TrainingId");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+                new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = model.TrainingId },
+				new SqlParameter("@ReadingRate", SqlDbType.Float, 8) { Value = model.ReadingRate },
+				new SqlParameter("@DisscusRate", SqlDbType.Float, 8) { Value = model.DisscusRate },
+				new SqlParameter("@HomeWorkRate", SqlDbType.Float, 8) { Value = model.HomeWorkRate },
+				new SqlParameter("@QuestionRate", SqlDbType.Float, 8) { Value = model.QuestionRate },
+				new SqlParameter("@TestingRate", SqlDbType.Float, 8) { Value = model.TestingRate },
+				new SqlParameter("@CommentRate", SqlDbType.Float, 8) { Value = model.CommentRate }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+	}
+}

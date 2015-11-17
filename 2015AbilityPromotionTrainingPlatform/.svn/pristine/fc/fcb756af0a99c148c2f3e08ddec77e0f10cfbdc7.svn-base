@@ -1,0 +1,118 @@
+﻿@using Dianda.AP.Model.Course.CourseCreate;
+
+@{
+    ViewBag.Title = "编辑视频";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseActivityVideoEdit.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <div class="d-form">
+            <ol class="breadcrumb" style ="width:894px;">
+            <li><a href="CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">课程制作</a></li>
+            <li><a href="CourseActivityAdd?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">添加学习活动</a></li>
+            <li class="active">影音教材</li>
+            </ol>
+            <div id="blk_ct_course_activity_video" class="blk_ct_course_activity_video">
+                <h4 class="text-center">编辑学习活动 - 影音教材（@ViewBag.TrainingInfo.Title）</h4>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <div class="form-group">
+                      <label class="control-label">标题 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtTitle">此项为必填内容</span></label>
+                      <input id ="txtTitle" type="text" class="form-control" maxlength="100">
+                    </div>
+                  </div>
+                  <div class="col-xs-3">
+		                <div class="form-group">
+			                <label class="control-label">排序 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtSort">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtSort" validtype="number">此项必须正整数</span></label>
+                            <input id ="txtSort" type="text" class="form-control" value ="@ViewBag.ActivityVideoModel.Sort" maxlength ="3">
+		                </div>
+	                </div>
+                  <div class="col-xs-4">
+                    <div class="form-group">
+                      <label class="control-label">预计时长 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtTimeLength">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtTimeLength" validtype="number">此项必须正整数</span></label>
+                      <input id ="txtTimeLength" type="text" class="form-control" maxlength="4" style="width:120px;" value ="@ViewBag.ActivityVideoModel.TimeLength"> 分钟
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="form-group">
+                      <label class="control-label">影音内容 <span class="text-danger">*</span>
+                          <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtVideoLink">此项为必填内容</span>
+                          <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtVideoLink" validtype="maxlength">此项内容最多输入4000个字符</span>
+                          <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtVideoLink" validtype="format">此项内容不符合mp4文件格式(1.后缀是否为.mp4或MP4 2.文件名是否为空)</span>
+                      </label>
+                      <label class="chk" style="width:215px;">
+                        <input id ="radioMp4" type="radio" name="ContentType" value="1" checked> Mp4
+                      </label>
+                      <label class="chk" style="width:215px;">
+                        <input id ="radioFlash" type="radio" name="ContentType" value="2"> Flash
+                      </label>
+                      <label class="chk" style="width:215px;">
+                        <input id ="radioMp3" type="radio" name="ContentType" value="3"> Mp3
+                      </label>
+                      <label class="chk wide" style="margin-left:-25px;">
+                         影音链接 <input id ="txtVideoLink" type="text" name="name" value="" readonly ="readonly" style="width:600px;">
+                      </label>
+                      <label class="chk wide" style="margin-left:-25px;">
+                        上传文件
+                        <div style="height: auto; min-height: 30px;margin-left:60px;margin-top:-25px;">
+                            <div style="float: left; width: 400px; position: relative;">
+                                <input type="file" id="AttachUpload">
+                                <a href="javascript:$('#AttachUpload').uploadify('upload', '*')" style="float: right;margin-right:-60px;">上传</a>
+                            </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">开放日期 <span class="text-danger">*</span>
+                                <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterOpenDayNum">此项为必填内容</span>
+                                <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterOpenDayNum" validtype="number">此项必须正整数</span>
+                                <span id ="DateCompare" class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="comparedate">此项必须不大于截止日期</span>
+			                </label>
+			                <label class="chk" style="width:200px;">
+				                <input id ="radioAlreadyOpen" type="radio" name="OpenTime" value="1" checked> 始终开放
+			                </label>
+			                <label class="chk" style="width:200px;">
+				                <input id ="radioPartialOpen" type="radio" name="OpenTime" value="2"> 开班后 <input id ="txtAfterOpenDayNum" type="text" name="name" value="" style="width:50px;" maxlength ="3"> 天开放
+			                </label>
+		                </div>
+	                </div>
+                  <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">截止日期 <span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterEndDayNum">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtAfterEndDayNum" validtype="number">此项必须正整数</span></label>
+			                <label class="chk" style="width:200px;">
+				                <input id ="radioAlreadyEnd" type="radio" name="EndTime" value="1" checked> 无截止日期
+			                </label>
+			                <label class="chk" style="width:200px;">
+				                <input id = "radioPartialEnd" type="radio" name="EndTime" value="2"> 开班后 <input id ="txtAfterEndDayNum" type="text" name="name" value="" style="width:50px;" maxlength ="3"> 天截止
+			                </label>
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <hr>
+		                <button id = "btnSubmit" class="btn btn-success" style="width:150px;">提交</button>
+		                &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Course/CourseCreate/CourseDetail?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)">返回</a>
+	                </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    var Id = "@ViewBag.ActivityVideoModel.Id";
+    var UnitId = "@ViewBag.ActivityVideoModel.UnitId";
+    var OpenTime = "@ViewBag.ActivityVideoModel.OpenTime";
+    var EndTime = "@ViewBag.ActivityVideoModel.EndTime";
+    var Title = "@ViewBag.ActivityVideoModel.Title";
+    var ContentType = "@ViewBag.ActivityVideoModel.ContentType"
+    var VideoLink = "@ViewBag.ActivityVideoModel.Content.ToString().Replace("\n", "<br />")";
+</script>

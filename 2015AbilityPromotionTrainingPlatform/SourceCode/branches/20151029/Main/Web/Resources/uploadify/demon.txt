@@ -1,0 +1,261 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace UploadifyTest.Controllers
+{
+    public class HomeController : Controller
+    {
+        //
+        // GET: /Home/
+
+        public ActionResult Index()
+        {
+            //FileStream fs = new FileStream(Server.MapPath("~/uploadify/UploadFile/1.txt"), FileMode.OpenOrCreate);
+            //fs.Flush();
+            //fs.Close();
+            return View();
+        }
+
+        public ActionResult Upload()
+        {
+            System.Web.HttpPostedFileBase file = Request.Files[0];
+            return Content(file.FileName);
+        }
+
+        //上传图片
+        public ActionResult UploadImage()
+        {
+            #region 验证
+            if (Request.Files.Count == 0)
+            {
+                return Json(new { Result = false, Msg = "请选择文件！" }, JsonRequestBehavior.AllowGet);
+            }
+
+            HttpPostedFileBase file = Request.Files[0];
+
+            string exts = ".jpg,.jpeg,.gif,.png";
+            int maxSize = 3 * 1024 * 1024;
+
+            string fileName = file.FileName;
+            string fileExt = Path.GetExtension(fileName).ToLower();
+            if (Array.IndexOf(exts.Split(','), fileExt) == -1)
+            {
+                return Json(new { Result = false, Msg = "非法的文件后缀名，只允许以下类型：" + exts }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (file.ContentLength > maxSize)
+            {
+                return Json(new { Result = false, Msg = "文件超过3MB！" }, JsonRequestBehavior.AllowGet);
+            }
+            #endregion
+
+            string guid = Guid.NewGuid().ToString();
+            string dir = ("/Upload/") + DateTime.Now.ToString("yyyy-MM-dd") + "/";
+            if (!Directory.Exists(Server.MapPath(dir)))
+                Directory.CreateDirectory(Server.MapPath(dir));
+            string path = dir + guid + fileExt;
+            file.SaveAs(Server.MapPath(path));
+
+            if (CreateThumbs(dir, guid + fileExt, 160))
+            {
+                return Json(new { Result = true, Directory = dir, Name = guid + fileExt }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { Result = false, Msg = "生成缩略图失败！" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        //生成缩略图
+        private bool CreateThumbs(string dir, string name, int thumbsSize)
+        {
+            string dirThumbs = dir + "_thumbs/";
+            if (!Directory.Exists(Server.MapPath(dirThumbs)))
+                Directory.CreateDirectory(Server.MapPath(dirThumbs));
+            try
+            {
+                string fileExt = Path.GetExtension(name);
+                string pathThumbs = dirThumbs + name;
+                int thumbsWidth, thumbsHeight;
+                Image image = Image.FromFile(Server.MapPath(dir + name));
+                int sourceWith = image.Width;
+                int sourceHeight = image.Height;
+                if (image.Width >= image.Height)
+                {
+                    thumbsWidth = thumbsSize;
+                    thumbsHeight = sourceHeight * thumbsSize / sourceWith;
+                }
+                else
+                {
+                    thumbsWidth = sourceWith * thumbsSize / sourceHeight;
+                    thumbsHeight = thumbsSize;
+                }
+
+                Bitmap bmp = new Bitmap(thumbsWidth, thumbsHeight);
+                Graphics GR = Graphics.FromImage(bmp);
+                GR.SmoothingMode = SmoothingMode.Default;
+                GR.CompositingQuality = CompositingQuality.Default;
+                GR.InterpolationMode = InterpolationMode.Default;
+                Rectangle rectDestination = new Rectangle(0, 0, thumbsWidth, thumbsHeight);
+                GR.DrawImage(image, rectDestination, 0, 0, sourceWith, sourceHeight, GraphicsUnit.Pixel);
+
+                switch (fileExt.ToLower())
+                {
+                    case ".gif":
+                        bmp.Save(Server.MapPath(pathThumbs), System.Drawing.Imaging.ImageFormat.Gif);
+                        break;
+                    case ".jpg":
+                        bmp.Save(Server.MapPath(pathThumbs), System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+                    case ".jpeg":
+                        bmp.Save(Server.MapPath(pathThumbs), System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+                    case ".png":
+                        bmp.Save(Server.MapPath(pathThumbs), System.Drawing.Imaging.ImageFormat.Png);
+                        break;
+                    default: return false;
+                }
+
+                bmp.Dispose();
+                GR.Dispose();
+                image.Dispose();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$.fn.UploadImage = function (settings) {
+    var swfUploadSettings = {
+        height: 30,
+        width: 85,
+        swf: '/uploadify/uploadify.swf',
+        uploader: '/Home/UploadImage',
+        buttonClass: 'uploadify-mybutton',
+        fileSizeLimit: '3MB',
+        fileTypeExts: '*.jpg; *.jpeg; *.gif; *.png',
+        auto: false,
+        buttonText: '浏览',
+        queueSizeLimit: 1,
+        successTimeout: 60,
+        multi: false,
+        overrideEvents: ['onSelectError'],
+        onSelectError: function (file, errorCode, errorMsg) {
+            switch (errorCode) {
+                case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:
+                    this.queueData.errorMsg = '每次最多上传 ' + this.settings.queueSizeLimit + '个文件';
+                    break;
+                case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                    this.queueData.errorMsg = '文件大小超过限制 (' + this.settings.fileSizeLimit + ')';
+                    break;
+                case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
+                    this.queueData.errorMsg = '文件为空';
+                    break;
+                case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                    this.queueData.errorMsg = '文件格式不正确，仅限 ' + this.settings.fileTypeExts;
+                    break;
+            }
+            if (errorCode != SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED) {
+                delete this.queueData.files[file.id];
+            }
+        },
+        onUploadError: function (file, errorCode, errorMsg, errorString) {
+        },
+        onUploadSuccess: function (file, data, response) {
+        }
+    };
+
+    if (settings) {
+        swfUploadSettings = $.extend(swfUploadSettings, settings);
+    }
+
+    $(this).uploadify(swfUploadSettings);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>上传测试</title>
+    <link href="@Url.Content("~/uploadify/uploadify.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+    <script src="@Url.Content("~/uploadify/jquery.uploadify.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/Common.js")"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#file_upload').UploadImage({
+                onUploadSuccess: function (file, data, response) {
+                    if (response) {
+                        var myData = $.parseJSON(data);
+                        if (myData.Result) {
+                            alert(myData.Directory + myData.Name);
+                        } else {
+                            alert(myData.Msg);
+                        }
+                    }
+                    else {
+                        alert('服务器没有响应！');
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <p><input type="file" name="file_upload" id="file_upload" /></p>
+        <p><a href="javascript:$('#file_upload').uploadify('upload')">上传</a></p>
+    </div>
+</body>
+</html>

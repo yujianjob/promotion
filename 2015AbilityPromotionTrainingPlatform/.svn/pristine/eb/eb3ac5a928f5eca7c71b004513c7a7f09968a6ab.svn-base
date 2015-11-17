@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Attributes
+{
+    public class UrlDecryptAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            //string qs = Dianda.Common.QueryString.Decrypt(HttpUtility.UrlDecode(filterContext.HttpContext.Request.QueryString.ToString()));
+            //filterContext.ActionParameters.Clear();
+            //List<ParameterDescriptor> pds = filterContext.ActionDescriptor.GetParameters().ToList();
+            var param = filterContext.ActionParameters.ToList();
+            foreach (ParameterDescriptor pd in filterContext.ActionDescriptor.GetParameters())
+            {
+                if (param.Exists(t => t.Key.Equals(pd.ParameterName, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    string decstring = Dianda.Common.QueryString.Decrypt(HttpUtility.UrlDecode(filterContext.HttpContext.Request.QueryString[pd.ParameterName]));
+                    if (!string.IsNullOrEmpty(decstring))
+                    {
+                        filterContext.ActionParameters[pd.ParameterName] = Convert.ToInt32(decstring);
+                    }
+                    else
+                    {
+                        ContentResult result = new ContentResult();
+                        result.Content = "<script>setTimeout(function () { window.location.href = '/Entrance/Home/Index?GroupId=" 
+                            + Code.SiteCache.Instance.GroupId + "' }, 3000);</script>操作失败,3秒后自动返回到首页！";
+                        filterContext.Result = result;
+                    }
+                }
+            }
+        }
+    }
+
+    class UrlModelBinder : IModelBinder
+    {
+        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

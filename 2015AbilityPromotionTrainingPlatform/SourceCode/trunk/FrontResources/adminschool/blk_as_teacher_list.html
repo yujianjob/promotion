@@ -1,0 +1,143 @@
+<div class="d-search">
+
+	<form class="form-inline">
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部区县</option>
+	    	<option value="">杨浦区</option>
+	    	<option value="">宝山区</option>
+	    	<option value="">浦东新区</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部学段</option>
+	    	<option value="">小学</option>
+	    	<option value="">初中</option>
+	    	<option value="">高中</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部学校</option>
+	    	<option value="">五角场小学</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <input type="text" class="form-control" placeholder="姓名、师训编号、身份证搜索">
+	  </div>
+	  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+	</form>
+
+	<div class="action">
+		<a href="teacher-add.html" class="btn btn-success">新增教师</a>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>姓名</th>
+				<th>师训编号</th>
+				<th>用户名</th>
+				<th>性别</th>
+				<th>所属学校</th>
+				<th>账号状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>张晓明</td>
+				<td>11023101231</td>
+				<td>abc</td>
+				<td>男</td>
+				<td>五角场小学</td>
+				<td><span class="text-info">启用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">重置密码</a>&nbsp;
+					<a href="javascript:;" onclick="">禁用</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</td>
+			</tr>
+			<tr>
+				<td>李敏</td>
+				<td>11023101231</td>
+				<td>bdcds</td>
+				<td>男</td>
+				<td>五角场小学</td>
+				<td><span class="text-info">启用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">重置密码</a>&nbsp;
+					<a href="javascript:;" onclick="">禁用</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</td>
+			</tr>
+			<tr>
+				<td>王晓明</td>
+				<td>11023101231</td>
+				<td>bdcds</td>
+				<td>男</td>
+				<td>五角场小学</td>
+				<td><span class="text-info">启用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">重置密码</a>&nbsp;
+					<a href="javascript:;" onclick="">禁用</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</td>
+			</tr>
+			<tr>
+				<td>周鑫</td>
+				<td>11023101231</td>
+				<td>bdcds</td>
+				<td>男</td>
+				<td>五角场小学</td>
+				<td><span class="text-info">启用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">重置密码</a>&nbsp;
+					<a href="javascript:;" onclick="">禁用</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</td>
+			</tr>
+			<tr>
+				<td>李丽</td>
+				<td>11023101231</td>
+				<td>bdcds</td>
+				<td>男</td>
+				<td>五角场小学</td>
+				<td><span class="text-danger">禁用中</span></td>
+				<td>
+					<a href="javascript:;" onclick="">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">重置密码</a>&nbsp;
+					<a href="javascript:;" onclick="">禁用</a>&nbsp;
+					<a href="javascript:;" onclick="">删除</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

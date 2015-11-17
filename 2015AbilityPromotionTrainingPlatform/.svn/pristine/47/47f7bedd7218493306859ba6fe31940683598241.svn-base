@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "在线学习 - 视频[预览]";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script src="~/Resources/Scripts/Video/html5media.min.js"></script>
+<link href="http://vjs.zencdn.net/4.11/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/4.11/video.js"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CoursePreviewLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h d-h-video">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 rel">
+                <div id="blk_ln_course_video" class="blk_ln_course_video" data-km-htm="blk_ln_course_video.html">
+                    <div class="video-container">
+                        @if (ViewBag.Model_Course_UnitContent != null)
+                        {
+                            Dianda.AP.Model.Course_UnitContent Video_Model = ViewBag.Model_Course_UnitContent;
+                            <div class="video-player">
+                                <video id="example_video_1" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" width="1000" height="500" data-setup="{}">
+                                    <source src="@Video_Model.Content" type='video/mp4' />
+                                </video>
+                            </div>                            
+                            <div class="video-info">
+                                <span class="title" style="word-break: break-all; word-wrap: break-word;">@Video_Model.Title</span>
+                                <span class="duration">@Html.Raw(Video_Model.TimeLength + "分钟")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav dark">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $('#d_note').hide();
+        });
+    });
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+        //var ClassId = Number(@ViewBag.ClassId);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent
+            //ClassId: ClassId
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLinePreview/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>

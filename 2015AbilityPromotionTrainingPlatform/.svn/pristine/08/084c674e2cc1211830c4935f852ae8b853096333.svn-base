@@ -1,0 +1,106 @@
+﻿@using Dianda.AP.Model.Course.CourseCreate;
+
+@{
+    IHtmlString Loading = @Html.Raw("<div style='left:400px;position:relative;font-size:20px'>加载中……</div>");
+    IHtmlString noDataTip = @Html.Raw("<div style='left:400px;position:relative;font-size:20px'>没有笔记信息……</div>");
+
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    Course_CourseInfo Model = ViewBag.TrainingInfo as Course_CourseInfo;
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/course.common.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Learn/LearnNoteView.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-11">
+        <div class="course-bar">
+            <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+            <a href="/Course/CourseCreate/CourseLearn?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="title">@Model.Title</a>
+        </div>
+        <div class="d-note-wide">
+            <div id="blk_ln_course_notewide" class="blk_ln_course_notewide">
+                <div class="h">
+	                笔记本
+	                <span class="action">
+		                <a href="/Learn/LearnOnLine/ExportAllNotes?TrainingId=@ViewBag.TrainingId" class="add">全部导出</a>
+	                </span>
+                </div>
+                <div id ="notesContent"></div>
+            </div>
+        </div>
+        </div>
+        <div class="col-xs-1">
+        <div class="d-section-menu">
+            <a href="/Prepare/ClassAddressList/Index?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">班级通讯录</a>
+            <a href="/Prepare/ClassMessage/List?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">班级通知</a>
+            <a href="/Learn/LearnOnLine/LearnNoteView?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">笔记本</a>
+            <a href="/Learn/LearnOnLine/LearnOnLineEvaluateView?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId" class="i">课程评价</a>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div id ="ChapterModel" style = "display:none;">
+    <div>
+        <div class="chapter">
+	        <span id ="ChapTitle"></span>
+	        <div class="action">
+                <a id ="ExportNote" href="javascript:void(0);" class="add">导出</a>
+	        </div>
+        </div>
+        <div class="notes">
+            <div id ="NoteContent"></div>
+        </div>
+    </div>
+</div>
+
+<div id ="NoteModel" style = "display:none;">
+    <div class="i">
+		<div id ="content" class="content"></div>
+		<div id ="createtime" class="date"></div>
+		<div class="action">
+			<a id ="NoteDelete" href="javascript:void(0);" class="del">删除</a>&nbsp;
+			<a id ="NoteEdit" href="javascript:void(0);" class="edit">编辑</a>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade blk_modal_add_class_notify" id="NoteTypeModal" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                <h4 id = "NoteTypeTitle" class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <input id="NoteId" type="hidden" />
+                <input id="ClassId" type="hidden" />
+                <input id="TrainingId" type="hidden" />
+                <input id="AccountId" type="hidden" />
+                <input id="UnitContent" type="hidden" />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label">内容<span class="text-danger">*</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtContent">此项为必填内容</span><span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="txtContent" validtype="maxlength">此项内容最多输入300个字符</span></label>
+                            <textarea id="txtContent" style="height: 200px;" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button  onclick="doSubmit();" class="btn btn-success" type="button">提交</button>
+                <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var Loading = "@Loading";
+var noDataTip = "@noDataTip";
+var TrainingId = "@ViewBag.TrainingId";
+</script>

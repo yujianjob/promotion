@@ -1,0 +1,81 @@
+﻿//自适应高度
+function SetWinHeight2(height) {
+    iframeObj = $('#showlist')[0];
+    if (navigator.userAgent.indexOf('MSIE') > 0) {
+        height += 50;
+    }
+
+    if (iframeObj != null) {
+        iframeObj.height = height;
+    }
+}
+
+//批量报名
+function classRegisterAll(_classid, SignUpStartTime, SignUpEndTime, People, LimitPeopleCnt) {
+    if (check(SignUpStartTime, SignUpEndTime, People, LimitPeopleCnt)) {
+        var _data = {
+            ClassId: _classid,
+            Members: $("#hidteachers").val(),
+            MembersNames: $("#hidteachersname").val()
+        };
+        $.ajax({
+            url: '/Market/Coursemarket/ClassRegisterAll',
+            type: 'GET',
+            data: _data,
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'text',
+            error: function (m) {
+                var z = m;
+            },
+            success: function (data) {
+                var result = $.parseJSON(data);
+                if (result.Code == 0) {
+                    Alert(result.Msg, 'window.location = \'/Market/Coursemarket/CoursemarketSingleList\'');
+                }
+                else {
+                    Alert(result.Msg);
+                }
+                
+            },
+            error: function () {
+                Alert('服务器错误！');
+            }
+        });
+    }
+}
+
+//验证时间和人数
+function check(SignUpStartTime, SignUpEndTime, People, LimitPeopleCnt) {
+    var myDate = new Date();
+    var myStart = new Date(SignUpStartTime);
+    var myEnd = new Date(SignUpEndTime);
+    var myPeople = Number(People);
+    var myLimitPeopleCnt = Number(LimitPeopleCnt);
+    if ($("#hidteachers").val() == "") {
+        Alert("请选教师");
+        return false;
+    }
+    if (myStart > myDate) {
+        Alert("未到报名时间");
+        return false;
+    }
+    if (myEnd < myDate) {
+        Alert("已过报名时间");
+        return false;
+    }
+    if (myLimitPeopleCnt <= myPeople) {
+        Alert("报名人数已满");
+        return false;
+    }
+    return true;
+}
+
+$(function(){
+    $(".chk").click(function () {
+        if ($(this).prop("checked")) {
+            var type = this.value;
+            var url = $('#url').val();
+            $('#showlist').attr('src', url +'&Type='+ type);
+        }
+    })
+})

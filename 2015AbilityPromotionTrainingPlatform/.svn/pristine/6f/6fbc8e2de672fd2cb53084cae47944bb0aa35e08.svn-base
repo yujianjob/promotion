@@ -1,0 +1,406 @@
+﻿@model IList<Dianda.AP.Model.Class_Detail>
+@{
+    ViewBag.Title = "班级开班";
+    Layout = Url.Content("~/Views/Shared/LinkLayout.cshtml");
+}
+
+<style type="text/css">
+    .listTh {
+    }
+</style>
+<body>
+
+
+    <div class="d-h">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="d-page-title">班级开班</div>
+                    <hr>
+                    <div class="blk_at_class_list" id="blk_at_class_list">
+                        <div class="d-search">
+
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <select class="form-control" id="plan" onchange="search();" style="width: 150px">
+                                        <option value="">全部选课学期</option>
+                                        @if (ViewBag.PlanList != null && ViewBag.PlanList.Count > 0)
+                                        {
+                                            foreach (var item in ViewBag.PlanList)
+                                            {
+                                            <option value="@(Dianda.Common.QueryString.UrlEncrypt( item.Id))">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="subject" onchange="search();" style="width: 150px">
+                                        <option value="">全部学科</option>
+                                        @if (ViewBag.SubjectList != null && ViewBag.SubjectList.Count > 0)
+                                        {
+                                            foreach (var item in ViewBag.SubjectList)
+                                            {
+                                            <option value="@(Dianda.Common.QueryString.UrlEncrypt( item.Id))">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="status" onchange="search();" style="width: 150px">
+                                        <option value="">全部状态</option>
+                                        <option value="1">草稿</option>
+                                        <option value="2">待审核</option>
+                                        <option value="3">已通过</option>
+                                        <option value="4">不通过</option>
+                                        <option value="5">已开班</option>
+                                        <option value="6">已结业</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <input id="searchTxt" type="text" placeholder="课程、班级搜索" class="form-control">
+                                </div>
+                                <button class="btn btn-default" type="button" onclick="search();"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                            </form>
+
+                            <div class="action">
+                                <a class="btn btn-success" href="Index">开设新班级</a>
+                            </div>
+
+                        </div>
+
+                        <div class="d-datatable">
+
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>班级名称</th>
+                                        <th>课程名称</th>
+                                        <th>辅导员</th>
+                                        <th>报名日期</th>
+                                        <th>开班日期</th>
+                                        <th>审核状态</th>
+                                        <th>报名进度</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Count > 0)
+                                    {
+                                        var traningBll = new Dianda.AP.BLL.Traning_DetailBLL();
+                                        var managerBll = new Dianda.AP.BLL.PlatformManager_DetailBLL();
+                                        var memberBll = new Dianda.AP.BLL.Member_BaseInfoBLL();
+                                        foreach (var item in Model)
+                                        {
+                                        <tr>
+                                            <td>@item.Title</td>
+                                            <td>@{ var training = traningBll.GetModel(item.TraningId, "");
+                                                   if (training != null)
+                                                   { 
+                                                @training.Title ;
+                                                   }
+                                            }
+                                            </td>
+                                            <td>@{ if (item.Instructor != 0)
+                                                   {
+                                                       var platform = new Dianda.AP.BLL.PlatformManager_DetailBLL().GetModel(item.Instructor, "");
+                                                       var member = memberBll.GetListModel(" AccountId=" + platform.AccountId);
+                                                       if (member != null && member.Count > 0)
+                                                       { @member.First().RealName <span>&nbsp;</span> @member.First().Mobile}
+                                                   }
+                                            }
+                                            </td>
+                                            <td>@{ @item.SignUpStartTime.ToString("yyyy-MM-dd")<span></span> @item.SignUpEndTime.ToString("yyyy-MM-dd") }</td>
+                                            <td>@{ @item.OpenClassFrom.ToString("yyyy-MM-dd")<span></span> @item.OpenClassTo.ToString("yyyy-MM-dd") }</td>
+                                            <td>
+                                                @{ 
+                                                   string style = "";
+                                                   string status = "";
+                                                   switch (item.Status)
+                                                   {
+                                                       case 1:
+                                                           style = "text-warning";
+                                                           status = "草稿";
+                                                           break;
+                                                       case 2:
+                                                           style = "text-warning";
+                                                           status = "待审核";
+                                                           break;
+                                                       case 3:
+                                                           style = "text-success";
+                                                           status = "已通过";
+                                                           break;
+                                                       case 4:
+                                                           style = "text-danger";
+                                                           status = "不通过";
+                                                           break;
+                                                       case 5:
+                                                           style = "text-primary";
+                                                           status = "已开班";
+                                                           break;
+                                                       case 6:
+                                                           style = "text-muted";
+                                                           status = "已结业";
+                                                           break;
+                                                       case 7:
+                                                           style = "text-muted";
+                                                           status = "已撤销";
+                                                           break;
+                                                   }
+                                                    <span class='@style'>@status</span>
+                                                }
+                                            </td>
+                                            <td>@{ @item.People}/@{if (item.LimitPeopleCnt == -1)
+                                                                   {@("不限")}
+                                                                   else
+                                                                   {@(item.LimitPeopleCnt) } }</td>
+                                            <td>
+                                                @if (item.Status == 1 || item.Status == 4)
+                                                {
+                                                    <a onclick="" href="EditClassDetail/?id=@item.Id">编辑&nbsp;</a>
+                                                }
+                                                @if (item.Status == 2)
+                                                {   <a   href="@Url.Action("ClassAuditDetail", "ClassAudit", new { id =Dianda.Common.QueryString.UrlEncrypt( item.Id), doaction = Dianda.Common.QueryString.UrlEncrypt("doaction") })">查看&nbsp;</a>
+                                                    <a onclick="ClassAction('cancel',@item.Id)" href="javascript:;">撤销&nbsp;</a>
+                                                }
+                                                @if (item.Status == 3)
+                                                {
+                                                    <a   href="@Url.Action("ClassAuditDetail", "ClassAudit", new { id =  Dianda.Common.QueryString.UrlEncrypt( item.Id), doaction = Dianda.Common.QueryString.UrlEncrypt("doaction") })">查看&nbsp;</a>
+                                                    <a onclick="ClassAction('start',@item.Id)" href="javascript:;">开班&nbsp;</a>
+                                                    <a onclick="doInstructor(@item.Id,@item.Instructor)" href="javascript:;">辅导员&nbsp;</a>
+                                                    <a onclick="ClassAction('cancel',@item.Id)" href="javascript:;">撤销&nbsp;</a>
+                                                }
+                                                @if (item.Status == 5)
+                                                {
+                                                    <a   href="@Url.Action("ClassAuditDetail", "ClassAudit", new { id = Dianda.Common.QueryString.UrlEncrypt( item.Id), doaction = Dianda.Common.QueryString.UrlEncrypt("doaction") })">查看&nbsp;</a>
+                                                    
+                                                    <a onclick=" ClassAction('complete',@item.Id)" href="javascript:;">结业&nbsp;</a>
+                                                }
+                                                @if (item.Status < 5)
+                                                {
+                                                    <a onclick="ClassAction('clear',@item.Id)" href="javascript:;">清除&nbsp;</a>
+                                                }
+                                                @if (item.Status == 6)
+                                                {
+                                                    <a   href="@Url.Action("ClassAuditDetail", "ClassAudit", new { id = Dianda.Common.QueryString.UrlEncrypt( item.Id), doaction = Dianda.Common.QueryString.UrlEncrypt("doaction") })">查看&nbsp;</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, pagecount = @ViewBag.totalPage, basecount = @ViewBag.basecount })
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(".chk :radio").on('click', function () {
+            if ($(this).attr('checked') == undefined || $(this).attr('checked') == '') {
+                $(this).attr('checked', "checked");
+            }
+            else {
+                $(this).removeAttr('checked');
+            }
+        });
+
+
+
+        function setInstructor() {
+            var action = 'setInstructor';
+            var chkVal = $("input[name='a10']:checked").val();
+            if (chkVal == undefined || chkVal == '') {
+                alert('请选择辅导员!');
+                return;
+            }
+            var classid = $('#ClassId').val();
+            if (classid == undefined || classid == '') {
+                alert('班级不存在!');
+                return;
+            }
+            ClassAction(action, classid, chkVal);
+        }
+
+        function getParamValue(paramName) {
+            var url = window.location.href;
+            var paramIndex = url.indexOf('?');
+            var param = url.substring(paramIndex + 1, url.length);
+            var paraArr = param.split('&');
+            for (var i = 0; i < paraArr.length; i++) {
+                if (paraArr[i].indexOf(paramName) > -1) {
+                    return paraArr[i].split('=')[1];
+                }
+            }
+            return '';
+        }
+        $(document).ready(function () {
+            $('#ClassId').val('');
+            if (getParamValue('param_plan') !='') {
+                //$('#plan').val(getParamValue('param_plan'));
+                $("#plan option[value=" + getParamValue('param_plan') + "]").attr("selected", true);
+            }
+            if (getParamValue('param_subject') != '') {
+                //$('#subject').val(getParamValue('param_subject'));
+                $("#subject option[value=" + getParamValue('param_subject') + "]").attr("selected", true);
+            }
+            if (getParamValue('param_status') != '') {
+                //$('#status').val(getParamValue('param_status'));
+                $("#status option[value=" + getParamValue('param_status') + "]").attr("selected", true);
+            }
+            if (getParamValue('param_searchTxt') > -1) {
+                $('#searchTxt').text(getParamValue('param_searchTxt'));
+            }
+        });
+        function search() {
+            var param_plan = $("#plan").val();
+            var param_subject = $("#subject").val();
+            var param_status = $("#status").val();
+            var param_searchTxt = $("#searchTxt").val();
+
+            window.location.href = "?param_plan=" + param_plan + "&param_subject=" + param_subject
+            + "&param_status=" + param_status + "&param_searchTxt=" + param_searchTxt;
+        }
+
+        function doInstructor(id, InstructorID) {
+            $('#ClassId').val(id);
+            $('#myModal').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+            //alert(InstructorID);
+            if (InstructorID != 0)
+            {
+                $("input[name='a10']").each(function () {
+                    if ($(this).val() == InstructorID) {
+                        $(this).prop('checked', true);
+                    }
+                    else
+                    {
+                        $(this).prop('checked', false);
+                    }
+                });
+            }
+        }
+
+        function ClassAction(action, id, instructor) {
+
+            if (!confirm('确认此操作?'))
+                return;
+
+            $.ajax({
+                type: 'get',
+                url: '/ClassApply/ClassAction',
+                data: { strAction: action, Id: id, Instructor: instructor },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+
+                    $('#modal-edit-status .modal-title').text(result.Msg);
+                    $('#modal-edit-status').modal({
+                        keyboard: false,
+                        backdrop: 'static'
+                    });
+
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $proto.init(function () {
+                /* 页面加载后立即执行的代码写在这里 */
+
+            });
+
+
+        });
+    </script>
+    <div class="modal fade blk_modal_manage_group in" id="myModal" style="display: none; padding-right: 17px;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">设置辅导员</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="ClassId" type="hidden" />
+                    <div class="row">
+                        @if (ViewBag.instructorList != null && ViewBag.instructorList.Count > 0)
+                        {
+                            foreach (var item in ViewBag.instructorList)
+                            {
+                            <div class="col-xs-3">
+                                <div class="g">
+                                    <div class="name">
+                                        <label class="chk">
+                                            <input type="radio" id="plan"   value="@item.PlatformManager_Id" name="a10">
+                                            @item.Nickname (@item.UserName)
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="num">
+                                        <img style="height:80px;width:80px;" src="@item.Pic" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            }
+                        }
+
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button" onclick="setInstructor()">确定</button>
+                    <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div role="dialog" class="modal" data-km-htm="/jnpx/dist/blk_alert.html" id="d_alert">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div style="display: none;" class="modal-header">
+                    <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12" id="d_alert_body">
+                        </div>
+                    </div>
+                </div>
+                <div style="display: none;" class="modal-footer">
+                    <button class="btn btn-primary" type="button">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<div class="modal fade" id="modal-edit-status">
+    <div class="modal-dialog">
+        <div style="padding: 0;" class="modal-content d-form">
+            <div class="modal-header">
+                <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                <div class="modal-title"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="window.location.reload();" class="btn btn-success" type="button">确认</button>
+            </div>
+
+        </div>
+    </div>
+</div>

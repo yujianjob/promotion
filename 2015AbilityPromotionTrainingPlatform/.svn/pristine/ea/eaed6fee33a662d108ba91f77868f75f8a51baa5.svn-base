@@ -1,0 +1,121 @@
+﻿@using Dianda.AP.Model;
+@using Dianda.Common;
+@{
+    ViewBag.Title = "班级通知列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Class_Notice> list = ViewBag.List as List<Class_Notice>;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-11">
+            <div class="course-bar">
+              <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+              <a href="/Course/CourseCreate/CourseLearn?TrainingId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@Dianda.Common.QueryString.UrlEncrypt(ViewBag.ClassId)" class="title">@ViewBag.TrainingInfo.Title</a>
+            </div>
+            <div id="blk_ln_course_notice" class="blk_ln_course_notice">
+                <div class="h">
+	                班级通知
+	                <span class="action">&nbsp;</span>
+                </div>
+                <hr>
+                @if(list.Count>0)
+                {
+                for (int i = 0; i < list.Count; i++)
+                { 
+                    <div class="i" style="word-break:break-all; word-wrap:break-word;">
+                        <span class="title">@list[i].Title</span>
+                        <span class="date">@list[i].CreateDate.ToString("yyyy-MM-dd")</span>
+                        @*<div class="content">@list[i].Content</div>*@
+                         <div class="content"><pre style="white-space: pre-wrap;background-color:transparent;overflow:hidden;word-break:break-all; word-wrap:break-word; border:none; font-size:15px;">@list[i].Content</pre></div>
+                        <div class="action">&nbsp;</div>
+                    </div>
+                }
+                }else
+                {
+                    <div class="i">
+                            <span style="font-size:18px;">暂无班级公告</span>
+                        </div>
+                }
+                <hr>
+                <div class="d-pagination clearfix">
+                    <div class="pull-left">
+                        当前页<span>@ViewData["pageIndex"]</span>
+                        @if (@ViewData["pageCount"].ToString() == "0")
+                        {
+                                <span>总页数 1</span>
+                        }
+                        else
+                        {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                        }
+                        总记录<span>@ViewData["recordCount"]</span>
+                        每页显示条数<span>@ViewData["pageSize"]</span>
+                    </div>
+                    <div class="pull-right text-right">
+                        <a id="HomePage" href="/Prepare/ClassMessage/List?PageIndex=@QueryString.UrlEncrypt(1)&TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)">首页</a>
+                        <a id="OnPage" href="/Prepare/ClassMessage/List?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) - 1)&TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)">上一页</a>
+                        <a id="NextPage" href="/Prepare/ClassMessage/List?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) + 1)&TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)">下一页</a>
+                        <a id="LastPage" href="/Prepare/ClassMessage/List?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageCount"].ToString()))&TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)">尾页</a>
+                        跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+                        <button class="btn btn-sm" id="GoBtn">» </button>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-xs-1">
+            <div class="d-section-menu">
+                <a href="/Prepare/ClassAddressList/Index?TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)" class="i">班级通讯录</a>
+                <a href="/Prepare/ClassMessage/List?TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)" class="i">班级通知</a>
+                <a href="/Learn/LearnOnLine/LearnNoteView?TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)" class="i">笔记本</a>
+                <a href="/Learn/LearnOnLine/LearnOnLineEvaluateView?TrainingId=@QueryString.UrlEncrypt(ViewBag.TrainingId)&ClassId=@QueryString.UrlEncrypt(ViewBag.ClassId)" class="i">课程评价</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+            $('input.input-date').datepicker({});
+        });
+    });
+    $(document).ready(function () {
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10 || index == pagecount) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+    });
+
+    $("#GoBtn").click(function () {      //输入页数跳转页面
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (pagecount == "0") {
+            pagecount = "1";
+        } if (index == "0") {
+            Alert('请输入正确的页数！！！');
+            return false;
+        }
+        else if (parseInt(index) > parseInt(pagecount)) {
+            Alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            Alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = '/Prepare/ClassMessage/List?ClassId=@ViewData["ClassId"]&pageIndex=' + index + '&TrainingId=@ViewBag.TrainingId';
+        }
+    });
+</script>

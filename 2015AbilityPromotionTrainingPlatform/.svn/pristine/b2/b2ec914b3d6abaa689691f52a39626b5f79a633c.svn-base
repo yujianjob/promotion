@@ -1,0 +1,530 @@
+﻿@using Dianda.AP.Model;
+@model Dianda.AP.Model.AccountEditModel
+@{
+    ViewBag.Title = "个人信息修改";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string UserName = ViewData["UserName"].ToString();
+    string Email = ViewData["Email"].ToString();
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript" src="~/Resources/Scripts/jquery.validate.js"></script>
+<script type="text/javascript" src="~/Resources/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script type="text/javascript" src="~/Resources/Scripts/jquery.form.js"></script>
+
+@if (ViewData["Type"].ToString() == "Edit")
+{
+using (Html.BeginForm("Edit", "AccountEdit", FormMethod.Post))
+{
+@Html.ValidationSummary(false)
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>@Model.UserName</h4>
+                <hr>
+                <div class="row">
+                    <div class="col-xs-2 text-center">
+                        <img src="@Model.Pic" id="PicImg" style="margin-bottom: 20px;" width="150" height="150">
+                        <a href="javascript:;" id="Execption">更换头像</a>
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="row">
+                            <div class="col-xs-4" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.AccountId)</label>
+                                    @Html.TextBoxFor(model => model.AccountId, new { @class = "form-control", @readonly = "readonly" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.AccountId)</p>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-4" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Pic)</label>
+                                    @Html.TextBoxFor(model => model.Pic, new { @class = "form-control", @readonly = "readonly" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Pic)</p>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.UserName)</label>
+                                   <br />
+                                    @Model.RealName
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeacherNo)</label>
+                                    <br />
+                                    @Model.TeacherNo
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Email)</label>
+                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control",@value=Email })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Email)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Sex)</label>
+                                    <br />
+                                    @Html.RadioButtonFor(model => model.Sex, 1) 男
+                                    @Html.RadioButtonFor(model => model.Sex, 2) 女
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Sex)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Birthday)</label>
+                                    @Html.TextBoxFor(model => model.Birthday, new { @class = "form-control input-date" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Birthday)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.CredentialsNumber)</label>
+                                    @Html.TextBoxFor(model => model.CredentialsNumber, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.CredentialsNumber)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Mobile)</label>
+                                    @Html.TextBoxFor(model => model.Mobile, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Mobile)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Nation)</label>
+                                    @Html.DropDownListFor(model => model.Nation, ViewData["NationList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Nation)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.PoliticalStatus)</label>
+                                    @Html.DropDownListFor(model => model.PoliticalStatus, ViewData["PoliticalList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.PoliticalStatus)</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Region)</label>
+                                    <br />
+                                    @Model.Region
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.StudySection)</label>
+                                    <br />
+                                    @Model.StudySection
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Organ)</label>
+                                    <br />
+                                    @Model.Organ
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Job)</label>
+                                    <br />
+                                    @Model.Job
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.WorkRank)</label>
+                                    <br />
+                                    @Model.WorkRank
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachDate)</label>
+                                    <br />
+                                    @Model.TeachDate
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachStudySection)</label>
+                                    <br />
+                                    @Model.TeachStudySection
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachSubject)</label>
+                                    <br />
+                                    @Model.TeachSubject
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachGrade)</label>
+                                    <br />
+                                    @Model.TeachGrade
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TraningType)</label>
+                                    <br />
+                                    @Model.TraningType
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TraningObject)</label>
+                                    <br />
+                                    @Model.TraningObject
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.EduLevel)</label>
+                                    @Html.DropDownListFor(model => model.EduLevel, ViewData["EduLevelList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.EduLevel)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.EduDegree)</label>
+                                    @Html.DropDownListFor(model => model.EduDegree, ViewData["EduDegreeList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.EduDegree)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.EduMajor)</label>
+                                    @Html.DropDownListFor(model => model.EduMajor, ViewData["EduMajorList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.EduMajor)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.GraduateSchool)</label>
+                                    @Html.TextBoxFor(model => model.GraduateSchool, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.GraduateSchool)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.GraduateTime)</label>
+                                    @Html.TextBoxFor(model => model.GraduateTime, new { @class = "form-control input-date" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.GraduateTime)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <hr>
+                                @*<button class="btn btn-success" style="width: 150px;">提交</button>*@
+                                <input type="submit" value="提交" class="btn btn-success" />
+                                &nbsp;&nbsp;&nbsp;&nbsp;<a href="@Url.Action("List", "AccountEdit")">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+}
+else
+{ 
+using (Html.BeginForm("Add", "AccountEdit", FormMethod.Post))
+{
+    <div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>@UserName</h4>
+                <hr>
+                <div class="row">
+                    <div class="col-xs-2 text-center">
+                        <img src="" id="PicImg" style="margin-bottom: 20px;" width="150" height="150">
+                        <a href="javascript:;" id="Execption">更换头像</a>
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="row">
+                            <div class="col-xs-4" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.AccountId)</label>
+                                    @Html.TextBoxFor(model => model.AccountId, new { @class = "form-control", @readonly = "readonly" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.AccountId)</p>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-4" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Pic)</label>
+                                    @Html.TextBoxFor(model => model.Pic, new { @class = "form-control", @readonly = "readonly" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Pic)</p>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.RealName)</label>
+                                    @Html.TextBoxFor(model => model.RealName, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.RealName)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeacherNo)</label>
+                                    @Html.TextBoxFor(model => model.TeacherNo, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.TeacherNo)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Email)</label>
+                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Email)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Sex)</label>
+                                    <br />
+                                    @Html.RadioButtonFor(model => model.Sex, 1) 男
+                                    @Html.RadioButtonFor(model => model.Sex, 2) 女
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Sex)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Birthday)</label>
+                                    @Html.TextBoxFor(model => model.Birthday, new { @class = "form-control input-date" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Birthday)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.CredentialsNumber)</label>
+                                    @Html.TextBoxFor(model => model.CredentialsNumber, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.CredentialsNumber)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Mobile)</label>
+                                    @Html.TextBoxFor(model => model.Mobile, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Mobile)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Nation)</label>
+                                    @Html.DropDownListFor(model => model.Nation, ViewData["NationList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.Nation)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.PoliticalStatus)</label>
+                                    @Html.DropDownListFor(model => model.PoliticalStatus, ViewData["PoliticalList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.PoliticalStatus)</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Region)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.StudySection)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Organ)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.Job)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.WorkRank)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachDate)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachStudySection)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachSubject)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TeachGrade)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TraningType)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.TraningObject)</label>
+                                    <br />
+                                    暂无
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.EduLevel)</label>
+                                    @Html.DropDownListFor(model => model.EduLevel, ViewData["EduLevelList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.EduLevel)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.EduDegree)</label>
+                                    @Html.DropDownListFor(model => model.EduDegree, ViewData["EduDegreeList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.EduDegree)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.EduMajor)</label>
+                                    @Html.DropDownListFor(model => model.EduMajor, ViewData["EduMajorList"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.EduMajor)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.GraduateSchool)</label>
+                                    @Html.TextBoxFor(model => model.GraduateSchool, new { @class = "form-control" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.GraduateSchool)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group">
+                                    <label class="control-label">@Html.LabelFor(model => model.GraduateTime)</label>
+                                    @Html.TextBoxFor(model => model.GraduateTime, new { @class = "form-control input-date" })
+                                    <p style="color: red;">@Html.ValidationMessageFor(model => model.GraduateTime)</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <hr>
+                                @*<button class="btn btn-success" style="width: 150px;">提交</button>*@
+                                <input type="submit" value="提交" class="btn btn-success" />
+                                &nbsp;&nbsp;&nbsp;&nbsp;<a href="@Url.Action("List", "AccountEdit")">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+}
+<form id="fileFrom" style="display: none;" action="@Url.Action("PicUpdate")" method="post" enctype="multipart/form-data">
+    <input name="file" type="file" id="file" />
+    <input type="submit" value="提交" />
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var type = "@ViewData["Sex"]";
+        if (type = "1") {
+            $("#Sex").eq(0).attr("checked", true);
+        } else {
+            $("#Sex").eq(1).attr("checked", true);
+        }
+
+        var state = "@ViewData["Type"].ToString()";
+        if (state == "Add")
+        {
+            $("#Email").val(@Email);
+        }
+
+        $('#fileFrom').submit(function () {
+            $(this).ajaxSubmit(function (message) {
+                $("#file").val('');
+                var src = message.split(';');
+                if (src[0] == "yes") {
+                    var PicUrl = src[1].substring(src[1].indexOf("\Areas") - 1, src[1].length);
+                    $("#PicImg").attr("src", PicUrl);
+                    $("#Pic").val(PicUrl);
+                } else {
+                    alert(src[1]);
+                    return false;
+                }
+            });
+            return false;
+        });
+
+        $("#file").change(function () {
+            if (this.files.length > 0)
+                $("#fileFrom").submit();
+        });
+    })
+
+    $("#Execption").click(function () {
+        $("#file").click();
+    })
+</script>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+            $('input.input-date').datepicker({});
+
+
+        });
+    });
+</script>

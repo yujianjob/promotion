@@ -1,0 +1,112 @@
+$(function () {
+    $proto.init(function () {
+        /* 页面加载后立即执行的代码写在这里 */
+
+        //若当前登录人属于区级，初始化当前登录人所述区下所有机构
+        if (GroupId == ManagerAreaGroupId) {
+            if (GroupId != null && GroupId != "") {
+                $("#drpOrgan").html("<option value='-1'>--请选择机构--</option>");
+                $.ajax({
+                    url: '/Statistics/Statistics/GetRegion',
+                    type: 'get',
+                    data: { id: GroupId },
+                    cache: false,
+                    dataType: 'text',
+                    timeout: 30000,
+                    success: function (data) {
+                        var json = JSON.parse(data);
+                        for (var i = 0; i < json.length; i++) {
+                            $("#drpOrgan").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        Alert(errorMessage);
+                    }
+                });
+            }
+        }
+
+        LoadingData(GroupId, ManageOrganId);
+    });
+});
+
+//搜索按钮单击事件
+function verifySearch() {
+    LoadingData(GroupId, ManageOrganId);
+}
+
+//搜索校验
+function checkts(search) {
+    if (search.length > 0) {
+        var reg = new RegExp('^[^\/\\#$%&\^\*\<\>]+$');
+        if (!reg.test(search)) {
+            Alert('搜索的内容不能输入特殊字符 ^ / \ # $ % & * < >');
+            return false;
+        }
+    }
+    return true;
+}
+
+//获取机构
+$("#drpRegin").change(function () {
+    $("#drpOrgan").html("<option value = '-1'>--请选择机构--</option>");
+    var id = $(this).val();
+    if (id != null && id != "") {
+        $.ajax({
+            url: '/Statistics/Statistics/GetRegion',
+            type: 'get',
+            data: { id: id },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var json = JSON.parse(data);
+                for (var i = 0; i < json.length; i++) {
+                    $("#drpOrgan").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+    }
+})
+
+//加载统计分数数据
+function LoadingData(GroupId, ManageOrganId) {
+    var ListModel = $("#ListModel table:eq(0)");
+
+    var obj = JSON.stringify({ RegionId: GroupId == ManagerCityGroupId ? $("#drpRegin").val() : 0, OrganId: (GroupId == ManagerCityGroupId || GroupId == ManagerAreaGroupId) ? $("#drpOrgan").val() : ManageOrganId, IsTest: $("#IsTest").val(), PageIndex: Number(PageIndex), SearchTxt: $("#searchTitle").val() });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/Statistics/Statistics/ScoreList',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            $("#ScoreInfo").html(Loading);
+            if (!data || !data.Data || data.Data.length == 0) {
+                $("#ScoreInfo").html(noDataTip);
+                return;
+            }
+
+            var htmls = "";
+            for (var i = 0; i < data.Data.length; i++) {
+                var eleCon = ListModel.clone(true);
+                eleCon.find("#RealName").html(data.Data[i]["RealName"]);
+                eleCon.find("#TeacherNo").html(data.Data[i]["TeacherNo"]);
+                eleCon.find("#RegionTitle").html(data.Data[i]["RegionTitle"]);
+                eleCon.find("#OrganTitle").html(data.Data[i]["OrganTitle"]);
+                eleCon.find("#DiscussCnt").html(data.Data[i]["DiscussCnt"]);
+                eleCon.find("#btnSearch").attr("href", DetailUrl.replace("{0}", data.Data[i]["Id"]));
+                htmls += $(eleCon)[0].outerHTML;
+            }
+
+            $("#ScoreInfo").html(htmls);
+        },
+        error: function () {
+        }
+    });
+}

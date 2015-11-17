@@ -1,0 +1,343 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using Dianda.AP.Model;
+using Dianda.AP.Model.Course.CourseCreate;
+
+namespace Dianda.AP.DAL
+{
+	public class Course_UnitQuestionDAL
+	{
+		/// <summary>
+		/// 新增一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Add(Course_UnitQuestion model)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("insert into [dbo].[Course_UnitQuestion] ([Verson],[UnitContent],[Content],[QTtype],[Question],[Answer],[Credit],[Display],[Delflag],[CreateDate])");
+			sql.Append(" values (@Verson,@UnitContent,@Content,@QTtype,@Question,@Answer,@Credit,@Display,@Delflag,@CreateDate)");
+			sql.Append(" set @Id=@@IDENTITY");
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@Verson", SqlDbType.VarChar, 20) { Value = model.Verson },
+				new SqlParameter("@UnitContent", SqlDbType.Int, 4) { Value = model.UnitContent },
+				new SqlParameter("@Content", SqlDbType.VarChar, 2000) { Value = model.Content },
+				new SqlParameter("@QTtype", SqlDbType.Int, 4) { Value = model.QTtype },
+				new SqlParameter("@Question", SqlDbType.VarChar, 8000) { Value = model.Question },
+				new SqlParameter("@Answer", SqlDbType.VarChar, 100) { Value = model.Answer },
+				new SqlParameter("@Credit", SqlDbType.Float, 8) { Value = model.Credit },
+				new SqlParameter("@Display", SqlDbType.Bit, 1) { Value = model.Display },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate }
+			};
+			int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+			model.Id = Convert.ToInt32(cmdParams[0].Value);
+			return result;
+		}
+
+		/// <summary>
+		/// 更新一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Update(Course_UnitQuestion model)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("update [dbo].[Course_UnitQuestion] set ");
+			sql.Append("[Verson]=@Verson,[UnitContent]=@UnitContent,[Content]=@Content,[QTtype]=@QTtype,[Question]=@Question,[Answer]=@Answer,[Credit]=@Credit,[Display]=@Display,[Delflag]=@Delflag,[CreateDate]=@CreateDate");
+			sql.Append(" where [Id]=@Id");
+			SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@Verson", SqlDbType.VarChar, 20) { Value = model.Verson },
+				new SqlParameter("@UnitContent", SqlDbType.Int, 4) { Value = model.UnitContent },
+				new SqlParameter("@Content", SqlDbType.VarChar, 2000) { Value = model.Content },
+				new SqlParameter("@QTtype", SqlDbType.Int, 4) { Value = model.QTtype },
+				new SqlParameter("@Question", SqlDbType.VarChar, 8000) { Value = model.Question },
+				new SqlParameter("@Answer", SqlDbType.VarChar, 100) { Value = model.Answer },
+				new SqlParameter("@Credit", SqlDbType.Float, 8) { Value = model.Credit },
+				new SqlParameter("@Display", SqlDbType.Bit, 1) { Value = model.Display },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate }
+			};
+			return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+		}
+
+		/// <summary>
+		/// 取得一条记录
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="where"></param>
+		/// <returns></returns>
+		public Course_UnitQuestion GetModel(int id, string where)
+		{
+			string sql = "select * from [dbo].[Course_UnitQuestion] where [Id]=@Id";
+			if (!string.IsNullOrEmpty(where))
+				sql += " and " + where;
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+			{
+				if (reader.Read())
+				{
+					Course_UnitQuestion model = new Course_UnitQuestion();
+					ConvertToModel(reader, model);
+					return model;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+
+        /// <summary>
+        /// 删除一条记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int Delete(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Course_UnitQuestion] set ");
+            sql.Append("Delflag = 1");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+		/// <summary>
+		/// 获取数据集
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public List<Course_UnitQuestion> GetList(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from [dbo].[Course_UnitQuestion]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			List<Course_UnitQuestion> list = new List<Course_UnitQuestion>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Course_UnitQuestion model = new Course_UnitQuestion();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取分页数据集
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public List<Course_UnitQuestion> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Course_UnitQuestion]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Course_UnitQuestion]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			List<Course_UnitQuestion> list = new List<Course_UnitQuestion>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Course_UnitQuestion model = new Course_UnitQuestion();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取DataTable
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public DataTable GetTable(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select [Id],[Verson],[UnitContent],[Content],[QTtype],[Question],[Answer],[Credit],[Display],[Delflag],[CreateDate] from [dbo].[Course_UnitQuestion]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		/// <summary>
+		/// 获取分页DataTable
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Course_UnitQuestion]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select [Id],[Verson],[UnitContent],[Content],[QTtype],[Question],[Answer],[Credit],[Display],[Delflag],[CreateDate],ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Course_UnitQuestion]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		private void ConvertToModel(IDataReader reader, Course_UnitQuestion model)
+		{
+			if (reader["Id"] != DBNull.Value)
+				model.Id = Convert.ToInt32(reader["Id"]);
+			if (reader["Verson"] != DBNull.Value)
+				model.Verson = reader["Verson"].ToString();
+			if (reader["UnitContent"] != DBNull.Value)
+				model.UnitContent = Convert.ToInt32(reader["UnitContent"]);
+			if (reader["Content"] != DBNull.Value)
+				model.Content = reader["Content"].ToString();
+			if (reader["QTtype"] != DBNull.Value)
+				model.QTtype = Convert.ToInt32(reader["QTtype"]);
+			if (reader["Question"] != DBNull.Value)
+				model.Question = reader["Question"].ToString();
+			if (reader["Answer"] != DBNull.Value)
+				model.Answer = reader["Answer"].ToString();
+			if (reader["Credit"] != DBNull.Value)
+				model.Credit = Convert.ToDouble(reader["Credit"]);
+			if (reader["Display"] != DBNull.Value)
+				model.Display = Convert.ToBoolean(reader["Display"]);
+			if (reader["Delflag"] != DBNull.Value)
+				model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+			if (reader["CreateDate"] != DBNull.Value)
+				model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+		}
+
+
+        /// <summary>
+        /// 判断指定单元活动是否已经添加试题
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public bool IsExistsQuizQues(int Id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from dbo.Course_UnitQuestion where UnitContent=@UnitContent and Display = 1 and Delflag = 0");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@UnitContent", SqlDbType.Int, 4) { Value = Id }
+			};
+
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString(), cmdParams))
+            {
+                if (reader.Read())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取指定活动的单元活动考试试题信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<Course_UnitQuestion> GetQuizQuesInfo(int id)
+        {
+            string sql = @"select * from dbo.Course_UnitQuestion where UnitContent=@UnitContent and Display = 1 and Delflag = 0";
+            SqlParameter[] cmdParams = new SqlParameter[]{
+                new SqlParameter("@UnitContent", SqlDbType.Int, 4) { Value = id }
+            };
+
+            List<Course_UnitQuestion> list = new List<Course_UnitQuestion>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+            {
+                while (reader.Read())
+                {
+                    Course_UnitQuestion model = new Course_UnitQuestion();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// 更新一条单元活动考试试题记录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int UpdateCourseQuestion(Course_Question model)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Course_UnitQuestion] set ");
+            sql.Append("[Content]=@Content,[QTtype]=@QTtype,[Question]=@Question,[Answer]=@Answer,[Credit]=@Credit");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@Content", SqlDbType.VarChar, 2000) { Value = model.Content },
+				new SqlParameter("@QTtype", SqlDbType.Int, 4) { Value = model.QTtype },
+				new SqlParameter("@Question", SqlDbType.VarChar, 8000) { Value = model.Question },
+				new SqlParameter("@Answer", SqlDbType.VarChar, 100) { Value = model.Answer },
+				new SqlParameter("@Credit", SqlDbType.Float, 8) { Value = model.Credit },
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+
+        /// <summary>
+        /// 更新指定活动考试试题版本号
+        /// </summary>
+        /// <param name="UnitId"></param>
+        /// <param name="Verson"></param>
+        /// <returns></returns>
+        public int SetVerson(int UnitContent, string Verson)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Course_UnitQuestion] set Verson=@Verson where UnitContent=@UnitContent and delflag = 0 ");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@UnitContent", SqlDbType.Int, 4) { Value = UnitContent },
+				new SqlParameter("@Verson", SqlDbType.VarChar, 20) { Value = Verson }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+        }
+	}
+}

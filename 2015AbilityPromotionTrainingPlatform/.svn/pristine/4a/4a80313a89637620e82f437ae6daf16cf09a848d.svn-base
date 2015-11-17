@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "我的测评";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+    ViewBag.MenuId = "d_learner_assessment";
+}
+
+<div class="col-xs-9">
+            <div class="d-page-title">我的测评</div>
+            <hr>
+
+          </div>

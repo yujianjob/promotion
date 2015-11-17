@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Dianda.AP.Model.Learn.MyLearn.MyCourseInfo>
+
+@{
+    ViewBag.Title = "我的选课";
+    ViewBag.MenuId = "d_learner_coursetake";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+}
+
+
+<div class="col-xs-9">
+    <div class="d-page-title">我的选课</div>
+    <div id="blk_ln_menu_coursetake" class="blk_ln_menu_coursetake">
+        <div class="d-navmenu">
+	        <a class="i" href="@Url.Action("Passed")" id="d_learner_courestake_approved">已批准的课程</a>
+	        <a class="i" href="@Url.Action("ForPassed")" id="d_learner_courestake_pending">待批准的课程</a>
+	        <a class="i active" href="@Url.Action("UnPassed")" id="d_learner_courestake_notapproved">不批准的课程</a>
+        </div>
+    </div>
+      			
+    <div class="d-coursetakelist approved blk_ln_coursetakelist_approved" id="blk_ln_coursetakelist_approved">
+        @if (Model.Count() == 0)
+        {
+            <div class="No_Content_Title">暂无信息</div>
+        }
+        @foreach (var item in Model)
+        {
+            double percent = item.CurrentSchedule / item.TotalTime;
+            <div class="i">
+                <a class="thumb" href="#"><img src="@item.Pic" width="200" height="125"></a>
+                <span class="source">@item.OrganName</span>
+                <a class="title" href="#">@item.TrainingName</a>
+                <div class="period clearfix">
+                    <div class="pull-left">@item.OpenClassFrom.ToString("yyyy-MM-dd")</div>
+  	                <div class="pull-right text-right"></div>
+                </div>
+                <div class="action">
+                    @if (item.StatusMember == 3)
+                    {
+                        <span class="status bg-danger">学校方&nbsp;<span class="glyphicon glyphicon-remove"></span></span>
+                        @*<span class="status bg-danger">培训方&nbsp;<span class="glyphicon glyphicon-remove"></span></span>*@
+                    }
+                    else
+                    {
+                        <span class="status bg-success">学校方&nbsp;<span class="glyphicon glyphicon-ok"></span></span>
+                        <span class="status bg-danger">培训方&nbsp;<span class="glyphicon glyphicon-remove"></span></span>
+                    }
+                    
+                </div>
+                <span class="sign bg-sign orange">@item.FieldName.Substring(0, 2)<span class="hour">@item.TotalTime 课时</span></span>
+            </div>
+        }
+
+        <hr>
+        @if (ViewBag.RecordCount > ViewBag.PageSize)
+{
+    @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+        new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+}
+
+    </div>
+
+
+</div>

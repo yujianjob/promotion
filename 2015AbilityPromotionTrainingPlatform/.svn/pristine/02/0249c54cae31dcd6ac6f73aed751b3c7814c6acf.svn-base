@@ -1,0 +1,117 @@
+﻿using Dianda.AP.DAL;
+using Dianda.AP.Model;
+using Dianda.AP.Model.API;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.BLL
+{
+    public class APIBLL
+    {
+        APIDAL dal = new APIDAL();
+
+        #region 学校
+        public bool AddOrgan(Organ_Detail model)
+        {
+            return dal.AddOrgan(model) > 0;
+        }
+
+        public bool UpdateOrgan(Organ_Detail model)
+        {
+            return dal.UpdateOrgan(model) > 0;
+        }
+
+        public bool DeleteOrgan(int outSourceId)
+        {
+            return dal.DeleteOrgan(outSourceId) > 0;
+        }
+
+        public Organ_Detail GetOrganByOutId(int outId)
+        {
+            return dal.GetOrganByOutId(outId);
+        }
+        #endregion 
+
+        #region 教师
+        public bool AddMemberAccount(Member_Account model)
+        {
+            return dal.AddMemberAccount(model) > 0;
+        }
+
+        public bool AddMemberBaseInfo(MemberBaseInfo model)
+        {
+            return dal.AddMemberBaseInfo(model) > 0;
+        }
+
+        public bool UpdateMemberAccount(Member_Account model)
+        {
+            return dal.UpdateMemberAccount(model) > 0;
+        }
+
+        public bool UpdateMemberBaseInfo(MemberBaseInfo model)
+        {
+            return dal.UpdateMemberBaseInfo(model) > 0;
+        }
+
+        public bool DeleteMemberAccount(int id)
+        {
+            return dal.DeleteMemberAccount(id) > 0;
+        }
+
+        public bool DeleteMemberBaseInfo(int accountId)
+        {
+            return dal.DeleteMemberBaseInfo(accountId) > 0;
+        }
+
+        public Member_Account GetMemberAccountByOutId(int outId)
+        {
+            return dal.GetMemberAccountByOutId(outId);
+        }
+
+        //学科
+        public void UpdateSubject(int accountId, string source, string target)
+        {
+            dal.UpdateSubject(accountId, source, target);
+        }
+
+        //学段
+        public void UpdateSection(int accountId, string source, string target)
+        {
+            dal.UpdateSection(accountId, source, target);
+        }
+
+        //年级
+        public void UpdateGrade(int accountId, string source, string target)
+        {
+            dal.UpdateGrade(accountId, source, target);
+        }
+
+        //职务
+        public void UpdateJob(int accountId, string source, string target)
+        {
+            dal.UpdateJob(accountId, source, target);
+        }
+
+        //职称
+        public void UpdateRank(int accountId, string source, string target)
+        {
+            dal.UpdateRank(accountId, source, target);
+        }
+
+        //培训形式
+        public void UpdateTrainingType(int accountId, string source, string target)
+        {
+            dal.UpdateTrainingType(accountId, source, target);
+        }
+
+        //将外部编号转为内部Id
+        public string ConvertKey(string table, string outKey)
+        {
+            return dal.ConvertKey(table, outKey);
+        }
+        #endregion
+    }
+}

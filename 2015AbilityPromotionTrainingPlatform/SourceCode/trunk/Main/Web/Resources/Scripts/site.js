@@ -1,0 +1,51 @@
+﻿$.fn.UploadFile = function (settings) {
+    var swfUploadSettings = {
+        height: 30,
+        width: 85,
+        swf: '/Resources/uploadify/uploadify.swf',
+        uploader: '/Entrance/Home/UploadFile',
+        buttonClass: 'uploadify-button-gray',
+        fileSizeLimit: '10MB',
+        fileTypeExts: '*.jpg; *.jpeg; *.gif; *.png',
+        auto: false,
+        buttonText: '浏览···',
+        queueSizeLimit: 1,
+        successTimeout: 60,
+        removeCompleted: true,
+        multi: false,
+        overrideEvents: ['onSelectError'],
+        onSelectError: function (file, errorCode, errorMsg) {
+            switch (errorCode) {
+                case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:
+                    this.queueData.errorMsg = '每次最多上传 ' + this.settings.queueSizeLimit + '个文件';
+                    break;
+                case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                    this.queueData.errorMsg = '文件大小超过限制 (' + this.settings.fileSizeLimit + ')';
+                    break;
+                case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
+                    this.queueData.errorMsg = '文件为空';
+                    break;
+                case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                    this.queueData.errorMsg = '文件格式不正确，仅限 ' + this.settings.fileTypeExts;
+                    break;
+            }
+            if (errorCode != SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED) {
+                delete this.queueData.files[file.id];
+            }
+            if (settings.onSelectError) settings.onSelectError.apply(this, arguments);
+        },
+        onUploadError: function (file, errorCode, errorMsg, errorString) {
+        },
+        onUploadSuccess: function (file, data, response) {
+        },
+        onSelect: function (file) {
+
+        }
+    };
+
+    if (settings) {
+        swfUploadSettings = $.extend(swfUploadSettings, settings);
+    }
+
+    $(this).uploadify(swfUploadSettings);
+};

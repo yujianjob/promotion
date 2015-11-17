@@ -1,0 +1,122 @@
+﻿@{
+    int pageindex = (int)PageData["pageindex"];
+    int totalcount = (int)(PageData["pagecount"]);
+    int basecount = (int)(PageData["basecount"]);
+    int pagecount = 0;
+    var count = (int)(PageData["pagecount"]);
+    if (count != 0)
+    {
+        var mod = count % basecount;
+        if (mod == 0)
+        { pagecount = count / basecount; }
+        else
+        { pagecount = count / basecount + 1; }
+    }
+}
+
+@functions{
+    public static string GetUrl(int index)
+    {
+        System.Collections.Specialized.NameValueCollection querystring = HttpContext.Current.Request.QueryString;
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.Append("?").AppendFormat("pageIndex=" + index);
+        foreach (string key in querystring.Keys)
+        {
+            if (key != "pageIndex")
+                sb.AppendFormat("&{0}={1}", key, HttpContext.Current.Server.UrlEncode(querystring[key]));
+        }
+        return sb.ToString();
+    }
+}
+<div class="d-pagination clearfix">
+    <div class="pull-left">
+        当前页<span>@pageindex</span>
+        总页数<span id="pagecount">@pagecount</span>
+        总记录<span>@totalcount</span>
+        每页显示条数<span>@basecount</span>
+    </div>
+    <div class="pull-right text-right">
+        @if (pageindex > 2)
+        {
+            <a href="@GetUrl(1)">首页</a>
+        }
+        @if (pageindex > 1)
+        {
+            <a href="@GetUrl(pageindex - 1)">上一页</a>
+        }
+        @if (pageindex < pagecount)
+        {
+            <a href="@GetUrl(pageindex + 1)">下一页</a>
+        }
+        @if (pageindex < pagecount - 1)
+        {
+            <a href="@GetUrl(pagecount)">尾页</a>
+        }
+        跳转到第<input id="gourl" value="@pageindex" type="text" class="form-control input-sm">页
+	
+         <button onclick="redirect2()" class="btn btn-sm">» </button>
+
+    </div>
+
+</div>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/ymPrompt.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/jquery-1.11.2.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/uploadify/jquery.uploadify.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/bootstrap.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/ie10-viewport-bug-workaround.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/km.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/proto.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/bootstrap-datepicker.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/bootstrap-datepicker.zh-CN.min.js")"></script>
+
+<script type="text/javascript" src="@Url.Content("/Resources/ueditor1_3_6-utf8-net/ueditor.config.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/ueditor1_3_6-utf8-net/ueditor.all.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Resources/ueditor1_3_6-utf8-net/lang/zh-cn/zh-cn.js")"></script>
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/site.js")"></script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        var pagecount = '@pagecount';
+        if (pagecount == 0) {
+            alert("暂无信息。");
+            
+        }
+    });
+
+    function redirect2() {
+
+        var num = $("#gourl").val();
+        var pagecount = '@pagecount';
+        if (pagecount < num || num < 1) {
+            Alert("页码不存在。");
+            return;
+        }
+        else {
+            var url = window.location.href;
+            if (url.indexOf('?') == -1)
+            { window.location.href = url + "/?pageIndex=" + num; }
+            else
+            {
+                if (url.indexOf('pageIndex') == -1) {
+                    window.location.href = url + "&pageIndex=" + num;
+                }
+                else {
+                    var paramIndex = url.indexOf('?');
+                    var prefix = url.substring(0, paramIndex) + "?";
+                    var surfix = "";
+                    var param = url.substring(paramIndex + 1, url.length);
+                    var paraArr = param.split('&');
+                    for (var i = 0; i < paraArr.length; i++) {
+                        if (paraArr[i].indexOf('pageIndex') == -1) {
+                            surfix += "&" + paraArr[i];
+                        }
+                    }
+                    prefix += "pageIndex=" + num + surfix;
+                    window.location.href = prefix;
+                }
+            }
+        }
+    }
+</script>

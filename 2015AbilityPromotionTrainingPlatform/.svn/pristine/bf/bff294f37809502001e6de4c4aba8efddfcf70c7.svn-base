@@ -1,0 +1,143 @@
+<div class="d-search">
+
+	<form class="form-inline">
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部选课学期</option>
+	    	<option value="">2015秋季</option>
+	    	<option value="">2015春季</option>
+	    	<option value="">2014秋季</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部学科</option>
+	    	<option value="">数学 (2)</option>
+	    	<option value="">思想品德 (3)</option>
+	    	<option value="">政治 (1)</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部状态</option>
+	    	<option value="">待审核</option>
+	    	<option value="">已通过</option>
+	    	<option value="">不通过</option>
+	    	<option value="">已开班</option>
+	    	<option value="">已结业</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <input type="text" class="form-control" placeholder="课程、班级搜索">
+	  </div>
+	  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+	</form>
+
+	<div class="action">
+		<a href="class-add.html" class="btn btn-success">开设新班级</a>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>班级名称</th>
+				<th>课程名称</th>
+				<th>辅导员</th>
+				<th>报名日期</th>
+				<th>开班日期</th>
+				<th>审核状态</th>
+				<th>报名进度</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>2015秋季A班</td>
+				<td>初中化学</td>
+				<td>林立 13281929123</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-warning">待审核</span></td>
+				<td>0/60</td>
+				<td>
+					<a href="javascript:;" onclick="">编辑</a>&nbsp;
+					<a href="javascript:;" onclick="">撤销</a>
+				</td>
+			</tr>
+			<tr>
+				<td>2015秋季B班</td>
+				<td>初中化学</td>
+				<td>赵晓东 13281929123</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-success">已通过</span></td>
+				<td>23/60</td>
+				<td>
+					<a href="javascript:;" onclick="">辅导员</a>&nbsp;
+					<a href="javascript:;" onclick="">撤销</a>
+				</td>
+			</tr>
+			<tr>
+				<td>2015秋季C班</td>
+				<td>初中化学</td>
+				<td>赵晓东 13281929123</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-danger">不通过</span></td>
+				<td>0/60</td>
+				<td>
+					<a href="javascript:;" onclick="">重新申请</a>&nbsp;
+					<a href="javascript:;" onclick="">清除</a>
+				</td>
+			</tr>
+			<tr>
+				<td>2015秋季C班</td>
+				<td>初中化学</td>
+				<td>赵晓东 13281929123</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-primary">已开班</span></td>
+				<td>58/60</td>
+				<td>
+					<a href="javascript:;" onclick="">辅导员</a>&nbsp;
+					<a href="javascript:;" onclick="">结业</a>
+				</td>
+			</tr>
+			<tr>
+				<td>2015秋季E班</td>
+				<td>初中化学</td>
+				<td>赵晓东 13281929123</td>
+				<td>2015-09-01 2015-09-20</td>
+				<td>2015-09-20 2015-12-30</td>
+				<td><span class="text-muted">已结业</span></td>
+				<td>60/60</td>
+				<td>
+					<a href="javascript:;" onclick="">辅导员</a>&nbsp;
+					<a href="javascript:;" onclick="">查看</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button> 	   
+
+	</div>
+</div>

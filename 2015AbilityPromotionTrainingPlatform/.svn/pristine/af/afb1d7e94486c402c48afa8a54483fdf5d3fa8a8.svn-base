@@ -1,0 +1,107 @@
+using System;
+using System.ComponentModel;
+
+namespace Dianda.AP.Model
+{
+    public partial class Member_PracticalCourse
+    {
+
+        public int Id { get; set; }
+
+        public int AccountId { get; set; }
+
+        public int? PracticalCourseId { get; set; }
+
+        public int? OrganId { get; set; }
+
+        public int? Creater { get; set; }
+
+        public int Status { get; set; }
+
+        public string ApplyRemark { get; set; }
+
+        public bool Delflag { get; set; }
+
+        public DateTime CreateDate { get; set; }
+
+        public int RoleId { get; set; }
+        
+    }
+
+
+    [Serializable]
+    public class PracticalCourseSearchModel
+    {
+        public string SearchTitle { get; set; }
+
+        [DefaultValue(-1)]
+        public int State { get; set; }
+
+        public string Where { get; set; }
+    }
+
+    [Serializable]
+    public class PracticalCourseListModel : Member_PracticalCourse
+    {
+        public string UserName { get; set; }
+
+        public string Nickname { get; set; }
+
+        public string TeacherNo { get; set; }
+
+        public string Title { get; set; }
+
+        public int TraingCategory { get; set; }
+
+        public int TraingTopic { get; set; }
+
+        public string Credits { get; set; }
+
+        public int? OrganName { get; set; }
+
+        public int? CreaterName { get; set; }
+    }
+
+
+    [Serializable]
+    public class MPracticalCourseModel : Member_PracticalCourse
+    {
+
+        public string Title { get; set; }
+
+        [DefaultValue(-1)]
+        public int TraingField { get; set; }
+
+        public int TraingCategory { get; set; }
+
+        public int TraingTopic { get; set; }
+
+        public string Content { get; set; }
+
+        public int PlanId { get; set; }
+
+        public string Attachment { get; set; }
+
+        [DefaultValue(1)]
+        public int People { get; set; }
+
+        [DefaultValue(true)]
+        public bool Display { get; set; }
+
+        public int FlowId { get; set; }
+
+        public int Member { get; set; }
+
+        public string Role { get; set; }
+
+        [DefaultValue(1)]
+        public int IsBatch { get; set; }
+    }
+
+    public class MPracticalCourseModels : MPracticalCourseModel
+    {
+        public string[] Members { get; set; }
+
+        public string[] Roles { get; set; }
+    }
+}

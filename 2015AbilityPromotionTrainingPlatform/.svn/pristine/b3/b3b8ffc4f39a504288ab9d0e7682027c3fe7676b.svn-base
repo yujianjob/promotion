@@ -1,0 +1,457 @@
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+
+namespace Dianda.AP.DAL
+{
+	public partial class Member_AccountDAL
+	{
+		/// <summary>
+		/// 新增一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Add(Member_Account model)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("insert into [dbo].[Member_Account] ([UserName],[Password],[Email],[Status],[RegisterIP],[OrganId],[Pic],[Nickname],[IsRealName],[originUserId],[origin],[OriginUserName],[IsNeedReName],[Delflag],[CreateDate])");
+			sql.Append(" values (@UserName,@Password,@Email,@Status,@RegisterIP,@OrganId,@Pic,@Nickname,@IsRealName,@originUserId,@origin,@OriginUserName,@IsNeedReName,@Delflag,@CreateDate)");
+			sql.Append(" set @Id=@@IDENTITY");
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@UserName", SqlDbType.VarChar, 50) { Value = model.UserName },
+				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = model.Password },
+				new SqlParameter("@Email", SqlDbType.VarChar, 200) { Value = model.Email },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@RegisterIP", SqlDbType.VarChar, 20) { Value = model.RegisterIP },
+				new SqlParameter("@OrganId", SqlDbType.Int, 4) { Value = model.OrganId },
+				new SqlParameter("@Pic", SqlDbType.VarChar, 200) { Value = model.Pic },
+				new SqlParameter("@Nickname", SqlDbType.VarChar, 20) { Value = model.Nickname },
+				new SqlParameter("@IsRealName", SqlDbType.Bit, 1) { Value = model.IsRealName },
+				new SqlParameter("@originUserId", SqlDbType.VarChar, 50) { Value = model.originUserId },
+				new SqlParameter("@origin", SqlDbType.Int, 4) { Value = model.origin },
+				new SqlParameter("@OriginUserName", SqlDbType.VarChar, 50) { Value = model.OriginUserName },
+				new SqlParameter("@IsNeedReName", SqlDbType.Bit, 1) { Value = model.IsNeedReName },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate }
+			};
+			int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+			model.Id = Convert.ToInt32(cmdParams[0].Value);
+			return result;
+		}
+
+		/// <summary>
+		/// 更新一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Update(Member_Account model)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("update [dbo].[Member_Account] set ");
+			sql.Append("[UserName]=@UserName,[Password]=@Password,[Email]=@Email,[Status]=@Status,[RegisterIP]=@RegisterIP,[OrganId]=@OrganId,[Pic]=@Pic,[Nickname]=@Nickname,[IsRealName]=@IsRealName,[originUserId]=@originUserId,[origin]=@origin,[OriginUserName]=@OriginUserName,[IsNeedReName]=@IsNeedReName,[Delflag]=@Delflag,[CreateDate]=@CreateDate");
+			sql.Append(" where [Id]=@Id");
+			SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@UserName", SqlDbType.VarChar, 50) { Value = model.UserName },
+				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = model.Password },
+				new SqlParameter("@Email", SqlDbType.VarChar, 200) { Value = model.Email },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@RegisterIP", SqlDbType.VarChar, 20) { Value = model.RegisterIP },
+				new SqlParameter("@OrganId", SqlDbType.Int, 4) { Value = model.OrganId },
+				new SqlParameter("@Pic", SqlDbType.VarChar, 200) { Value = model.Pic },
+				new SqlParameter("@Nickname", SqlDbType.VarChar, 20) { Value = model.Nickname },
+				new SqlParameter("@IsRealName", SqlDbType.Bit, 1) { Value = model.IsRealName },
+				new SqlParameter("@originUserId", SqlDbType.VarChar, 50) { Value = model.originUserId },
+				new SqlParameter("@origin", SqlDbType.Int, 4) { Value = model.origin },
+				new SqlParameter("@OriginUserName", SqlDbType.VarChar, 50) { Value = model.OriginUserName },
+				new SqlParameter("@IsNeedReName", SqlDbType.Bit, 1) { Value = model.IsNeedReName },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate }
+			};
+			return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+		}
+
+		/// <summary>
+		/// 取得一条记录
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="where"></param>
+		/// <returns></returns>
+		public Member_Account GetModel(int id, string where)
+		{
+			string sql = "select * from [dbo].[Member_Account] where [Id]=@Id";
+			if (!string.IsNullOrEmpty(where))
+				sql += " and " + where;
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+			{
+				if (reader.Read())
+				{
+					Member_Account model = new Member_Account();
+					ConvertToModel(reader, model);
+					return model;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 获取数据集
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public List<Member_Account> GetList(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from [dbo].[Member_Account]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			List<Member_Account> list = new List<Member_Account>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Member_Account model = new Member_Account();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取分页数据集
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public List<Member_Account> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Member_Account]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Member_Account]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			List<Member_Account> list = new List<Member_Account>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Member_Account model = new Member_Account();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+        public List<Member_AccountBaseInfo> GetMABListPractice(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from [dbo].[Member_Account]");
+            if (!string.IsNullOrEmpty(where))
+                sb.Append(" where " + where);
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from (select ma.*,mbi.RealName,mbi.Mobile,mbi.Job from [dbo].[Member_Account] ma left join [dbo].[Member_BaseInfo] mbi on ma.Id=mbi.AccountId) as n");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<Member_AccountBaseInfo> list = new List<Member_AccountBaseInfo>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Member_AccountBaseInfo model = new Member_AccountBaseInfo();
+                    ConvertToModelP(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        public List<Member_AccountBaseInfo> GetMABList(int pageSize, int pageIndex, string where,string where2,int ClassId,int TrainingId, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+
+            StringBuilder s = new StringBuilder();
+            s.Append("(select ma.*,mbi.RealName,mbi.Mobile,mbi.Job,mpc.Status as mpcStatus,sum(CASE mpt.Result WHEN 1 THEN 1 WHEN 2 THEN 0 ELSE 0 END) as mptResult from [dbo].[Member_Account] ma left join [dbo].[Member_BaseInfo] mbi on ma.Id=mbi.AccountId");
+            s.Append(" left join (select * from dbo.Member_ClassRegister where ClassId='" + ClassId + "')as mpc on ma.Id=mpc.AccountId");
+            s.Append(" left join (select * from dbo.Member_ClassRegister where TrainingId='" + TrainingId + "')as mpt on ma.Id=mpt.AccountId");
+           
+            if (!string.IsNullOrEmpty(where))
+                s.Append(" where 1=1 " + where+" group by ma.Id,ma.UserName,ma.Password,ma.Email,ma.Status,ma.RegisterIP,ma.OrganId,ma.Pic,ma.Nickname,ma.IsRealName,ma.originUserId,ma.origin,ma.OriginUserName,ma.IsNeedReName,ma.Delflag,ma.CreateDate,ma.OutSourceId,mbi.RealName,mbi.Mobile,mbi.Job,mpc.Status) as n" +where2);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select count(1) from "+s.ToString());
+            
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from " + s.ToString());
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<Member_AccountBaseInfo> list = new List<Member_AccountBaseInfo>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Member_AccountBaseInfo model = new Member_AccountBaseInfo();
+                    ConvertToModel2(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+		/// <summary>
+		/// 获取DataTable
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public DataTable GetTable(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select [Id],[UserName],[Password],[Email],[Status],[RegisterIP],[OrganId],[Pic],[Nickname],[IsRealName],[originUserId],[origin],[OriginUserName],[IsNeedReName],[Delflag],[CreateDate] from [dbo].[Member_Account]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		/// <summary>
+		/// 获取分页DataTable
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Member_Account]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select [Id],[UserName],[Password],[Email],[Status],[RegisterIP],[OrganId],[Pic],[Nickname],[IsRealName],[originUserId],[origin],[OriginUserName],[IsNeedReName],[Delflag],[CreateDate],ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Member_Account]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+        /// <summary>
+        /// 获取分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <returns></returns>
+        public List<Member_Account> GetList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Member_Account]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<Member_Account> list = new List<Member_Account>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    Member_Account model = new Member_Account();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 取得记录数
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public int GetCount(string where)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select count(1) from [dbo].[Member_Account]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()));
+        }
+
+        private void ConvertToModel(IDataReader reader, Member_Account model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+            if (reader["Password"] != DBNull.Value)
+                model.Password = reader["Password"].ToString();
+            if (reader["Email"] != DBNull.Value)
+                model.Email = reader["Email"].ToString();
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["RegisterIP"] != DBNull.Value)
+                model.RegisterIP = reader["RegisterIP"].ToString();
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+            if (reader["Nickname"] != DBNull.Value)
+                model.Nickname = reader["Nickname"].ToString();
+            if (reader["IsRealName"] != DBNull.Value)
+                model.IsRealName = Convert.ToBoolean(reader["IsRealName"]);
+            if (reader["originUserId"] != DBNull.Value)
+                model.originUserId = reader["originUserId"].ToString();
+            if (reader["origin"] != DBNull.Value)
+                model.origin = Convert.ToInt32(reader["origin"]);
+            if (reader["OriginUserName"] != DBNull.Value)
+                model.OriginUserName = reader["OriginUserName"].ToString();
+            if (reader["IsNeedReName"] != DBNull.Value)
+                model.IsNeedReName = Convert.ToBoolean(reader["IsNeedReName"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["OutSourceId"] != DBNull.Value)
+                model.OutSourceId = Convert.ToInt32(reader["OutSourceId"]);
+        }
+
+        private void ConvertToModelP(IDataReader reader, Member_AccountBaseInfo model)
+		{
+			if (reader["Id"] != DBNull.Value)
+				model.Id = Convert.ToInt32(reader["Id"]);
+			if (reader["UserName"] != DBNull.Value)
+				model.UserName = reader["UserName"].ToString();
+			if (reader["Password"] != DBNull.Value)
+				model.Password = reader["Password"].ToString();
+			if (reader["Email"] != DBNull.Value)
+				model.Email = reader["Email"].ToString();
+			if (reader["Status"] != DBNull.Value)
+				model.Status = Convert.ToInt32(reader["Status"]);
+			if (reader["RegisterIP"] != DBNull.Value)
+				model.RegisterIP = reader["RegisterIP"].ToString();
+			if (reader["OrganId"] != DBNull.Value)
+				model.OrganId = Convert.ToInt32(reader["OrganId"]);
+			if (reader["Pic"] != DBNull.Value)
+				model.Pic = reader["Pic"].ToString();
+			if (reader["Nickname"] != DBNull.Value)
+				model.Nickname = reader["Nickname"].ToString();
+			if (reader["IsRealName"] != DBNull.Value)
+				model.IsRealName = Convert.ToBoolean(reader["IsRealName"]);
+			if (reader["originUserId"] != DBNull.Value)
+				model.originUserId = reader["originUserId"].ToString();
+			if (reader["origin"] != DBNull.Value)
+				model.origin = Convert.ToInt32(reader["origin"]);
+			if (reader["OriginUserName"] != DBNull.Value)
+				model.OriginUserName = reader["OriginUserName"].ToString();
+			if (reader["IsNeedReName"] != DBNull.Value)
+				model.IsNeedReName = Convert.ToBoolean(reader["IsNeedReName"]);
+			if (reader["Delflag"] != DBNull.Value)
+				model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+			if (reader["CreateDate"] != DBNull.Value)
+				model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+            if (reader["Mobile"] != DBNull.Value)
+                model.Mobile = reader["Mobile"].ToString();
+            if (reader["Job"] != DBNull.Value)
+                model.Job = reader["Job"].ToString();
+		}
+
+        private void ConvertToModel2(IDataReader reader, Member_AccountBaseInfo model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+            if (reader["Password"] != DBNull.Value)
+                model.Password = reader["Password"].ToString();
+            if (reader["Email"] != DBNull.Value)
+                model.Email = reader["Email"].ToString();
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["RegisterIP"] != DBNull.Value)
+                model.RegisterIP = reader["RegisterIP"].ToString();
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+            if (reader["Nickname"] != DBNull.Value)
+                model.Nickname = reader["Nickname"].ToString();
+            if (reader["IsRealName"] != DBNull.Value)
+                model.IsRealName = Convert.ToBoolean(reader["IsRealName"]);
+            if (reader["originUserId"] != DBNull.Value)
+                model.originUserId = reader["originUserId"].ToString();
+            if (reader["origin"] != DBNull.Value)
+                model.origin = Convert.ToInt32(reader["origin"]);
+            if (reader["OriginUserName"] != DBNull.Value)
+                model.OriginUserName = reader["OriginUserName"].ToString();
+            if (reader["IsNeedReName"] != DBNull.Value)
+                model.IsNeedReName = Convert.ToBoolean(reader["IsNeedReName"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+            if (reader["Mobile"] != DBNull.Value)
+                model.Mobile = reader["Mobile"].ToString();
+            if (reader["Job"] != DBNull.Value)
+                model.Job = reader["Job"].ToString();
+            if (reader["mpcStatus"] != DBNull.Value)
+                model.mpcStatus = Convert.ToInt32(reader["mpcStatus"]);
+            else
+                model.mpcStatus = -1;
+            if (reader["mptResult"] != DBNull.Value)
+                model.mptResult = Convert.ToInt32(reader["mptResult"]);
+            else
+                model.mptResult = 0;
+
+            
+        }
+	}
+}

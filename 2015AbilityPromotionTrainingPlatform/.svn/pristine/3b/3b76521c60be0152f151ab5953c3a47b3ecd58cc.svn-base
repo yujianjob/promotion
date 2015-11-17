@@ -1,0 +1,4 @@
+﻿//切换班级
+function change(id, type) {
+    $('#showlist').attr("src", "CoursemarketTCList?Id=" + id + "&Type=" + type);
+}

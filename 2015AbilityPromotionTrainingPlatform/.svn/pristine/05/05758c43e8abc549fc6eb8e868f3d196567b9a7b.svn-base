@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Dianda.AP.Model.Learn.MyLearn.MyCourseInfo>
+
+@{
+    ViewBag.Title = "我的选课";
+    ViewBag.MenuId = "d_learner_coursetake";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+}
+
+<div class="col-xs-9">
+    <div class="d-page-title">我的选课</div>
+    <div id="blk_ln_menu_coursetake" class="blk_ln_menu_coursetake">
+        <div class="d-navmenu">
+	        <a class="i active" href="@Url.Action("Passed")" id="d_learner_courestake_approved">已批准的课程</a>
+	        <a class="i" href="@Url.Action("ForPassed")" id="d_learner_courestake_pending">待批准的课程</a>
+	        <a class="i" href="@Url.Action("UnPassed")" id="d_learner_courestake_notapproved">不批准的课程</a>
+        </div>
+    </div>
+      			
+    <div class="d-coursetakelist approved blk_ln_coursetakelist_approved" id="blk_ln_coursetakelist_approved">
+
+        @foreach (var item in Model)
+        {
+            double percent = item.CurrentSchedule / item.TotalTime;
+            <div class="i">
+                <a class="thumb" href="#"><img src="@item.Pic" width="200" height="125"></a>
+                <span class="source">@item.OrganName</span>
+                <a class="title" href="#">@item.TrainingName</a>
+                <div class="period clearfix">
+                    <div class="pull-left">@item.OpenClassFrom.ToString("yyyy-MM-dd")</div>
+  	                <div class="pull-right text-right"></div>
+                </div>
+                <div class="action @item.Id">
+                    @if (item.Result != 1 && item.StatusClass != 5 && item.StatusClass != 6)
+                    {
+                    <a class="btn btn-success" href="javascript:void(0);" onclick="DeleteCourse(@item.Id);">放弃该课程</a>
+                    }
+                </div>
+                <span class="sign bg-sign orange">@item.FieldName.Substring(0 ,2)<span class="hour">@item.TotalTime 课时</span></span>
+            </div>
+        }
+
+        <hr>
+        @if (ViewBag.RecordCount > ViewBag.PageSize)
+{
+    @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+        new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+}
+
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="modal-course-delete-confirm">
+    <div class="modal-dialog" style="margin:30px auto;width:600px;">
+        <div class="modal-content d-form" style="padding:0;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-title">确认放弃该课程？</div>
+        </div>
+    
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" onClick="DeleteSubmit();">确认</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        </div>
+            
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+        });
+    });
+
+    var courseId = 0;
+
+    function DeleteCourse(id) {
+        courseId = id;
+        $('#modal-course-delete-confirm').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+
+    function DeleteSubmit() {
+        $.ajax({
+            url: 'AjaxCourseDelete',
+            type: 'get',
+            data: { Id: courseId },
+            content: 'application/json',
+            dataType: 'text',
+            success: function (data) {
+                var myData = $.parseJSON(data);
+                if (myData.Result) {
+                    AfterDeleteSubmit();
+                    window.location.href = '@Url.Action("Passed")';
+                }
+                else {
+                    Alert(myData.Msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 302) {
+                    eval(XMLHttpRequest.responseText);
+                }
+            }
+        });
+    }
+
+    function AfterDeleteSubmit() {
+        $('#modal-course-delete-confirm').modal('hide');
+    }
+</script>

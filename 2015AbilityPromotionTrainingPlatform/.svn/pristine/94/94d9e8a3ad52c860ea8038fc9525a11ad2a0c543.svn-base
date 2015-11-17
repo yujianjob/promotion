@@ -1,0 +1,551 @@
+﻿using Dianda.AP.BLL;
+using Dianda.AP.Model;
+using Dianda.AP.Model.Entrance.Home;
+using Dianda.AP.Model.Entrance.Login;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using Dianda.AP.Model.Course.CourseCreate;
+using XXW.Enum;
+
+namespace Web.Code
+{
+    public class SiteCache
+    {
+        private SiteCache() { }
+        private static SiteCache instance = new SiteCache();
+        public static SiteCache Instance 
+        {
+            get { return instance; }
+        }
+
+        XXW.SiteUtils.SessionHelper session = XXW.SiteUtils.SessionHelper.Instance;//单独的缓存类(session)
+        Dianda.CacheFactory.CacheHelper cache = Dianda.CacheFactory.CacheHelper.Instance;//公共的缓存类(cache)
+
+        /// <summary>
+        /// 用户登录标识
+        /// </summary>
+        public LoginInfo LoginInfo
+        {
+            get { return (LoginInfo)session.GetSession("LoginInfo"); }
+            set { session.SetSession("LoginInfo", value); }
+        }
+
+        /// <summary>
+        /// 计划Id
+        /// </summary>
+        public int PlanId
+        {
+            get
+            {
+                object obj = session.GetSession("PlanId");
+                if (obj == null)
+                {
+                    DataSet ds = new EntranceHomeBLL().GetTrainingPlanList("Delflag=0 and IsOpen=1 and PartitionId=" + this.LoginInfo.PartitionId, "Id");
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        int planId = Convert.ToInt32(ds.Tables[0].Rows[0]["Id"]);
+                        session.SetSession("PlanId", planId);
+                        return planId;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return Convert.ToInt32(obj);
+                }
+            }
+            set { session.SetSession("PlanId", value); }
+        }
+
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string UserName
+        {
+            get 
+            {
+                object obj = session.GetSession("UserName");
+                if (obj == null)
+                {
+                    Member_Account memberAccount = new EntranceHomeBLL().GetMember_AccountModel(this.LoginInfo.UserId, "Delflag=0 and Status=2");
+                    if (memberAccount != null)
+                    {
+                        session.SetSession("UserName", memberAccount.UserName);
+                        return memberAccount.UserName;
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
+                else
+                {
+                    return obj.ToString();
+                }
+            }
+            set { session.SetSession("UserName", value); }
+        }
+
+        /// <summary>
+        /// 昵称
+        /// </summary>
+        public string NickName
+        {
+            get
+            {
+                object obj = session.GetSession("NickName");
+                if (obj == null)
+                {
+                    Member_Account memberAccount = new EntranceHomeBLL().GetMember_AccountModel(this.LoginInfo.UserId, "Delflag=0 and Status=2");
+                    if (memberAccount != null)
+                    {
+                        session.SetSession("NickName", memberAccount.Nickname);
+                        return memberAccount.Nickname;
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
+                else
+                {
+                    return obj.ToString();
+                }
+            }
+            set { session.SetSession("NickName", value); }
+        }
+
+        /// <summary>
+        /// 当前权限组Id
+        /// </summary>
+        public int GroupId
+        {
+            get 
+            {
+                object obj = session.GetSession("GroupId");
+                if (obj == null)
+                {
+                    Dianda.AP.Model.Entrance.Home.PlatformGroups group = this.PlatformGroups.FirstOrDefault();
+                    if (group != null)
+                    {
+                        session.SetSession("GroupId", group.Id);
+                        return group.Id;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return Convert.ToInt32(obj);
+                }
+            }
+            set { session.SetSession("GroupId", value); }
+        }
+
+        /// <summary>
+        /// 用户管理机构
+        /// </summary>
+        public int ManageOrganId
+        {
+            get
+            {
+                object obj = session.GetSession("ManageOrganId");
+                if (obj == null)
+                {
+                    Dianda.AP.Model.Entrance.Home.PlatformGroups manage = this.PlatformGroups.FirstOrDefault(t => t.Id == this.GroupId);
+                    if (manage != null)
+                    {
+                        session.SetSession("ManageOrganId", manage.ManageOrganId);
+                        return manage.ManageOrganId;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return Convert.ToInt32(obj);
+                }
+            }
+            set { session.SetSession("ManageOrganId", value); }
+        }
+
+        /// <summary>
+        /// 组织机构Id
+        /// </summary>
+        public int OrganId
+        {
+            get
+            {
+                object obj = session.GetSession("OrganId");
+                if (obj == null)
+                {
+                    Member_Account memberAccount = new EntranceHomeBLL().GetMember_AccountModel(this.LoginInfo.UserId, "Delflag=0 and Status=2");
+                    if (memberAccount != null)
+                    {
+                        session.SetSession("OrganId", memberAccount.OrganId);
+                        return Convert.ToInt32(memberAccount.OrganId);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return Convert.ToInt32(obj);
+                }
+            }
+            set { session.SetSession("OrganId", value); }
+        }
+
+        /// <summary>
+        /// 未读消息数量
+        /// </summary>
+        public int NotifyCount
+        {
+            get
+            {
+                object obj = session.GetSession("NotifyCount");
+                if (obj == null)
+                {
+                    int notify = new EntranceHomeBLL().GetNotifyCount(this.LoginInfo.UserId, this.LoginInfo.PartitionId);
+                    session.SetSession("NotifyCount", notify);
+                    return notify;
+                }
+                else
+                {
+                    return (int)obj;
+                }
+            }
+            set
+            {
+                session.SetSession("NotifyCount", value);
+            }
+        }
+
+        /// <summary>
+        /// 管理员Id
+        /// </summary>
+        public int ManagerId
+        {
+            get
+            {
+                object obj = session.GetSession("ManagerId");
+                if (obj == null)
+                {
+                    Dianda.AP.Model.Entrance.Home.PlatformGroups manage = this.PlatformGroups.FirstOrDefault(t => t.Id == this.GroupId);
+                    if (manage != null)
+                    {
+                        session.SetSession("ManagerId", manage.ManagerId);
+                        return manage.ManagerId;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return Convert.ToInt32(obj);
+                }
+            }
+            set { session.SetSession("ManagerId", value); }
+        }
+
+        /// <summary>
+        /// 权限组信息
+        /// </summary>
+        public List<PlatformGroups> PlatformGroups
+        {
+            get
+            {
+                object obj = session.GetSession("PlatformGroups");
+                if (obj == null)
+                {
+                    List<PlatformGroups> list = new EntranceHomeBLL().GetPlatformGroupsList(this.LoginInfo.PartitionId, this.LoginInfo.UserId);
+                    PlatformGroups model = new PlatformGroups();
+                    model.Id = (int)PlatformGroupEnum.TeacherGeneral;
+                    model.Title = "普通教师";
+                    model.ManageOrganId = this.OrganId;
+                    list.Add(model);
+                    session.SetSession("PlatformGroups", list);
+                    return list;
+                }
+                else
+                {
+                    return (List<PlatformGroups>)obj;
+                }
+            }
+            set
+            {
+                session.SetSession("PlatformGroups", value);
+            }
+        }
+
+        #region 课程相关缓存
+        // ************************************** 课程相关缓存开始 **************************************//
+        /// <summary>
+        /// 课程制作父节点Id
+        /// </summary>
+        public int ParentId
+        {
+            get { return (int)session.GetSession("ParentId"); }
+            set { session.SetSession("ParentId", value); }
+        }
+
+        /// <summary>
+        /// 课程活动父节点Id
+        /// </summary>
+        public int UnitId
+        {
+            get { return (int)session.GetSession("ParentId"); }
+            set { session.SetSession("ParentId", value); }
+        }
+
+        /// <summary>
+        /// 课程制作Id
+        /// </summary>
+        public int TrainingId
+        {
+            get { return (int)session.GetSession("TrainingId"); }
+            set { session.SetSession("TrainingId", value); }
+        }
+
+        /// <summary>
+        /// 单元活动Id
+        /// </summary>
+        public int UnitContent
+        {
+            get { return (int)session.GetSession("UnitContent"); }
+            set { session.SetSession("UnitContent", value); }
+        }
+
+        /// <summary>
+        /// 班级Id
+        /// </summary>
+        public int ClassId
+        {
+            get { return (int)session.GetSession("ClassId"); }
+            set { session.SetSession("ClassId", value); }
+        }
+
+        /// <summary>
+        /// 课程制作章节信息(课程详细)
+        /// </summary>
+        public List<Course_ChapterSectionInfo> ChapterSectionInfo
+        {
+            get
+            {
+                List<Course_ChapterSectionInfo> list = new Course_UnitDetailBLL().GetChapterSectionInfo(this.TrainingId,this.ParentId);
+                session.SetSession("ChapterSectionInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("ChapterSectionInfo", value);
+            }
+        }
+
+        /// <summary>
+        /// 课程制作章节信息(课程预览和学习)
+        /// </summary>
+        public List<Course_ChapterSectionInfo> LearnChapterSectionInfo
+        {
+            get
+            {
+                List<Course_ChapterSectionInfo> list = new Course_UnitDetailBLL().GetLearnChapterSectionInfo(this.TrainingId, this.ParentId);
+                session.SetSession("LearnChapterSectionInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("LearnChapterSectionInfo", value);
+            }
+        }
+
+        /// <summary>
+        /// 课程制作活动信息
+        /// </summary>
+        public List<Course_ActivityInfo> ActivityInfo
+        {
+            get
+            {
+                List<Course_ActivityInfo> list = new Course_UnitContentBLL().GetActivityInfo(this.UnitId);
+                session.SetSession("CourseActivityInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("CourseActivityInfo", value);
+            }
+        }
+
+        /// <summary>
+        /// 课程制作学习活动信息
+        /// </summary>
+        public List<Course_ActivityLearn> ActivityLearn
+        {
+            get
+            {
+                List<Course_ActivityLearn> list = new Course_UnitContentBLL().GetActivityLearn(this.UnitId,this.ClassId,this.LoginInfo.UserId);
+                session.SetSession("CourseActivityLearn", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("CourseActivityLearn", value);
+            }
+        }
+
+        /// <summary>
+        /// 课程结业考试信息
+        /// </summary>
+        public List<Course_ActivityInfo> ExamInfo
+        {
+            get
+            {
+                List<Course_ActivityInfo> list = new Course_UnitContentBLL().GetExamInfo(this.TrainingId);
+                session.SetSession("ExamInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("ExamInfo", value);
+            }
+        }
+
+        /// <summary>
+        /// 课程学习结业考试信息
+        /// </summary>
+        public List<Course_ActivityLearn> LearnExamInfo
+        {
+            get
+            {
+                List<Course_ActivityLearn> list = new Course_UnitContentBLL().GetLearnExamInfo(this.TrainingId, this.ClassId, this.LoginInfo.UserId);
+                session.SetSession("ExamInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("ExamInfo", value);
+            }
+        }
+
+        /// <summary>
+        /// 单元活动测试试题信息
+        /// </summary>
+        public List<Course_UnitQuestion> QuizQuesInfo
+        {
+            get
+            {
+                List<Course_UnitQuestion> list = new Course_UnitQuestionBLL().GetQuizQuesInfo(this.UnitContent);
+                session.SetSession("QuizQuesInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("QuizQuesInfo", value);
+            }
+        }
+
+        /// <summary>
+        /// 课程结业考试试题信息
+        /// </summary>
+        public List<Course_UnitTest> ExamQuesInfo
+        {
+            get
+            {
+                List<Course_UnitTest> list = new Course_UnitTestBLL().GetExamQuesInfo(this.TrainingId);
+                session.SetSession("ExamQuesInfo", list);
+                return list;
+            }
+            set
+            {
+                session.SetSession("ExamQuesInfo", value);
+            }
+        }
+        // ************************************** 课程相关缓存结束 **************************************//
+        #endregion
+
+        #region 权限缓存
+        /// <summary>
+        /// 权限集合
+        /// </summary>
+        public List<PlatformRoles> PlatformRoles
+        {
+            get
+            {
+                int groupId = this.GroupId;
+                object obj = cache.Get("PlatformRoles_" + groupId);
+                if (obj == null)
+                {
+                    List<PlatformRoles> list = new List<PlatformRoles>();
+                    EntranceHomeBLL bll = new EntranceHomeBLL();
+                    PlatformManager_Groups model = bll.GetPlatformGroup(groupId, "Delflag=0");
+                    if (model != null)
+                    {
+                        if (!string.IsNullOrEmpty(model.Role))
+                        {
+                            list = bll.GetPlatformRolesList("Delflag=0 and IsMenu=0 and Id in (" + model.Role + ")", "");
+                        }
+                    }
+                    cache.Set("PlatformRoles_" + groupId, list);
+                    return list;
+                }
+                else
+                {
+                    return (List<PlatformRoles>)obj;
+                }
+            }
+            set
+            {
+                cache.Set("PlatformRoles_" + this.GroupId, value);
+            }
+        }
+        #endregion
+
+        #region 菜单缓存
+        public List<PlatformMenu> PlatformMenus
+        {
+            get
+            {
+                int groupId = this.GroupId;
+                object obj = cache.Get("PlatformMenus_" + groupId);
+                if (obj == null)
+                {
+                    List<PlatformMenu> list = new List<PlatformMenu>();
+                    EntranceHomeBLL bll = new EntranceHomeBLL();
+                    PlatformManager_Groups model = bll.GetPlatformGroup(groupId, "Delflag=0");
+                    if (model != null)
+                    {
+                        if (!string.IsNullOrEmpty(model.Role))
+                        {
+                            list = bll.GetPlatformMenusList("Delflag=0 and IsMenu=1 and Id in (" + model.Role + ")", "Sort");
+                        }
+                    }
+                    cache.Set("PlatformMenus_" + groupId, list);
+                    return list;
+                }
+                else
+                {
+                    return (List<PlatformMenu>)obj;
+                }
+            }
+            set
+            {
+                cache.Set("PlatformMenus_" + this.GroupId, value);
+            }
+        }
+        #endregion
+    }
+}

@@ -1,0 +1,174 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Dianda.AP.Model;
+using Dianda.AP.DAL;
+using System.Data;
+
+namespace Dianda.AP.BLL
+{
+    public class AccountEditBLL
+    {
+        AccountEditDAL dal = new AccountEditDAL();
+        public DataTable GetNation(int type)
+        {
+            return dal.GetNation(type);
+        }
+
+        public AccountEdit GetModel(int AccountId)
+        {
+            return dal.GetModel(AccountId);
+        }
+
+        public bool Edit(AccountEditModel model)
+        {
+            return dal.Edit(model);
+        }
+
+        public DataTable GetList(int AccountId)
+        {
+            return dal.GetList(AccountId);
+        }
+
+        public string TeachStudySection(int AccountId)
+        {
+            DataTable dt = dal.TeachStudySection(AccountId);
+            string Value = "";
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    Value += dt.Rows[i][1].ToString() + ",";
+                }
+                else
+                {
+                    Value += dt.Rows[i][1].ToString();
+                }
+            }
+            return Value;
+        }
+
+        public string TeachSubject(int AccountId)
+        {
+            DataTable dt = dal.TeachSubject(AccountId);
+            string Value = "";
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    Value += dt.Rows[i][1].ToString() + ",";
+                }
+                else
+                {
+                    Value += dt.Rows[i][1].ToString();
+                }
+            }
+            return Value;
+        }
+
+        public string TeachGrade(int AccountId)
+        {
+            DataTable dt = dal.TeachGrade(AccountId);
+            string Value = "";
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    Value += dt.Rows[i][1].ToString() + ",";
+                }
+                else
+                {
+                    Value += dt.Rows[i][1].ToString();
+                }
+            }
+            return Value;
+        }
+
+
+        public string TeachStudySectionTo(int AccountId)
+        {
+            DataTable dt = dal.TeachStudySection(AccountId);
+            string Value = "";
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    Value += dt.Rows[i][0].ToString() + ",";
+                }
+                else
+                {
+                    Value += dt.Rows[i][0].ToString();
+                }
+            }
+            return Value;
+        }
+
+        public string TeachSubjectTo(int AccountId)
+        {
+            DataTable dt = dal.TeachSubject(AccountId);
+            string Value = "";
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    Value += dt.Rows[i][0].ToString() + ",";
+                }
+                else
+                {
+                    Value += dt.Rows[i][0].ToString();
+                }
+            }
+            return Value;
+        }
+
+        public string TeachGradeTo(int AccountId)
+        {
+            DataTable dt = dal.TeachGrade(AccountId);
+            string Value = "";
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    Value += dt.Rows[i][0].ToString() + ",";
+                }
+                else
+                {
+                    Value += dt.Rows[i][0].ToString();
+                }
+            }
+            return Value;
+        }
+
+        public bool Add(AccountEditModel model)
+        {
+            return dal.Add(model);
+        }
+
+        public string GetEmail(int AccountId)
+        {
+            return dal.GetEmail(AccountId);
+        }
+
+        public DataTable GetRegin(int Type)
+        {
+            return dal.GetRegin(Type);
+        }
+
+        public DataTable GetRegionTo(int id)
+        {
+            return dal.GetRegionTo(id);
+        }
+
+        public DataTable GetTraning_InfoFk(int type)
+        {
+            return dal.GetTraning_InfoFk(type);
+        }
+
+        public DataTable GetOrgan(int id)
+        {
+            return dal.GetOrgan(id);
+        }
+    }
+}

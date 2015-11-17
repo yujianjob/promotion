@@ -1,0 +1,98 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-h d-h-header">
+    <div id="blk_ac_header" class="d-header blk_ac_header">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-3">
+                    <a href="#" class="logo">
+                        @*<img src="/Resources/Images/logo.png">*@
+                        <div style="color:#4a89b7;font-size:27px;font-weight:bold;line-height:36px;margin-top:23px;">上海市中小学教师</div>
+                        <div style="color:#4a89b7;font-size:16px;line-height:20px;">信息技术应用能力提升培训平台</div>
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group" style="display:none;">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th-list"></span>&nbsp;
+			      	            <span>目录</span>
+                                </div>
+                                <input type="text" class="form-control" style="width: 240px;">
+                                <div class="input-group-addon bg-white">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-xs-5 text-right">
+                    @{
+                        List<Dianda.AP.Model.Entrance.Home.PlatformMenu> menuList = (List<Dianda.AP.Model.Entrance.Home.PlatformMenu>)(Web.Code.SiteCache.Instance.PlatformMenus);
+                    }
+                    @foreach (var item in menuList)
+                    {
+                        if (item.ParentId == 0)
+                        {
+                            if (!item.IsFolder)
+                            {
+                                if (item.MenuPath != "")
+                                {
+                                    string[] menuArray = item.MenuPath.Split('/');
+                                    <a href="@Url.Action(menuArray[2], menuArray[1], new { area = menuArray[0] })" class="i">@item.MenuText</a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="i">@item.MenuText&nbsp;<span class="caret"></span>
+                                    <div class="menu">
+                                        <div class="sub">
+                                            @foreach (var subitem in menuList.Where(t => t.ParentId == item.Id))
+                                            {
+                                                if (subitem.MenuPath != "")
+                                                {
+                                                    string[] submenuArray = subitem.MenuPath.Split('/');
+                                                    <a href="@Url.Action(submenuArray[2], submenuArray[1], new { area = submenuArray[0] })">@subitem.MenuText</a>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </span>
+                            }
+                        }
+                        
+                    }
+
+                    @{
+                        string nick = Web.Code.SiteCache.Instance.NickName;
+                        //string nick3;
+                        //if (nick.Length > 3)
+                        //{
+                        //    nick3 = nick.Substring(0, 3) + "...";
+                        //}
+                        //else
+                        //{
+                        //    nick3 = nick;
+                        //}
+                    }
+                    <span class="i"><span class="w96" title="@nick">@nick</span><span class="caret"></span>
+                        <div class="menu">
+                            <div class="sub">
+                                <a href="/Learn/MyLearn/InDate">学习空间</a>
+                                <a href="/Prepare/Message/Index">通知提醒</a>
+                                <a href="/Prepare/AccountEdit/List">个人信息</a>
+                                <a href="/Prepare/PassWordEdit">密码设置</a>
+                                <a href="/Entrance/Login/DoLogout">退出</a>
+                            </div>
+                        </div>
+                    </span>
+                    <a class="ba" href="@Url.Action("Index", "Message", new { area = "Prepare" })">@Web.Code.SiteCache.Instance.NotifyCount</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@RenderBody()

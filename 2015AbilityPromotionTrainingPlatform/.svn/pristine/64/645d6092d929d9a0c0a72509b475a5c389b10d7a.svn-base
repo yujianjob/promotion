@@ -1,0 +1,271 @@
+﻿@using System.Data;
+@using Dianda.AP.Model;
+@{
+    ViewBag.Title = "教师学时管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DataTable ColumnDt = ViewBag.ColumnDt as DataTable;
+    DataTable dt = ViewBag.GetList as DataTable;
+    int pageSize = Convert.ToInt32(ViewData["pageSize"]);
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">教师学时管理</div>
+                <hr>
+                <div id="blk_ac_exemption_credit" class="blk_ac_exemption_credit">
+                    <div class="d-search">
+
+                        @using (Html.BeginForm("Index", "Period", FormMethod.Post, new { @class = "form-inline" }))
+                        {
+                            
+                            <div class="form-group">
+                                @Html.DropDownList("whereOrgan", ViewData["Organ"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.DropDownList("whereOrganTo", ViewData["OrganTo"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBox("whereName", null, new { @class = "form-control", @placeholder = "姓名、师训编号、证件编号搜索" })
+                            </div>
+                            <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                        }
+
+                    </div>
+
+                    <div class="d-datatable">
+
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    @if (ColumnDt.Rows.Count!=0)
+                                    {
+                                        for (int i = 0; i < ColumnDt.Rows.Count; i++)
+                                        { 
+                                             <th>@ColumnDt.Rows[i][1].ToString()</th>
+                                         }
+                                    }
+                                    <th>结业状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (dt.Rows.Count != 0)
+                                {
+                                    for (int i = 0; i < dt.Rows.Count; i++)
+                                    { 
+                                        <tr>
+                                            <td>@dt.Rows[i]["RealName"].ToString()</td>
+                                            <td>@dt.Rows[i]["TeacherNo"].ToString()</td>
+
+                                    @for (int k = 0; k < ColumnDt.Rows.Count; k++)
+                                    { 
+                                        string[] item = dt.Rows[i][ColumnDt.Rows[k][1].ToString()].ToString().Split('/');
+
+                                        if(item.Length==2)
+                                        {
+                                        if(int.Parse(item[0].ToString())>=int.Parse(item[1].ToString()))
+                                        {
+                                        <td style="color:green;">
+                                            @item[0]/@item[1] 
+                                        </td>
+                                        }else
+                                        {
+                                            <td style="color:red;">
+                                            @item[0]/@item[1]
+                                            </td>
+                                        }
+                                        }else
+                                        {
+                                           <td style="color:red;">
+                                            0/0
+                                            </td> 
+                                        }
+                                    }
+
+                                            @if (dt.Rows[i]["Result"].ToString()=="1")
+                                            {
+                                                     <td style="color:red;">未完成</td>
+                                            }else
+                                            {
+                                                     <td style="color:green;">已完成</td>
+                                            }
+                                            <td><a href="javascript:;" onclick="Search('@dt.Rows[i]["AccountId"]','@dt.Rows[i]["RealName"]')">查看</a></td>
+                                        </tr>
+                                        
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        @if(pageSize < dt.Rows.Count)
+                        {
+                             <div style="text-align:center;" ><a href="@Url.Action("Index", "Period", new {pageSize = pageSize + 10,whereOrgan=ViewData["whereOrgan"],whereOrganTo=ViewData["whereOrganTo"],whereName = ViewData["whereName"] })">点击加载更多...</a></div>
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            
+                        </div>
+                        <div class="pull-right text-right">
+                            
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="blk_at_new_search" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog"  style="height:500px;">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">教师学时查看</h4>
+            </div>
+            <div class="modal-body">
+               <div style="text-align:center;"><span id="RealName" style="font-size:20px;"></span></div>
+                <br />
+                <table border="1" cellspacing="1" cellpadding="0" id="table">
+                    <tr>
+                        <td style="width:200px; text-align:center;">
+                            类型
+                        </td>
+                        <td style="width:200px; text-align:center;">
+                            课程名称
+                        </td>
+                        <td style="width:200px; text-align:center;">
+                            学时
+                        </td>
+                        <td style="width:200px; text-align:center;">
+                            获得日期
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("Export", "Period", FormMethod.Post, new { @class = "form-inline" }))
+                {
+                 <div style="display:none;"> @Html.TextBox("AccountId", new {@id="AccountId" })</div>
+                 <input type="submit" id="ExportBtn" value ="导出成文件" class="btn btn-default" />
+                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+    $("#whereOrgan").change(function () {
+        var id = $(this).val();
+        if (id != null && id != 0) {
+            $("#whereOrganTo").html("<option value>请选择</option>");
+            $.ajax({
+                url: '@Url.Action("GetOrganTo")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    for (var i = 0; i < json.length; i++) {
+                        $("#whereOrganTo").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    alert(errorMessage);
+                }
+            });
+        }
+    })
+
+
+    $(document).ready(function () {
+        var id = $("#whereOrgan").val();
+        var OrganTo = "@ViewData["whereOrganTo"]";
+        if (id != "" && id != null) {
+            $.ajax({
+                url: '@Url.Action("GetOrganTo")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    for (var i = 0; i < json.length; i++) {
+                        if (OrganTo == json[i].Value) {
+                            $("#whereOrganTo").append("<option value=" + json[i].Value + " selected>" + json[i].Text + "</option>");
+                        } else {
+                            $("#whereOrganTo").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>");
+                        }
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    alert(errorMessage);
+                }
+            });
+        }
+    })
+
+    $('#blk_at_new_search').on('shown.bs.modal', function (e) {
+
+    });
+    $('#blk_at_new_search').on('hidden.bs.modal', function (e) {
+
+    });
+
+    function Search(AccountId,RealName)
+    {
+        $('#blk_at_new_search').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        $("#table").html("<tr><td style='width:200px; text-align:center;'>类型</td><td style='width:200px; text-align:center;'>课程名称</td><td style='width:200px; text-align:center;'>学时</td><td style='width:200px; text-align:center;'>获得日期</td></tr>");
+
+        var app = "";
+        $("#RealName").text(RealName + "的学分记录");
+        $("#AccountId").val(AccountId);
+        $.ajax({
+            url: '@Url.Action("GetSearch")',
+            type: 'get',
+            data: { AccountId: AccountId },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var json = JSON.parse(data);
+                for (var i = 0; i < json.length; i++) {
+                    app += "<tr><td style='width:200px; text-align:center;'>" + json[i].FidTitle + "</td><td style='width:200px; text-align:center;'>" + json[i].DetailTitle + "</td><td style='width:200px; text-align:center;'>" + json[i].Credits + "</td><td style='width:200px; text-align:center;'>" + GetDateTime(json[i].CreateDate) + "</td></tr>";
+                }
+                $("#table").append(app);
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    }
+
+    function GetDateTime(value) {
+        if (value != null) {
+            var date = new Date(parseInt(value.replace("/Date(", "").replace(")/", ""), 10));
+            //月份为0-11，所以+1，月份小于10时补个0
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            return date.getFullYear() + "-" + month + "-" + currentDate;
+        }
+    }
+</script>

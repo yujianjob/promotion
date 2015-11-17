@@ -1,0 +1,145 @@
+﻿using Dianda.AP.Model.Entrance.Home;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using XXW.Enum;
+
+namespace Web.Areas.Entrance.Controllers
+{
+    public class HomeController : Controller
+    {
+        //首页处理
+        // GET: /Entrance/Home/
+
+        //根据权限跳转
+        public ActionResult Index()
+        {
+            Code.SiteCache cache = Code.SiteCache.Instance;
+
+            if (cache.LoginInfo == null)
+                return RedirectToAction("Index", "Login", new { area = "Entrance" });
+            else
+            {
+                int groupId = (int)PlatformGroupEnum.TeacherGeneral;
+                bool accept = true;
+                if (!string.IsNullOrEmpty(Request["GroupId"]))
+                {
+                    int.TryParse(Request["GroupId"], out groupId);
+                }
+
+                if (groupId != 0)
+                {
+                    foreach (var type in Enum.GetValues(typeof(PlatformGroupEnum)))
+                    {
+                        if (groupId == (int)type)
+                        {
+                            accept = true;
+                            break;
+                        }
+                        else
+                        {
+                            accept = false;
+                        }
+                    }
+                }
+                else
+                {
+                    accept = false;
+                }
+
+                if (!accept)
+                    groupId = cache.PlatformGroups.FirstOrDefault().Id;
+                cache.GroupId = groupId;
+
+                List<PlatformMenu> menus = cache.PlatformMenus;
+                PlatformMenu menu = menus.FirstOrDefault(t => t.MenuPath != "");
+                if (menu != null)
+                {
+                    return Redirect("/" + menu.MenuPath);
+                }
+                else
+                {
+                    return Redirect("/SiteOption/ErrorFunction");
+                }
+
+
+                /*switch (groupId)
+                {
+                    //市级管理员
+                    case (int)PlatformGroupEnum.ManagerCity:
+                        cache.GroupId = groupId;
+                        return Redirect("/Prepare/TrainingCheck/List");
+                    //区级管理员
+                    case (int)PlatformGroupEnum.ManagerArea:
+                        cache.GroupId = groupId;
+                        return Redirect("/ClassDomain/ClassAudit/ClassAuditList");
+                    //培训机构管理员
+                    case (int)PlatformGroupEnum.ManagerTraining:
+                        cache.GroupId = groupId;
+                        return Redirect("/Prepare/UserList/Index");
+                    //学校管理员
+                    case (int)PlatformGroupEnum.ManagerSchool:
+                        cache.GroupId = groupId;
+                        return Redirect("/Market/Coursemarket/CoursemarketSingleList");
+                    //课程教师
+                    case (int)PlatformGroupEnum.TeacherCourse:
+                        cache.GroupId = groupId;
+                        return Redirect("/Course/CourseCreate/CourseList");
+                    //课程辅导员
+                    case (int)PlatformGroupEnum.TeacherInstructor:
+                        cache.GroupId = groupId;
+                        return Redirect("/Course/CourseCreate/CourseList");
+                    //普通教师
+                    case (int)PlatformGroupEnum.TeacherGeneral:
+                        cache.GroupId = groupId;
+                        return Redirect("/Learn/MyLearn/InDate");
+                    //区县进修学校
+                    case (int)PlatformGroupEnum.School:
+                        cache.GroupId = groupId;
+                        return Redirect("/Prepare/AccountEdit/Index");
+                    default:
+                        return Redirect("/SiteOption/ErrorFunction");
+                }*/
+
+            }
+        }
+
+        //当前所有身份（没用）
+        public ActionResult GroupData()
+        {
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            ViewBag.Groups = cache.PlatformGroups;
+            ViewBag.GroupId = cache.GroupId;
+            return View();
+        }
+
+        //（没用）
+        public ActionResult blk_modal_select_picture()
+        {
+            return View();
+        }
+
+        public ActionResult ClearCache(int id)
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                if (id == 1)
+                {
+                    Dianda.CacheFactory.CacheHelper.Instance.Remove("PlatformMenus_" + i);
+                }
+                if (id == 2)
+                {
+                    Dianda.CacheFactory.CacheHelper.Instance.Remove("PlatformRoles_" + i);
+                }
+            }
+            return Content("233333");
+        }
+
+        public ActionResult TestEx()
+        {
+            throw new Exception();
+        }
+    }
+}

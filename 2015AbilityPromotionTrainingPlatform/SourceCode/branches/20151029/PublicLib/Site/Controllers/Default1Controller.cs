@@ -1,0 +1,54 @@
+﻿using log4net;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using x = XXW;
+using System.IO;
+using System.Security.Cryptography;
+namespace Site.Controllers
+{
+    public class Default1Controller : Controller
+    {
+
+        [Serializable]
+        public class BookInfoMini
+        {
+            public int Id { get; set; }
+
+
+            public string Title { get; set; }
+
+            public string Pic { get; set; }
+
+            public string Author { get; set; }
+
+            public string Link { get; set; }
+            public int Level { get; set; }
+            public string Tags { get; set; }
+            public string NewCommnet { get; set; }
+        }
+        class abc
+        {
+            public string Title { get; set; }
+            public string Value { get; set; }
+        }
+        class temp
+        {
+            public List<abc> kkk { get; set; }
+            public string UserId { get; set; }
+        }
+        public ActionResult Index()
+        {
+            return Content(Dianda.Common.StringSecurity.AES.Encrypt("abc", "nltswx05"));
+           
+        }
+        
+    }
+}

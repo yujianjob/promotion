@@ -1,0 +1,293 @@
+﻿@model IList<Dianda.AP.Model.Member_ClassRegister>
+@{
+    ViewBag.Title = "作业批改";
+    Layout = Url.Content("~/Views/Shared/LinkLayout.cshtml");
+    var accountBll = new Dianda.AP.BLL.Member_AccountBLL();
+    var baseBll = new Dianda.AP.BLL.Member_BaseInfoBLL();
+    var organBll = new Dianda.AP.BLL.Organ_DetailBLL();
+    var homeworkBll = new Dianda.AP.BLL.Course_UnitHomeWorkBLL();
+    var unitcontentBll = new Dianda.AP.BLL.Course_UnitContentBLL();
+    Dianda.AP.Model.Course_UnitContent contentModel = null;
+    var classBll = new Dianda.AP.BLL.Class_DetailBLL();
+    var homeworkModel = new Dianda.AP.Model.Course_UnitHomeWork();
+}
+
+<input  type="hidden" id="pageIndex" value="@ViewBag.pageIndex"/>
+
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">@ViewBag.ClassName&nbsp;&nbsp;<span class="text-muted">@ViewBag.CourseName</span></div>
+                <div class="blk_ct_menu_class" id="blk_ct_menu_class">
+
+                    @RenderPage(@Url.Content("~/Views/Shared/ClassTeacherLink.cshtml"), new { classId = @ViewBag.classId })
+
+                </div>
+                <div class="blk_ct_class_task" id="blk_ct_class_task">
+                    <div class="form-group form-inline filter">
+                        <select class="form-control" id="unit" onchange="search();">
+                            <option value="">全部作业</option>
+                            @foreach (var item in ViewBag.UnitList)
+                            {
+                                <option value="@item.Id">@item.Title</option>
+                            }
+                        </select>
+                        <select class="form-control" id="status" onchange="search();">
+                            <option value="">全部状态</option>
+                            <option value="-1">未提交</option>
+                            <option value="0">未打分</option>
+                            <option value="1">已打分</option>
+                        </select>
+                    </div>
+                    @foreach (var item in Model)
+                    {
+                        var accout = accountBll.GetModel(item.AccountId, "");
+                        var baseInfo = baseBll.GetListModel(" Delflag=0 and AccountId=" + item.AccountId);
+                        var organModel = organBll.GetModel(accout.OrganId.Value);
+
+                        if (item.homeworkId > 0)
+                        {
+                            homeworkModel = homeworkBll.GetModel(Convert.ToInt32(item.homeworkId), "");
+                        }
+                        contentModel = unitcontentBll.GetModel(Convert.ToInt32(item.cqId), "");
+
+                        if (accout != null && organModel != null)
+                        {
+                        <div class="i">
+                            <div class="t">
+                                <div class="thumb">
+                                    <img style="width:40px;height:40px;" src="@accout.Pic">
+                                </div>
+                                <div class="name">
+                                    @if (baseInfo.Count > 0)
+                                    {
+                                        @baseInfo.First().RealName
+                                    }
+                                    else
+                                    {
+                                        @accout.Nickname
+                                    }
+
+                                </div>
+                                <div class="source trim">@organModel.Title</div>
+                            </div>
+                            <div class="form-group form-inline pg">
+                                @if (contentModel != null)
+                                { 
+                                    <span class="title" title="@contentModel.Title">作业：
+                                                       
+                                                           @(contentModel.Title.Length > 10 ? contentModel.Title.Substring(0, 10) + "..." : contentModel.Title)
+                                        &nbsp;</span>
+                                }
+                                @if (item.homeworkId > 0)
+                                {
+                                    var unitHomeWork = new Dianda.AP.BLL.Course_UnitHomeWorkBLL().GetList(" Delflag=0 and AccountId=" + item.AccountId + " and UnitContent=" + homeworkModel.UnitContent, "");
+
+                                    if (unitHomeWork != null && unitHomeWork.Count > 0)
+                                    { 
+                                    <a target="_blank" href="@Url.Action("LearnOnLineTaskShowView", "LearnOnLine"
+                                    , new { TrainingId = classBll.GetModel(ViewBag.param_classId).TraningId, ClassId = ViewBag.param_classId, UnitContent = homeworkModel.UnitContent, UId = unitHomeWork[0].Id, area = "Learn" })" >打开作业</a>
+                                    
+                                        if (!homeworkModel.Score.HasValue || !homeworkModel.ScoreCreater.HasValue)
+                                        {
+                                    <a onclick="$(this).parent().find('.action .edit').toggle()" href="javascript:;">打分</a>
+                                        }
+                                    }
+                                    
+                                    <div class="action">
+                                        <div class="edit" style="display: none;">
+                                            <input   onkeyup="checkNum(this);" id="@("score" + homeworkModel.Id)" type="text" value="" style="width: 60px;" class="form-control">&nbsp;
+       
+                                    <button class="btn btn-success" type="button" onclick="doAction(@homeworkModel.Id,@item.AccountId)">保存</button>&nbsp;
+       
+                                    <a href="javascript:;" onclick="$(this).parent().toggle()">取消</a>
+                                        </div>
+                                        @if (homeworkModel.Score.HasValue)
+                                        {
+                                            <span class="score">得分 : @homeworkModel.Score</span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="status text-danger">未提交&nbsp;</span>
+   
+                                    <div class="action">
+                                        &nbsp;
+   
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    }
+
+
+                    <hr>
+                    @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, pagecount = @ViewBag.totalPage, basecount = @ViewBag.basecount })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        function checkNum(obj) {
+            if (obj.value.length == 1) { obj.value = obj.value.replace(/[^0-9]/g, '') } else { obj.value = obj.value.replace(/[^\d.]/g, '') }
+
+            var v = obj.value;
+            if (!isNaN(v)) {
+                //换成整数
+                var n = parseFloat(v);
+                if (n < 0)
+                    obj.value = "0";
+                if (n > 100)
+                    obj.value = "100";
+            }
+            else {
+                obj.value = "0";
+            }
+            var length = v.length;
+            if (length > 4) {
+                obj.value = obj.value.substring(0, 4);
+            }
+        }
+        function getParamValue(paramName) {
+            var url = window.location.href;
+            var paramIndex = url.indexOf('?');
+            var param = url.substring(paramIndex + 1, url.length);
+            var paraArr = param.split('&');
+            for (var i = 0; i < paraArr.length; i++) {
+                if (paraArr[i].indexOf(paramName) > -1) {
+                    return paraArr[i].split('=')[1];
+                }
+            }
+            return -10;
+        }
+        $(document).ready(function () {
+
+            if (getParamValue('status') > -10) {
+                $('#status').val(getParamValue('status'));
+            }
+            if (getParamValue('unit') > -10) {
+                $('#unit').val(getParamValue('unit'));
+            }
+        });
+        function search() {
+            var param_unit = $("#unit").val();
+            var param_status = $("#status").val();
+            var param_classId = '@ViewBag.classId';
+            var index = $("#pageIndex").val();
+            var param_pageIndex = '';
+            if (index != '')
+                param_pageIndex = "&pageIndex=" + index;
+            window.location.href = "?classId=" + param_classId + "&status=" + param_status + "&unit=" + param_unit;//+ param_pageIndex
+        }
+
+        function doAction(id, AccountId) {
+            var score = $('#score' + id).val();
+            if (score == '' || isNaN(score)) {
+                alert('请输入有效分值!');
+                return;
+            }
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/AddHomeWorkScore',
+                data: { classId: '@ViewBag.param_classId', planId: '@ViewBag.planId', Val: $('#score' + id).val(), ObjectId: id, AccountId: AccountId },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        window.location.reload();
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $proto.init(function () {
+                /* 页面加载后立即执行的代码写在这里 */
+
+
+            });
+        });
+
+        function doManageGroup() {
+            $('#blk_modal_manage_group').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function doManageGroupSubmit() {
+
+            $('#blk_modal_manage_group').modal('hide');
+        }
+        $('#blk_modal_manage_group').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_modal_manage_group').on('hidden.bs.modal', function (e) {
+
+        });
+
+        function doAddGroup() {
+            $('#blk_modal_add_group').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function doAddGroupSubmit() {
+            var ids = '';
+            $("input[name='a10']:checked").each(function () {
+                ids += $(this).val() + ',';
+
+            });
+            if (ids == '') {
+                Alert('请选择小组成员!');
+                return;
+            }
+            if ($('#gtitle').val() == '') {
+                Alert('请填写小组名称!');
+                return;
+            }
+
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/AddClassGroupMember',
+                data: { classId: $('#classId').val(), groupTitle: $('#gtitle').val(), accountIds: ids },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        Alert(result.Msg);
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+
+            $('#blk_modal_add_group').modal('hide');
+        }
+        $('#blk_modal_add_group').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_modal_add_group').on('hidden.bs.modal', function (e) {
+
+        });
+    </script>
+</div>

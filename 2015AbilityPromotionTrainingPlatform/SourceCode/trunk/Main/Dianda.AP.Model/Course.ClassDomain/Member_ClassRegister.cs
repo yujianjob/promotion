@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.Model
+{
+    public partial class Member_ClassRegister
+    {
+        public string ClassId_GroupId { get; set; }
+        public int homeworkId { get; set; }
+        public string cqId { get; set; }
+    }
+}

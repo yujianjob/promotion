@@ -1,0 +1,5 @@
+<div class="d-navmenu">
+	<a id="d_learner_notification_unread" href="/jnpx/dist/learner/notification-unread.html" class="i">未读通知</a>
+	<a id="d_learner_notification_read" href="/jnpx/dist/learner/notification-read.html" class="i">已读通知</a>
+	<a id="d_learner_notification_trash" href="/jnpx/dist/learner/notification-trash.html" class="i">回收站</a>
+</div>

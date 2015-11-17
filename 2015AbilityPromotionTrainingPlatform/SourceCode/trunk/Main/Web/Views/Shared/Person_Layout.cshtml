@@ -1,0 +1,44 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("~/Resources/Scripts/Practice/Practice.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Resources/layer/layer.min.js")"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/Practice/Practice.css")">
+
+<div class="d-h d-h-header">
+    <div id="blk_ln_header" class="d-header blk_ln_header" data-km-htm="blk_ln_header.html">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-3"><a href="#" class="logo">
+                    <img src="@Url.Content("~/Resources/Images/logo.png")"></a></div>
+                <div class="col-xs-4">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th-list"></span>&nbsp;
+			      	<span>目录</span>
+                                </div>
+                                <input type="text" class="form-control" style="width: 240px;">
+                                <div class="input-group-addon bg-white">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-xs-5 text-right">
+                    <a href="/jnpx/dist/learner/announcement-list.html" class="i">培训公告</a>
+                    <a href="/Market/Coursemarket/CoursemarketSingleList" class="i">课程超市</a>
+                    <a href="/Practice/PracticalCourse/MemberInfoListPractice" class="i b">张明明</a>
+                    <a href="/jnpx/dist/learner/notification-unread.html" class="ba">3</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@RenderBody()
+
+@RenderSection("bottom_script", required: false)

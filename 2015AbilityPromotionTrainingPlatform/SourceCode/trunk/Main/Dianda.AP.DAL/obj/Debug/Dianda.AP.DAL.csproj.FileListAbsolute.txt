@@ -1,0 +1,7 @@
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\bin\Debug\Dianda.AP.DAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\bin\Debug\Dianda.AP.DAL.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\bin\Debug\Dianda.AP.Model.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\bin\Debug\Dianda.AP.Model.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\obj\Debug\Dianda.AP.DAL.csprojResolveAssemblyReference.cache
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\obj\Debug\Dianda.AP.DAL.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\Main\Dianda.AP.DAL\obj\Debug\Dianda.AP.DAL.pdb

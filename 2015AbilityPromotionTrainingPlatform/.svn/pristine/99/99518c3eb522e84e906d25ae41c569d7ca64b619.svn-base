@@ -1,0 +1,5 @@
+<div class="d-leftmenu">
+	<a id="d_adminschool_coursemarket_all" href="/jnpx/dist/adminschool/coursemarketlist-all.html" class="i">全部课程 (20)</a>
+	<a id="d_adminschool_coursemarket_general" href="/jnpx/dist/adminschool/coursemarketlist-general.html" class="i">通识课程 (15)</a>
+	<a id="d_adminschool_coursemarket_specialty" href="/jnpx/dist/adminschool/coursemarketlist-specialty.html" class="i">专业课程 (5)</a>
+</div>

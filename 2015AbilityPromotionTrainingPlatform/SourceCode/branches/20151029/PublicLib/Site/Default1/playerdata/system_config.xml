@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<system>
+		<performance>
+			<HardwareScale>false</HardwareScale>
+			<HardwareScaleWidth>800</HardwareScaleWidth>
+			<HardwareScaleHeight>600</HardwareScaleHeight>
+			<VideoSmoothing>true</VideoSmoothing>
+		</performance>
+		<application>
+			<ControlBarWidth>800</ControlBarWidth>
+			<HideTime>5000</HideTime>
+			<Float>true</Float>
+			<ShowToolTip>true</ShowToolTip>
+			<PropRewrite>true</PropRewrite>
+		</application>
+	</system>
+	<components>
+		<player>
+			<Vol>80</Vol>
+			<BufferTime>3</BufferTime>
+			<!-- noScale, doubleSize, maintainAspectRatio, exactFit, fourThree, sixteenNine -->
+			<ScaleMode>maintainAspectRatio</ScaleMode>
+			<ShotScaleMode>exactFit</ShotScaleMode>
+			<MergeZones>true</MergeZones>
+			<TimeCodeTip>Processing</TimeCodeTip>
+			<SplitTime>10</SplitTime><!-- 分段时长, 单位:分钟 -->
+			<RememberPlayTime>false</RememberPlayTime>
+		</player>
+		<vmd>
+            <enable>true</enable>
+            <interval>3000</interval>
+            <imageNoVideo>playerdata/image/audio_logo.png</imageNoVideo>
+        </vmd>
+		<ad>
+			<!-- left, right -->
+			<TimeLabelPosition>left</TimeLabelPosition>
+		</ad>
+		<preview>
+			<Enable>true</Enable>
+			<Width>160</Width>
+			<Height>-1</Height>
+			<Trigger>1000</Trigger>
+			<SnowInterval>50</SnowInterval>
+			<SnowAlpha>.6</SnowAlpha>
+			<Duration>3000</Duration>
+			<OffsetY>5</OffsetY>
+		</preview>
+		
+		<watermark>
+			<enable>false</enable>
+			<link><![CDATA[http://tieba.baidu.com]]></link>
+			<tooltip>oVideo System</tooltip>
+			<style alpha="0.5" bgClr="0xFFFFFF" bgAlpha="0.0"/>
+			<layout w="" h="" l="5" c="" r="" t="5" m="" b=""/>
+			<content type="image">
+				<![CDATA[playerdata/image/olive_head_logo.png]]>
+			</content>
+		</watermark>
+		<playback>
+			<PlaybackLogo>
+				<url><![CDATA[http://www.g.cn]]></url>
+				<src><![CDATA[playerdata/image/head_logo.png]]></src>
+				<tooltip>上海</tooltip>
+				<style bgClr="0xFFFF00" bgAlpha="0.5" maxHeight="20" maxWidth="50" edge="5"/>
+			</PlaybackLogo>
+		</playback>
+		<seekbar>
+			<ShowOverTip>true</ShowOverTip>
+		</seekbar>
+		<subtitle>
+			<DefaultCharSet>GB2312</DefaultCharSet>
+		</subtitle>
+		<config_module><!-- dynamic,list,embed -->
+			<Hide>dynamic,list,embed</Hide>
+		</config_module>
+		<!--
+		<config_bar>//hd码率选择,color色彩选择,share分享,light开关灯,widescreen宽屏
+            <Hide>hd,color,share,light,widescreen</Hide>
+		</config_bar>
+		-->
+	</components>
+	<styles>
+	
+		<!--
+		<StyleFile>styles/normal_style.css</StyleFile>
+		<SkinFile>styles/swfs/normal_skin.swf</SkinFile>
+		-->
+		
+		
+<!-- 		<StyleFile>styles/blue_style.css</StyleFile> -->
+<!-- 		<SkinFile>styles/swfs/blue_skin.swf</SkinFile> -->
+		
+	   <StyleFile>styles/fasion_style.css</StyleFile>
+       <SkinFile>styles/swfs/fasion_skin.swf</SkinFile>
+
+		
+<!-- 		<StyleFile>styles/blue_style.css</StyleFile> -->
+<!-- 		<SkinFile>styles/swfs/blue_skin.swf</SkinFile> -->
+		
+		
+		<!--
+		<StyleFile>styles/yellow_style.css</StyleFile>
+		<SkinFile>styles/swfs/yellow_skin.swf</SkinFile>
+		-->
+		
+		
+<!-- 		<StyleFile>styles/fasion_style.css</StyleFile> -->
+<!-- 		<SkinFile>styles/swfs/fasion.swf</SkinFile> -->
+		
+		
+	</styles>
+</config>

@@ -1,0 +1,505 @@
+﻿@using Dianda.AP.Model;
+@using Dianda.Common;
+@{
+    ViewBag.Title = "免修记录管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<PlanExemption> list = ViewBag.GetList as List<PlanExemption>;
+}
+
+<script type="text/javascript" src="~/Resources/Scripts/jquery.form.js"></script>
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">免修记录管理</div>
+                <hr>
+                <div id="blk_ac_exemption_credit" class="blk_ac_exemption_credit">
+                    <div class="d-search">
+
+                        @using (Html.BeginForm("Index", "Exemption", FormMethod.Post, new { @class = "form-inline" }))
+                        {
+                            
+                            <div class="form-group">
+                                @Html.DropDownList("whereOrgan", ViewData["Organ"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group" style="display:none;" id="xjwhere">
+                                @Html.DropDownList("whereOrganTo", ViewData["OrganTo"] as List<SelectListItem>, "请选择", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBox("whereName", null, new { @class = "form-control", @style = "width:250px;", @placeholder = "姓名、师训编号搜索" })
+                                @*<input type="text" class="form-control" placeholder="姓名、师训编号搜索">*@
+                            </div>
+                            <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                        }
+                        <div class="action">
+                            @using (Html.BeginForm("ExportExecl", "Exemption", FormMethod.Post, new { @class = "form-inline" }))
+                            {
+                                <input type="submit" class="btn btn-success" value="下载导入模板"/>
+                                @*<input type="button" id="Execption" class="btn btn-success" value="导入免修记录">*@
+                                <div class="btn" style="padding:0; margin-top:-30px;"><input type="file" id="AttachUpload"></div>
+                                
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="d-datatable">
+                        @if (list.Count > 0)
+                        {
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>师训编号</th>
+                                        <th>姓名</th>
+                                        <th>所属学校</th>
+                                        <th>免修依据</th>
+                                        <th>抵扣学时/类型</th>
+                                        <th>操作日期</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < list.Count; i++)
+                                    { 
+                                        <tr>
+                                            <td>@list[i].TeacherNo</td>
+                                            <td>@list[i].RealName</td>
+                                            <td>@list[i].OrganTitle</td>
+                                            <td>@list[i].Remark</td>
+                                            @if (list[i].PEType == 1)
+                                            {
+                                                <td>@list[i].Credits/通识课程</td>
+                                            }
+                                            else if (list[i].PEType == 2)
+                                            {
+                                                <td>@list[i].Credits/专业课程</td>
+                                            }
+                                            else
+                                            { 
+                                                <td>@list[i].Credits/实践应用课程</td>
+                                            }
+                                            <td>@list[i].CreateDate.ToString("yyyy-MM-dd")</td>
+                                            <td>
+                                                <a href="javascript:;" onclick="doEditExem(@list[i].Id)">编辑</a>
+                                                <a href="javascript:;" onclick="DelUser(@list[i].Id)">删除</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div id="blk_ct_course_list" class="d-courseauthor-list blk_ct_course_list">
+                             <h4 class="No_Content_Title">暂无信息……</h4>
+                            <hr>
+                            </div>
+                            <br />
+                            <br />
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            @if (@ViewData["pageCount"].ToString() == "0")
+                            {
+                                <span>总页数 1</span>
+                            }
+                            else
+                            {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                            }
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="/Prepare/Exemption/Index?PageIndex=@QueryString.UrlEncrypt(1)&whereOrgan=@ViewData["whereOrgan"]&whereOrganTo=@ViewData["whereOrganTo"]&whereName=@ViewData["whereName"]">首页</a>
+
+                            <a id="OnPage" href="/Prepare/Exemption/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) - 1)&whereOrgan=@ViewData["whereOrgan"]&whereOrganTo=@ViewData["whereOrganTo"]&whereName=@ViewData["whereName"]">上一页</a>
+
+                            <a id="NextPage" href="/Prepare/Exemption/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) + 1)&whereOrgan=@ViewData["whereOrgan"]&whereOrganTo=@ViewData["whereOrganTo"]&whereName=@ViewData["whereName"]">下一页</a>
+
+                            <a id="LastPage" href="/Prepare/Exemption/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageCount"].ToString()))&whereOrgan=@ViewData["whereOrgan"]&whereOrganTo=@ViewData["whereOrganTo"]&whereName=@ViewData["whereName"]">尾页</a>
+
+
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="fileFrom" style="display: none;" action="@Url.Action("ExemExeclTemp")" method="post" enctype="multipart/form-data">
+    <input TYPE="file" id="file" runat="server">
+    <input type="submit" value="提交" />
+     @*onchange="javascript:getPath(this);"*@
+</form>
+
+<div id="blk_at_new_exem_editpass" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">免修学分编辑</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4" style="display: none;">
+                        <div class="form-group">
+                            <label class="control-label">ID<span class="text-danger">*</span></label>
+                            <input type="text" id="EditExemId" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4" style="width: 280px;">
+                        <div class="form-group">
+                            <label class="control-label">师训编号<span class="text-danger">*</span></label>
+                            <input type="text" id="EditPNum" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4" style="width: 280px;">
+                        <div class="form-group">
+                            <label class="control-label">免修依据<span class="text-danger">*</span></label>
+                            <input type="text" id="EditRemark" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4" style="width: 280px;">
+                        <div class="form-group">
+                            <label class="control-label">抵扣学时<span class="text-danger">*</span></label>
+                            <input type="text" id="EditCredits" class="form-control" maxlength="5" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                        </div>
+                    </div>
+                    @{
+                        List<SelectListItem> PEtypelist = new List<SelectListItem>
+                             {
+                              new SelectListItem{Text="通识课程",Value="1"},
+                              new SelectListItem{Text="专业课程",Value="2"},
+                              new SelectListItem{Text="实践应用课程",Value="3"}
+                             };   
+                     }
+                    <div class="col-xs-4" style="width: 280px;">
+                        <div class="form-group">
+                            <label class="control-label">免修学分类型<span class="text-danger">*</span></label>
+                            @Html.DropDownList("EditPEType", PEtypelist, null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="Message" style="color: red; float: left;"></span>
+                <button type="button" class="btn btn-success" onclick="EditExemSubmit()" style="width: 150px;">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        $proto.init(function () { });
+    });
+
+    $("#GoBtn").click(function () {      //输入页数跳转页面
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (pagecount == "0") {
+            pagecount = "1";
+        }
+        if (index == "0") {
+            Alert('请输入正确的页数！！！');
+            return false;
+        }
+        if (parseInt(index) > parseInt(pagecount)) {
+            Alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            Alert('请输入跳转页！！！');
+            return false;
+        } else {
+
+            location.href = "/Prepare/Exemption/Index?PageIndex=" + UrlEncode(index) + "&whereOrgan=@ViewData["whereOrgan"]&whereOrganTo=@ViewData["whereOrganTo"]&whereName=@ViewData["whereName"]";
+        }
+    });
+
+        $(document).ready(function () {     //页面加载事件
+            var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+            if (index == "1") {
+                $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+                $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+            }
+            if (parseInt(count) < 10 || index == pagecount) {
+                $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+                $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+            }
+
+            var id = $("#whereOrgan").val();
+            if (id != "" && id != null) {
+                $("#xjwhere").attr("style", "display:black;");
+            } else {
+                $("#xjwhere").attr("style", "display:none;");
+            }
+
+            var OrganTo = "@ViewData["whereOrganTo"]";
+            if (id != "" && id != null) {
+                $.ajax({     //绑定用户信息
+                    url: '@Url.Action("GetOrganTo")',
+                    type: 'get',
+                    data: { id: id },
+                    cache: false,
+                    dataType: 'text',
+                    timeout: 30000,
+                    success: function (data) {
+                        var json = JSON.parse(data);
+                        for (var i = 0; i < json.length; i++) {
+                            if (OrganTo == json[i].Value) {
+                                $("#whereOrganTo").append("<option value=" + json[i].Value + " selected>" + json[i].Text + "</option>");
+                            } else {
+                                $("#whereOrganTo").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>");
+                            }
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        Alert(errorMessage);
+                    }
+                });
+            }
+
+            $('#fileFrom').submit(function () {
+                $(this).ajaxSubmit(function (message) {
+                    $("#file").val('');
+                    var src = message.split(':');
+                    if (src[0] == "yes") {
+                        alert(src[1]);
+                        location.href = '/Prepare/Exemption/Index';
+                    } else {
+                        Alert(src[1]);
+                        return false;
+                    }
+                });
+                return false;
+            });
+
+            $("#file").change(function () {
+                if (this.files.length > 0)
+                    $("#fileFrom").submit();
+            });
+        })
+
+    $("#whereOrgan").change(function () {
+        if ($("#whereOrgan").val() == "" || $("#whereOrgan").val() == "请选择" || $("#whereOrgan").val() == 0) {
+            $("#xjwhere").attr("style", "display:none;");
+            $("#whereOrganTo").html("<option value>请选择</option>");
+        } else {
+            $("#xjwhere").attr("style", "display:black;");
+        }
+        
+            var id = $(this).val();
+            if (id != null && id != 0) {
+                $("#whereOrganTo").html("<option value>请选择</option>");
+                $.ajax({
+                    url: '@Url.Action("GetOrganTo")',
+                    type: 'get',
+                    data: { id: id },
+                    cache: false,
+                    dataType: 'text',
+                    timeout: 30000,
+                    success: function (data) {
+                        var json = JSON.parse(data);
+                        for (var i = 0; i < json.length; i++) {
+                            $("#whereOrganTo").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        Alert(errorMessage);
+                    }
+                });
+            }
+        })
+
+
+    $("#Execption").click(function () {
+        $("#file").click();
+        })
+
+        function DelUser(id) {     //删除用户
+            if (confirm('确认删除吗？')) {
+                $.ajax({
+                    url: '@Url.Action("DelExem")',
+                    type: 'get',
+                    data: { id: id },
+                    cache: false,
+                    dataType: 'text',
+                    timeout: 30000,
+                    success: function (data) {
+                        var src = data.split(':');
+                        if (src[0] == "yes") {
+                            alert(src[1]);
+                            location.href = '/Prepare/Exemption/Index';
+                        } else {
+                            Alert(src[1]);
+                            return false;
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        alert(errorMessage);
+                    }
+                });
+            }
+            return false;
+        }
+
+        $('#blk_at_new_exem_editpass').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_at_new_exem_editpass').on('hidden.bs.modal', function (e) {
+
+        });
+
+        function doEditExem(id) {     //弹出修改用户信息窗口
+            $('#blk_at_new_exem_editpass').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+            $("#Message").text("");
+            $.ajax({     //绑定用户信息
+                url: '@Url.Action("GetModel")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    $("#EditExemId").val(id);
+                    $("#EditPNum").val(json.TeacherNo);
+                    $("#EditRemark").val(json.Remark);
+                    $("#EditCredits").val(json.Credits);
+                    $("#EditPEType").val(json.PEType);
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    Alert(errorMessage);
+                }
+            });
+        }
+
+
+
+        function EditExemSubmit() {      //修改用户信息点击保存按钮事件
+            $("#Message").text("");
+
+            var exemid = $("#EditExemId").val();
+            var TeacherNo = $("#EditPNum").val();
+            var Remark = $("#EditRemark").val();
+            var Credits = $("#EditCredits").val();
+            var PEType = $("#EditPEType").val();
+            if (TeacherNo == "" || TeacherNo == null) {
+                $("#Message").text("请输入进修编号");
+                return false;
+            } else if (Remark == "" || Remark == null) {
+                $("#Message").text("请输入免修依据");
+                return false;
+            } else if (Credits == "" || Credits == null) {
+                $("#Message").text("请输入抵扣学时");
+                return false;
+            } else if (PEType == "" || PEType == null) {
+                $("#Message").text("请输入免修学分类型");
+                return false;
+            } else if (Credits == 0 || Credits == "0")
+            {
+                $("#Message").text("抵扣学时不能为0");
+                return false;
+            }
+
+
+            $.ajax({    //修改用户信息
+                url: '@Url.Action("ExemEdit")',
+                type: 'get',
+                data: { id: exemid, TeacherNo: TeacherNo, Remark: Remark, Credits: Credits, PEType: PEType },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var src = data.split(':');
+                    if (src[0] == "yes") {
+                        alert(src[1]);
+                        location.href = '/Prepare/Exemption/Index';
+                    } else {
+                        Alert(src[1]);
+                        return false;
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    Alert(errorMessage);
+                }
+            });
+            $('#blk_at_new_user_edit').modal('hide');
+        }
+
+    $('#AttachUpload').UploadFile({
+        multi: true,
+        queueSizeLimit: 10,
+        itemTemplate: '<div id="${fileID}" class="uploadify-queue-item" style="display:none;"></div>',
+        fileTypeExts: '*.xls;',
+        uploader: '/Prepare/Exemption/ExemExeclTemp',
+        buttonText: "导入免修记录",
+        auto: true,
+        buttonClass: "btn-success-Upload",
+        //buttonClass:"btn btn-success",
+        width: 110,
+        height: 34,
+        onUploadSuccess: function (file, data, response) {
+            if (response) {
+                var sss = data.split(":");
+                if (sss[0] == "yes") {
+                    alert(sss[1]);
+                    location.href = '/Prepare/Exemption/Index';
+                } else {
+                    Alert(sss[1]);
+                    return false;
+                }
+            } else {
+                alert("服务器无响应");
+                return false;
+            }
+        }
+    });
+
+
+    function UrlEncode(code) {
+        var EnCode = "";
+        var obj = JSON.stringify({ Code: code });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/Course/CourseCreate/EnCode',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                if (!data || !data.Data || data.Data.length == 0) {
+                    return;
+                }
+
+                EnCode = data.Data;
+            },
+            error: function () {
+            }
+        });
+
+        return EnCode;
+    }
+</script>

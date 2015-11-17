@@ -1,0 +1,140 @@
+<div class="d-search">
+
+	<form class="form-inline">
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">杨浦区</option>
+	    	<option value="">宝山区</option>
+	    	<option value="">黄浦区</option>
+	    	<option value="">徐汇区</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">杨浦</option>
+	    	<option value="">宝山</option>
+	    	<option value="">绿地</option>
+	    	<option value="">万达</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">小学</option>
+	    	<option value="">大学</option>
+	    	<option value="">高中</option>
+	    	<option value="">初中</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">五角场小学</option>
+	    	<option value="">宝山实验小学</option>
+	    	<option value="">徐家汇实验小学</option>
+	    	<option value="">绿地小学</option>
+	    	<option value="">看看小学</option>
+	    	<option value="">星星小学</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <input type="text" class="form-control" placeholder="姓名、实训编号、身份证搜索">
+	  </div>
+	  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+	</form>
+
+	<div class="action">
+		<a href="#" class="btn btn-success">批量导出证书信息</a>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>姓名</th>
+				<th>实训编号</th>
+				<th>通识课程</th>
+				<th>专业课程</th>
+				<th>实践课程</th>
+				<th>结业状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>张晓明</td>
+				<td>1102030202</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td><span class="text-warning">未完成</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			<tr>
+				<td>李敏</td>
+				<td>1102030202</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td><span class="text-warning">未完成</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			<tr>
+				<td>林鱼</td>
+				<td>1102030202</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td><span class="text-danger">未完成</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			<tr>
+				<td>王小二</td>
+				<td>1102030202</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td><span class="text-success">已完成</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			<tr>
+				<td>旺西野</td>
+				<td>1102030202</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td>0/60</td>
+				<td><span class="text-warning">待审核</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

@@ -1,0 +1,108 @@
+<div class="d-search">
+
+	<form class="form-inline">
+	  <div class="form-group">
+	    <input type="text" class="form-control" placeholder="姓名搜索...">
+	  </div>
+	  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+	</form>
+
+	<div class="action">
+		<a href="javascript:;" onclick="doAddUser()" class="btn btn-success">新增用户</a>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+	  <thead>
+	    <tr>
+	      <th>姓名</th>
+	      <th>所属机构</th>
+	      <th>账号状态</th>
+	      <th>操作</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <tr>
+	      <td>张晓明</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+	    </tr>
+	    <tr>
+	      <td>李敏</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+	    </tr>
+	    <tr>
+	      <td>林于</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+	    </tr>
+	    <tr>
+	      <td>王宇</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+	    </tr>
+	    <tr>
+	      <td>王晓明</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+	    </tr>
+	    <tr>
+	      <td>周新</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+        </tr>
+	    <tr>
+	      <td>赵梓熏</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+        </tr>
+	    <tr>
+	      <td>孙洪磊</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+        </tr>
+	    <tr>
+	      <td>俞敏洪</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-success">启用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">禁用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+        </tr>
+	    <tr>
+	      <td>吴勇</td>
+	      <td>上海师范大学</td>
+	      <td><span class="text-danger">禁用中</span></td>
+	      <td><a href="javascript:;" onclick="">编辑</a>&nbsp; <a href="javascript:;" onclick="">重置密码</a>&nbsp; <a href="javascript:;" onclick="">启用</a>&nbsp; <a href="javascript:;" onclick="">删除</a></td>
+        </tr>
+	  </tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button> 	   
+
+	</div>
+</div>

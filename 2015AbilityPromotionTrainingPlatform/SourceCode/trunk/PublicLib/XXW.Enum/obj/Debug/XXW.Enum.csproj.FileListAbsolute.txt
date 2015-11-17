@@ -1,0 +1,4 @@
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.Enum\bin\Debug\XXW.Enum.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.Enum\bin\Debug\XXW.Enum.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.Enum\obj\Debug\XXW.Enum.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\XXW.Enum\obj\Debug\XXW.Enum.pdb

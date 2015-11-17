@@ -1,0 +1,43 @@
+﻿using Dianda.AP.BLL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+
+namespace Web.Areas.Learn.Controllers
+{
+    public class MyPracticeController : Controller
+    {
+        // 我的实践
+        // GET: /Learn/MyPractice/
+
+        public ActionResult List()
+        {
+            LearnMyPracticeBLL bll = new LearnMyPracticeBLL();
+
+            Code.SiteCache cache = Code.SiteCache.Instance;
+            StringBuilder where = new StringBuilder();
+            where.Append("A.Delflag=0 and A.PlanId=" + cache.PlanId + " and B.Delflag=0 and B.AccountId=" + cache.LoginInfo.UserId);
+            where.Append(" and D.Delflag=0 and D.Status=2 and E.Delflag=0");
+
+            int recordCount = bll.GetMyPracticeCount(where.ToString());
+
+            int pageSize = 8, pageIndex;
+            int pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            int.TryParse(Request["PageIndex"], out pageIndex);
+            if (pageIndex < 1)
+                pageIndex = 1;
+            else if (pageIndex > pageCount)
+                pageIndex = pageCount;
+            ViewBag.RecordCount = recordCount;
+            ViewBag.PageCount = pageCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(bll.GetMyPracticeList(pageSize, pageIndex, where.ToString(), "A.Id"));
+        }
+
+    }
+}

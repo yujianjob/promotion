@@ -1,0 +1,126 @@
+<div class="d-search">
+	<div class="form-inline" style="float:right; margin-bottom:10px;">
+		<!-- <a href="add-range.html" class="btn btn-success">新增范围课程</a> -->
+		<button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">新增范围课程</button>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>课程名称</th>
+				<th>课程类别</th>
+				<th>课时</th>
+				<th>已修课程百分比</th>
+				<th>添加日期</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>云计算在课堂教学中的应用</td>
+				<td>通识课程</td>
+				<td>1</td>
+				<td>70%</td>
+				<td>2015-09-20</td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">新增范围课程</h4>
+      </div>
+      <div class="modal-body">
+        	<div class="d-search">
+
+        		<form class="form-inline">
+        		  <div class="form-group">
+        		    <input type="text" class="form-control" placeholder="通过课程名称查找...">
+        		  </div>
+        		  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+        		</form>
+
+        	</div>
+
+        	<div class="d-datatable">
+
+        		<table class="table table-bordered table-hover">
+        		  <thead>
+        		    <tr>
+        		      <th><input type="checkbox"></th>
+        		      <th>课程名称</th>
+        		      <th>课程类别</th>
+        		      <th>课时</th>
+        		      <th>已修课程百分比</th>
+        		    </tr>
+        		  </thead>
+        		  <tbody>
+        		    <tr>
+        		      <td><input type="checkbox"></td>
+        		      <td>云计算在课堂教学中的应用</td>
+        		      <td>通识课程</td>
+        		      <td>1</td>
+        		      <td>75%</td>
+        		    </tr>
+        		    <tr>
+        		      <td><input type="checkbox"></td>
+        		      <td>云计算在课堂教学中的应用</td>
+        		      <td>通识课程</td>
+        		      <td>1</td>
+        		      <td>75%</td>
+        		    </tr>
+        		    <tr>
+        		      <td><input type="checkbox"></td>
+        		      <td>云计算在课堂教学中的应用</td>
+        		      <td>通识课程</td>
+        		      <td>1</td>
+        		      <td>75%</td>
+        		    </tr>
+        		    <tr>
+        		      <td><input type="checkbox"></td>
+        		      <td>云计算在课堂教学中的应用</td>
+        		      <td>通识课程</td>
+        		      <td>1</td>
+        		      <td>75%</td>
+        		    </tr>
+        		  </tbody>
+        		</table>
+        	</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-success">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

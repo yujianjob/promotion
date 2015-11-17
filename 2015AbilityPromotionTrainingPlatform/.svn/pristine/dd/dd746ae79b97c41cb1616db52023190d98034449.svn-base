@@ -1,0 +1,612 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Dianda.AP.Model;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace Dianda.AP.DAL
+{
+    public class AccountEditDAL
+    {
+        public AccountEdit GetModel(int AccountId)
+        {
+            List<AccountEditModel> list = new List<AccountEditModel>();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select a.UserName,a.Pic,b.RealName,b.AccountId,b.TeacherNo,a.Email,b.Sex,b.Birthday, ");
+            sql.Append(" b.CredentialsNumber,b.Mobile,b.Nation,b.PoliticalStatus, ");
+            sql.Append(" b.RegionId,b.OrganId,b.Job, ");
+            sql.Append(" b.WorkRank,b.TeachDate,b.TraningType,b.TraningObject, ");
+            sql.Append(" b.EduLevel,b.EduDegree,b.EduMajor, ");
+            sql.Append(" GraduateSchool,GraduateTime ");
+            sql.Append(" from dbo.Member_Account a ");
+            sql.Append(" left join dbo.Member_BaseInfo b on a.Id=b.AccountId ");
+            sql.Append(" where a.id = " + AccountId + " and b.Delflag = 'false' ");
+            IDataReader dr = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString());
+            if (dr.Read())
+            {
+                AccountEdit model = new AccountEdit();
+                ConvertToModelTo(dr, model);
+                return model;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public DataTable GetList(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select a.Pic,a.Email,a.UserName,b.RealName,b.TeacherNo,b.Mobile,b.CredentialsNumber, ");
+            sql.Append(" b.Sex,b.Birthday,c.Title as Nation,d.Title as PoliticalStatus, ");
+            sql.Append(" e.Title as Region,f.Title as Organ,g.Title as Job,h.Title as WorkRank, ");
+            sql.Append(" b.TeachDate,i.Title as TraningType,j.Title as TraningObject, ");
+            sql.Append(" k.Title as EduLevel,l.Title as EduDegree,m.Title as EduMajor, ");
+            sql.Append(" b.EduMajorOhter,GraduateSchool,GraduateTime ");
+            sql.Append(" from dbo.Member_Account a  ");
+            sql.Append(" left join dbo.Member_BaseInfo b on a.Id=b.AccountId ");
+            sql.Append(" left join Member_InfoFK c on b.Nation = c.Id ");
+            sql.Append(" left join Member_InfoFK d on b.PoliticalStatus = d.Id ");
+            sql.Append(" left join Organ_Detail e on b.RegionId = e.Id ");
+            sql.Append(" left join Organ_Detail f on b.OrganId = f.Id ");
+            sql.Append(" left join Traning_InfoFk g on b.Job = g.Id ");
+            sql.Append(" left join Traning_InfoFk h on b.WorkRank = h.Id ");
+            sql.Append(" left join Traning_InfoFk i on b.TraningType = i.Id ");
+            sql.Append(" left join Traning_InfoFk j on b.TraningObject = j.Id ");
+            sql.Append(" left join Member_InfoFK k on b.EduLevel = k.id ");
+            sql.Append(" left join Member_InfoFK l on b.EduDegree = l.Id ");
+            sql.Append(" left join Member_InfoFK m on b.EduMajor = m.Id ");
+            sql.Append(" where a.Id = " + AccountId + " ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable GetNation(int type)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Member_InfoFK where InfoType=" + type + " and Display='true' and Delflag = 'false' ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable TeachStudySection(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title,b.Id from Member_StudySection a  ");
+            sql.Append(" inner join Traning_InfoFk b on a.StudySection = b.Id where a.AccountId = "+AccountId+" ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable TeachSubject(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title,b.Id from Member_TeachSubject a  ");
+            sql.Append(" inner join Traning_InfoFk b on a.TeachSubject = b.Id where a.AccountId = " + AccountId + " ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable TeachGrade(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select b.Title,b.Id from Member_TeachGrade a  ");
+            sql.Append(" inner join Traning_InfoFk b on a.TeachGrade = b.Id where a.AccountId = " + AccountId + " ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public bool Edit(AccountEditModel model)
+        {
+            int i = 0;
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" update Member_Account set Email = @Email,Pic = @Pic,Nickname=@Nickname,OrganId=@OrganId where Id = @AccountId ");
+            SqlParameter[] pame ={
+                                    new SqlParameter("@Email",SqlDbType.VarChar),
+                                    new SqlParameter("@AccountId",SqlDbType.Int),
+                                    new SqlParameter("@Pic",SqlDbType.VarChar),
+                                    new SqlParameter("@Nickname",SqlDbType.VarChar),
+                                    new SqlParameter("@OrganId",SqlDbType.Int)
+                                  };
+            pame[0].Value = model.Email;
+            pame[1].Value = model.AccountId;
+            pame[2].Value = model.Pic;
+            pame[3].Value = model.RealName;
+            pame[4].Value = model.Organ;
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), pame);
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" update Member_BaseInfo set Mobile=@Mobile,CredentialsNumber=@CredentialsNumber,Sex=@Sex, ");
+            sb.Append(" Birthday=@Birthday,Nation=@Nation,PoliticalStatus=@PoliticalStatus,RegionId=@RegionId,Organid=@Organid,Job=@Job, ");
+            sb.Append(" WorkRank=@WorkRank,TeachDate=@TeachDate,TraningType=@TraningType,TraningObject=@TraningObject,EduLevel=@EduLevel, ");
+            sb.Append(" EduDegree=@EduDegree,EduMajor=@EduMajor,GraduateSchool=@GraduateSchool,GraduateTime=@GraduateTime ");
+            sb.Append(" where AccountId = @AccountId ");
+            SqlParameter[] para ={
+                                    new SqlParameter("@AccountId",SqlDbType.Int),
+                                    new SqlParameter("@Mobile",SqlDbType.VarChar),
+                                    new SqlParameter("@CredentialsNumber",SqlDbType.VarChar),
+                                    new SqlParameter("@Sex",SqlDbType.Int),
+                                    new SqlParameter("@Birthday",SqlDbType.DateTime),
+                                    new SqlParameter("@Nation",SqlDbType.Int),
+                                    new SqlParameter("@PoliticalStatus",SqlDbType.Int),
+                                    new SqlParameter("@RegionId",SqlDbType.Int),
+                                    new SqlParameter("@Organid",SqlDbType.Int),
+                                    new SqlParameter("@Job",SqlDbType.Int),
+                                    new SqlParameter("@WorkRank",SqlDbType.Int),
+                                    new SqlParameter("@TeachDate",SqlDbType.DateTime),
+                                    new SqlParameter("@TraningType",SqlDbType.Int),
+                                    new SqlParameter("@TraningObject",SqlDbType.Int),
+                                    new SqlParameter("@EduLevel",SqlDbType.Int),
+                                    new SqlParameter("@EduDegree",SqlDbType.Int),
+                                    new SqlParameter("@EduMajor",SqlDbType.Int),
+                                    new SqlParameter("@GraduateSchool",SqlDbType.VarChar),
+                                    new SqlParameter("@GraduateTime",SqlDbType.DateTime)
+                                 };
+            para[0].Value = model.AccountId;
+            para[1].Value = model.Mobile;
+            para[2].Value = model.CredentialsNumber;
+            para[3].Value = model.Sex;
+            para[4].Value = model.Birthday;
+            para[5].Value = model.Nation;
+            para[6].Value = model.PoliticalStatus;
+            para[7].Value = model.Region;
+            para[8].Value = model.Organ;
+            para[9].Value = model.Job;
+            para[10].Value = model.WorkRank;
+            para[11].Value = model.TeachDate;
+            para[12].Value = model.TraningType;
+            para[13].Value = model.TraningObject;
+            para[14].Value = model.EduLevel;
+            para[15].Value = model.EduDegree;
+            para[16].Value = model.EduMajor;
+            para[17].Value = model.GraduateSchool;
+            para[18].Value = model.GraduateTime;
+
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(sb.ToString(), para);
+
+            string TeachStudySection = "";
+            string TeachSubject = "";
+            string TeachGrade = "";
+            if (model.TeachStudySection != null && model.TeachStudySection != "")
+            {
+                TeachStudySection = model.TeachStudySection.TrimEnd(',');
+            }
+            if (model.TeachSubject != null && model.TeachSubject != "")
+            {
+                TeachSubject = model.TeachSubject.TrimEnd(',');
+            }
+            if (model.TeachGrade != null && model.TeachGrade != "")
+            {
+                TeachGrade = model.TeachGrade.TrimEnd(',');
+            }
+
+            StringBuilder SectionDel = new StringBuilder();
+            SectionDel.Append(" delete from Member_StudySection where AccountId = " + model.AccountId + " ");
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(SectionDel.ToString());
+            string[] src = TeachStudySection.Split(',');
+            for (int k = 0; k < src.Length; k++)
+            {
+                if (src[k] != "" && src[k] != null)
+                {
+                    StringBuilder Section = new StringBuilder();
+                    Section.Append(" insert into Member_StudySection (AccountId,StudySection,Delflag,CreateDate) ");
+                    Section.Append(" values (" + model.AccountId + "," + src[k] + ",'false','" + DateTime.Now + "') ");
+                    i += MSEntLibSqlHelper.ExecuteNonQueryBySql(Section.ToString());
+                }
+            }
+
+
+            StringBuilder SubjectDel = new StringBuilder();
+            SubjectDel.Append(" delete from Member_TeachSubject where AccountId = " + model.AccountId + " ");
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(SubjectDel.ToString());
+            string[] src1 = TeachSubject.Split(',');
+            for (int k = 0; k < src1.Length; k++)
+            {
+                if (src1[k] != "" && src1[k] != null)
+                {
+                    StringBuilder Subject = new StringBuilder();
+                    Subject.Append(" insert into Member_TeachSubject (AccountId,TeachSubject,Delflag,CreateDate) ");
+                    Subject.Append(" values (" + model.AccountId + "," + src1[k] + ",'false','" + DateTime.Now + "') ");
+                    i += MSEntLibSqlHelper.ExecuteNonQueryBySql(Subject.ToString());
+                }
+            }
+
+
+            StringBuilder GradeDel = new StringBuilder();
+            GradeDel.Append(" delete from Member_TeachGrade where AccountId = " + model.AccountId + " ");
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(GradeDel.ToString());
+            string[] src2 = TeachGrade.Split(',');
+            for (int k = 0; k < src2.Length; k++)
+            {
+                if (src2[k] != "" && src2[k] != null)
+                {
+                    StringBuilder Grade = new StringBuilder();
+                    Grade.Append(" insert into Member_TeachGrade (AccountId,TeachGrade,Delflag,CreateDate) ");
+                    Grade.Append(" values (" + model.AccountId + "," + src2[k] + ",'false','" + DateTime.Now + "') ");
+                    i += MSEntLibSqlHelper.ExecuteNonQueryBySql(Grade.ToString());
+                }
+            }
+            if (i > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public bool Add(AccountEditModel model)
+        {
+            int i = 0;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" update Member_Account set Email = @Email,Pic = @Pic,Nickname=@Nickname,OrganId=@OrganId where Id = @AccountId ");
+            SqlParameter[] pame ={
+                                    new SqlParameter("@Email",SqlDbType.VarChar),
+                                    new SqlParameter("@AccountId",SqlDbType.Int),
+                                    new SqlParameter("@Pic",SqlDbType.VarChar),
+                                    new SqlParameter("@Nickname",SqlDbType.VarChar),
+                                    new SqlParameter("@OrganId",SqlDbType.Int)
+                                  };
+            pame[0].Value = model.Email;
+            pame[1].Value = model.AccountId;
+            pame[2].Value = model.Pic;
+            pame[3].Value = model.RealName;
+            pame[4].Value = model.Organ;
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(sb.ToString(), pame);
+
+
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" insert into Member_BaseInfo (AccountId,TeacherNo,RealName,Mobile,Phone,Address, ");
+            sql.Append(" PostCode,CredentialsType,CredentialsNumber,Sex,Birthday,Nation,PoliticalStatus,RegionId,Organid,Job,WorkRank,TeachDate,TraningType,TraningObject, ");
+            sql.Append(" EduLevel,EduDegree,EduMajor,EduMajorOhter,GraduateSchool,GraduateTime) ");
+            sql.Append(" values (@AccountId,@TeacherNo,@RealName,@Mobile,@Phone,@Address,@PostCode, ");
+            sql.Append(" @CredentialsType,@CredentialsNumber,@Sex,@Birthday,@Nation,@PoliticalStatus, ");
+            sql.Append(" @RegionId,@Organid,@Job,@WorkRank,@TeachDate,@TraningType,@TraningObject, ");
+            sql.Append(" @EduLevel,@EduDegree,@EduMajor,@EduMajorOhter,@GraduateSchool,@GraduateTime) ");
+
+            SqlParameter[] para ={
+                                    new SqlParameter("@AccountId",SqlDbType.Int),
+                                    new SqlParameter("@TeacherNo",SqlDbType.VarChar),
+                                    new SqlParameter("@RealName",SqlDbType.VarChar),
+                                    new SqlParameter("@Mobile",SqlDbType.VarChar),
+                                    new SqlParameter("@Phone",SqlDbType.VarChar),
+                                    new SqlParameter("@Address",SqlDbType.VarChar),
+                                    new SqlParameter("@PostCode",SqlDbType.VarChar),
+                                    new SqlParameter("@CredentialsType",SqlDbType.Int),
+                                    new SqlParameter("@CredentialsNumber",SqlDbType.VarChar),
+                                    new SqlParameter("@Sex",SqlDbType.Int),
+                                    new SqlParameter("@Birthday",SqlDbType.DateTime),
+                                    new SqlParameter("@Nation",SqlDbType.Int),
+                                    new SqlParameter("@PoliticalStatus",SqlDbType.Int),
+                                    new SqlParameter("@EduLevel",SqlDbType.Int),
+                                    new SqlParameter("@EduDegree",SqlDbType.Int),
+                                    new SqlParameter("@EduMajor",SqlDbType.Int),
+                                    new SqlParameter("@EduMajorOhter",SqlDbType.VarChar),
+                                    new SqlParameter("@GraduateSchool",SqlDbType.VarChar),
+                                    new SqlParameter("@GraduateTime",SqlDbType.DateTime),
+                                    new SqlParameter("@RegionId",SqlDbType.Int),
+                                    new SqlParameter("@Organid",SqlDbType.Int),
+                                    new SqlParameter("@Job",SqlDbType.Int),
+                                    new SqlParameter("@WorkRank",SqlDbType.Int),
+                                    new SqlParameter("@TeachDate",SqlDbType.DateTime),
+                                    new SqlParameter("@TraningType",SqlDbType.Int),
+                                    new SqlParameter("@TraningObject",SqlDbType.Int)
+                                 };
+            para[0].Value = model.AccountId;
+            para[1].Value = model.TeacherNo;
+            para[2].Value = model.RealName;
+            para[3].Value = model.Mobile;
+            para[4].Value = 0;
+            para[5].Value = "";
+            para[6].Value = "";
+            para[7].Value = 1;
+            para[8].Value = model.CredentialsNumber;
+            para[9].Value = model.Sex;
+            para[10].Value = model.Birthday;
+            para[11].Value = model.Nation;
+            para[12].Value = model.PoliticalStatus;
+            para[13].Value = model.EduLevel;
+            para[14].Value = model.EduDegree;
+            para[15].Value = model.EduMajor;
+            para[16].Value = model.EduMajorOhter;
+            para[17].Value = model.GraduateSchool;
+            para[18].Value = model.GraduateTime;
+            para[19].Value = model.Region;
+            para[20].Value = model.Organ;
+            para[21].Value = model.Job;
+            para[22].Value = model.WorkRank;
+            para[23].Value = model.TeachDate;
+            para[24].Value = model.TraningType;
+            para[25].Value = model.TraningObject;
+
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), para);
+
+            string TeachStudySection = "";
+            string TeachSubject = "";
+            string TeachGrade = "";
+            if (model.TeachStudySection != null && model.TeachStudySection != "")
+            {
+                TeachStudySection = model.TeachStudySection.TrimEnd(',');
+            }
+            if (model.TeachSubject != null && model.TeachSubject != "")
+            {
+                TeachSubject = model.TeachSubject.TrimEnd(',');
+            }
+            if (model.TeachGrade != null && model.TeachGrade != "")
+            {
+                TeachGrade = model.TeachGrade.TrimEnd(',');
+            }
+
+            StringBuilder SectionDel = new StringBuilder();
+            SectionDel.Append(" delete from Member_StudySection where AccountId = " + model.AccountId + " ");
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(SectionDel.ToString());
+            string[] src = TeachStudySection.Split(',');
+            for (int k = 0; k < src.Length; k++)
+            {
+                if (src[k] != "" && src[k] != null)
+                {
+                    StringBuilder Section = new StringBuilder();
+                    Section.Append(" insert into Member_StudySection (AccountId,StudySection,Delflag,CreateDate) ");
+                    Section.Append(" values (" + model.AccountId + "," + src[k] + ",'false','" + DateTime.Now + "') ");
+                    i += MSEntLibSqlHelper.ExecuteNonQueryBySql(Section.ToString());
+                }
+            }
+
+
+            StringBuilder SubjectDel = new StringBuilder();
+            SubjectDel.Append(" delete from Member_TeachSubject where AccountId = " + model.AccountId + " ");
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(SubjectDel.ToString());
+            string[] src1 = TeachSubject.Split(',');
+            for (int k = 0; k < src1.Length; k++)
+            {
+                if (src1[k] != "" && src1[k] != null)
+                {
+                    StringBuilder Subject = new StringBuilder();
+                    Subject.Append(" insert into Member_TeachSubject (AccountId,TeachSubject,Delflag,CreateDate) ");
+                    Subject.Append(" values (" + model.AccountId + "," + src1[k] + ",'false','" + DateTime.Now + "') ");
+                    i += MSEntLibSqlHelper.ExecuteNonQueryBySql(Subject.ToString());
+                }
+            }
+
+
+            StringBuilder GradeDel = new StringBuilder();
+            GradeDel.Append(" delete from Member_TeachGrade where AccountId = " + model.AccountId + " ");
+            i += MSEntLibSqlHelper.ExecuteNonQueryBySql(GradeDel.ToString());
+            string[] src2 = TeachGrade.Split(',');
+            for (int k = 0; k < src2.Length; k++)
+            {
+                if (src2[k] != "" && src2[k] != null)
+                {
+                    StringBuilder Grade = new StringBuilder();
+                    Grade.Append(" insert into Member_TeachGrade (AccountId,TeachGrade,Delflag,CreateDate) ");
+                    Grade.Append(" values (" + model.AccountId + "," + src2[k] + ",'false','" + DateTime.Now + "') ");
+                    i += MSEntLibSqlHelper.ExecuteNonQueryBySql(Grade.ToString());
+                }
+            }
+            if (i >= 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public string GetEmail(int AccountId)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Email from Member_Account where id = " + AccountId + " ");
+            return MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()).ToString();
+        }
+
+        private void ConvertToModel(IDataReader reader, AccountEditModel model)
+        {
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = reader["TeacherNo"].ToString();
+
+            if (reader["Email"] != DBNull.Value)
+                model.Email = reader["Email"].ToString();
+
+            if (reader["Sex"] != DBNull.Value)
+                model.Sex = Convert.ToInt32(reader["Sex"]);
+
+            if (reader["Birthday"] != DBNull.Value)
+                model.Birthday = Convert.ToDateTime(reader["Birthday"]);
+
+            if (reader["CredentialsNumber"] != DBNull.Value)
+                model.CredentialsNumber = reader["CredentialsNumber"].ToString();
+
+            if (reader["Mobile"] != DBNull.Value)
+                model.Mobile = reader["Mobile"].ToString();
+
+            if (reader["Nation"] != DBNull.Value)
+                model.Nation = Convert.ToInt32(reader["Nation"]);
+
+            if (reader["PoliticalStatus"] != DBNull.Value)
+                model.PoliticalStatus = Convert.ToInt32(reader["PoliticalStatus"]);
+
+            if (reader["Region"] != DBNull.Value)
+                model.Region = reader["Region"].ToString();
+
+            if (reader["StudySection"] != DBNull.Value)
+                model.StudySection = reader["StudySection"].ToString();
+
+            if (reader["Organ"] != DBNull.Value)
+                model.Organ = reader["Organ"].ToString();
+
+            if (reader["Job"] != DBNull.Value)
+                model.Job = reader["Job"].ToString();
+
+            if (reader["WorkRank"] != DBNull.Value)
+                model.WorkRank = reader["WorkRank"].ToString();
+
+            if (reader["TeachDate"] != DBNull.Value)
+                model.TeachDate = Convert.ToDateTime(reader["TeachDate"]);
+
+            //if (reader["TeachStudySection"] != DBNull.Value)
+            //    model.TeachStudySection = reader["TeachStudySection"].ToString();
+
+            //if (reader["TeachSubject"] != DBNull.Value)
+            //    model.TeachSubject = reader["TeachSubject"].ToString();
+
+            //if (reader["TeachGrade"] != DBNull.Value)
+            //    model.TeachGrade = reader["TeachGrade"].ToString();
+
+            if (reader["TraningType"] != DBNull.Value)
+                model.TraningType = reader["TraningType"].ToString();
+
+            if (reader["TraningObject"] != DBNull.Value)
+                model.TraningObject = reader["TraningObject"].ToString();
+
+            if (reader["EduLevel"] != DBNull.Value)
+                model.EduLevel = Convert.ToInt32(reader["EduLevel"]);
+
+            if (reader["EduDegree"] != DBNull.Value)
+                model.EduDegree = Convert.ToInt32(reader["EduDegree"]);
+
+            if (reader["EduMajor"] != DBNull.Value)
+                model.EduMajor = Convert.ToInt32(reader["EduMajor"]);
+
+            //if (reader["EduMajorOhter"] != DBNull.Value)
+            //    model.EduMajorOhter = reader["EduMajorOhter"].ToString();
+
+            if (reader["GraduateSchool"] != DBNull.Value)
+                model.GraduateSchool = reader["GraduateSchool"].ToString();
+
+            if (reader["GraduateTime"] != DBNull.Value)
+                model.GraduateTime = Convert.ToDateTime(reader["GraduateTime"]);
+        }
+
+        private void ConvertToModelTo(IDataReader reader, AccountEdit model)
+        {
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+
+            if (reader["Pic"] != DBNull.Value)
+                model.Pic = reader["Pic"].ToString();
+
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = reader["TeacherNo"].ToString();
+
+            if (reader["Email"] != DBNull.Value)
+                model.Email = reader["Email"].ToString();
+
+            if (reader["Sex"] != DBNull.Value)
+                model.Sex = Convert.ToInt32(reader["Sex"]);
+
+            if (reader["Birthday"] != DBNull.Value)
+                model.Birthday = Convert.ToDateTime(reader["Birthday"]);
+
+            if (reader["CredentialsNumber"] != DBNull.Value)
+                model.CredentialsNumber = reader["CredentialsNumber"].ToString();
+
+            if (reader["Mobile"] != DBNull.Value)
+                model.Mobile = reader["Mobile"].ToString();
+
+            if (reader["Nation"] != DBNull.Value)
+                model.Nation = Convert.ToInt32(reader["Nation"]);
+
+            if (reader["PoliticalStatus"] != DBNull.Value)
+                model.PoliticalStatus = Convert.ToInt32(reader["PoliticalStatus"]);
+
+            if (reader["RegionId"] != DBNull.Value)
+                model.Region = Convert.ToInt32(reader["RegionId"]);
+
+            if (reader["OrganId"] != DBNull.Value)
+                model.Organ = Convert.ToInt32(reader["OrganId"]);
+
+            if (reader["Job"] != DBNull.Value)
+                model.Job = Convert.ToInt32(reader["Job"]);
+
+            if (reader["WorkRank"] != DBNull.Value)
+                model.WorkRank = Convert.ToInt32(reader["WorkRank"]);
+
+            if (reader["TeachDate"] != DBNull.Value)
+                model.TeachDate = Convert.ToDateTime(reader["TeachDate"]);
+
+            //if (reader["TeachStudySection"] != DBNull.Value)
+            //    model.TeachStudySection = reader["TeachStudySection"].ToString();
+
+            //if (reader["TeachSubject"] != DBNull.Value)
+            //    model.TeachSubject = reader["TeachSubject"].ToString();
+
+            //if (reader["TeachGrade"] != DBNull.Value)
+            //    model.TeachGrade = reader["TeachGrade"].ToString();
+
+            if (reader["TraningType"] != DBNull.Value)
+                model.TraningType = Convert.ToInt32(reader["TraningType"]);
+
+            if (reader["TraningObject"] != DBNull.Value)
+                model.TraningObject = Convert.ToInt32(reader["TraningObject"]);
+
+            if (reader["EduLevel"] != DBNull.Value)
+                model.EduLevel = Convert.ToInt32(reader["EduLevel"]);
+
+            if (reader["EduDegree"] != DBNull.Value)
+                model.EduDegree = Convert.ToInt32(reader["EduDegree"]);
+
+            if (reader["EduMajor"] != DBNull.Value)
+                model.EduMajor = Convert.ToInt32(reader["EduMajor"]);
+
+            //if (reader["EduMajorOhter"] != DBNull.Value)
+            //    model.EduMajorOhter = reader["EduMajorOhter"].ToString();
+
+            if (reader["GraduateSchool"] != DBNull.Value)
+                model.GraduateSchool = reader["GraduateSchool"].ToString();
+
+            if (reader["GraduateTime"] != DBNull.Value)
+                model.GraduateTime = Convert.ToDateTime(reader["GraduateTime"]);
+        }
+
+        public DataTable GetRegin(int Type)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select * from Organ_Detail where OType = " + Type + " ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable GetRegionTo(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Organ_Detail where ParentId = " + id + " ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable GetTraning_InfoFk(int type)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Traning_InfoFk where CategoryType = " + type + " ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable GetOrgan(int id)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Organ_Detail where id=" + id + " ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+    }
+}

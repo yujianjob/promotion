@@ -1,0 +1,135 @@
+﻿@model System.Data.DataRowCollection
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/app.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/bootstrap.min.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/uploadify/uploadify.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/app.min.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Resources/Css/bootstrap-datepicker3.min.css")">
+    <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("/Resources/Css/ymPrompt.css")">
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/ymPrompt.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/jquery-1.11.2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/uploadify/jquery.uploadify.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/ie10-viewport-bug-workaround.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/km.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/proto.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/bootstrap-datepicker.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/bootstrap-datepicker.zh-CN.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/resources/ueditor1_3_6-utf8-net/ueditor.config.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/resources/ueditor1_3_6-utf8-net/ueditor.all.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/resources/ueditor1_3_6-utf8-net/lang/zh-cn/zh-cn.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/site.js")"></script>
+    <script type="text/javascript">
+        $(function () {
+            $proto.init(function () {
+
+            });
+
+            $('.chk-teacher').click(function () {
+                $('#SelectedIds').val('');
+                var temp = '';
+                $('.chk-teacher:checked').each(function () {
+                    temp += $(this).val() + ',';
+                });
+                if (temp != '')
+                    temp = temp.substr(0, temp.length - 1);
+                $('#SelectedIds').val(temp);
+            });
+
+        });
+
+        function TeacherSubmit() {
+            $.ajax({
+                url: 'AjaxBatchSelectTeacher',
+                type: 'get',
+                data: { TrainingId: '@ViewBag.TrainingId', Ids: $('#SelectedIds').val() },
+                content: 'application/json',
+                dataType: 'text',
+                success: function (data) {
+                    var myData = $.parseJSON(data);
+                    //if (myData.Result) {
+                    //    window.parent.AfterTeacherSubmit(myData.Msg);
+                    //}
+                    //else {
+                    //    Alert(myData.Msg);
+                    //}
+                    window.parent.AfterTeacherSubmit(myData.Msg);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    if (XMLHttpRequest.status == 302) {
+                        eval(XMLHttpRequest.responseText);
+                    }
+                }
+            });
+          }
+    </script>
+</head>
+<body>
+<div class="d-course-apply blk_as_course_apply" id="blk_as_course_apply">
+<div class="row" style="min-height:510px;">
+    @foreach (System.Data.DataRow item in Model)
+    {
+        
+        <div class="col-xs-4">
+            <label class="i">
+                <span class="name">@item["NickName"]</span>
+                <span class="title">&nbsp;</span>
+                <div class="unit trim">@item["OrganName"]</div>
+                <span class="glyphicon glyphicon-earphone" title="@item["Mobile"]"></span>
+                <span class="glyphicon glyphicon-envelope" title="@item["Email"]"></span>
+                <div class="thumb"><img src="@item["Pic"]" width="80" height="80"></div>
+
+                <div class="int">
+                @if (((List<Dianda.AP.Model.Traning_Teacher>)ViewBag.SelectedTeacher).Exists(t => t.PlatformManagerId == Convert.ToInt32(item["ManagerId"])))
+                {
+                    <input type="checkbox" class="chk-teacher" value="@item["ManagerId"]" checked="checked">
+                }
+                else
+                {
+                    <input type="checkbox" class="chk-teacher" value="@item["ManagerId"]">
+                }
+                </div>
+                
+            </label>
+        </div>
+    }
+    @Html.Hidden("SelectedIds")
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>@ViewBag.PageIndex</span>
+		总页数<span>@ViewBag.PageCount</span>
+		总记录<span>@ViewBag.RecordCount</span>
+		每页显示条数<span>@ViewBag.PageSize</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="@Url.Action("TeacherList", new { PageIndex = 1, TrainingId = ViewBag.TrainingId, KeyWords = ViewBag.KeyWords })">首页</a>
+		<a href="@Url.Action("TeacherList", new { PageIndex = ViewBag.PageIndex - 1, TrainingId = ViewBag.TrainingId, KeyWords = ViewBag.KeyWords })">上一页</a>
+		<a href="@Url.Action("TeacherList", new { PageIndex = ViewBag.PageIndex + 1, TrainingId = ViewBag.TrainingId, KeyWords = ViewBag.KeyWords })">下一页</a>
+		<a href="@Url.Action("TeacherList", new { PageIndex = ViewBag.PageCount, TrainingId = ViewBag.TrainingId, KeyWords = ViewBag.KeyWords })">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm" id="InputPageTo">页
+		<button class="btn btn-sm" id="BtnPageTo"> » </button>
+        <script type="text/javascript">
+            $('#BtnPageTo').click(function () {
+                if ($('#InputPageTo').val().trim() != '') {
+                    window.location.href = 'TeacherList?TrainingId=@ViewBag.TrainingId&PageIndex=' + $('#InputPageTo').val();
+                }
+            });
+        </script> 
+	</div>
+</div>
+
+<hr>
+<div>
+  <button style="width:150px;" class="btn btn-success" type="button" onclick="TeacherSubmit()">提交</button>
+  @*&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">取消</a>*@
+</div>
+</div>
+</body>
+</html>

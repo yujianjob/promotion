@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<flvlist>
+		<shot>playerdata/image/shot.jpg</shot>
+		<audioLogo>playerdata/image/audio_logo.png</audioLogo>
+		<!-- 水印 -->
+		<!--
+		<watermark>
+			<enable>true</enable>
+			<link><![CDATA[]]></link>
+			<tooltip>oVideo</tooltip>
+			<style alpha="0.5" bgClr="0xFFFFFF" bgAlpha="0.0"/>
+			<layout w="" h="" l="5" c="" r="" t="5" m="" b=""/>
+			<content type="image">
+				<![CDATA[playerdata/image/olive_head_logo.png]]>
+			</content>
+		</watermark>
+		-->
+		<!-- 回放条中的电视台/站点LOGO -->
+<!-- 		<playbackLogo> -->
+<!-- 			<url><![CDATA[http://www.g.cn]]></url> -->
+<!-- 			<src><![CDATA[playerdata/image/zhtv2.png]]></src> -->
+<!-- 			<tooltip>珠海广播电视</tooltip> -->
+<!-- 			<style bgClr="0xFFFF00" bgAlpha="0.0" maxHeight="20" maxWidth="0" edge="5"/> -->
+<!-- 		</playbackLogo> -->
+		
+		<!-- Video Motion Detection 视频动态检测 -->
+		<!--<vmd>
+			<enable>true</enable>
+			<interval>5000</interval>
+			<imageNoVideo>playerdata/image/audio_logo.png</imageNoVideo>-->
+			<!-- <visualModule>playerdata/module/visualModule.swf</visualModule> -->
+		<!--</vmd>-->
+		<host>http://www.linksoon.net</host>
+		<domain>
+			<site>http://flv.www.linksoon.net</site>
+		</domain>
+		<logo type="flash" delay="1" src="playerdata/wait.swf" link=""/>
+		<link><![CDATA[http://www.baidu.com]]></link>
+		<outside><![CDATA[http://www.g.cn]]></outside>
+		<!-- width,height:显示列表的高宽 -->
+		<list width="180" height="240">
+			<!-- playtype为0，是视频, 1是音频, 2是嵌入站外Flash -->
+			<flv playtype="0">
+				<title><![CDATA[1080P 高清 电影wall-e宣传片测试]]></title>
+				<sn>493a62c8e291a2dd</sn>
+				<!-- 是否允许播放 -->
+				<enplay>1</enplay>
+				<!-- 支付信息提示,只有enplay为0时启用 -->
+				<payInfo>
+					<info>
+						<text><![CDATA[访问此资源需要消耗10点积分，您目前有10点积分]]></text>
+						<button>OK</button>
+						<func><![CDATA[{close}]]></func>
+						<parameters>
+							<param><![CDATA[param1]]></param>
+							<param><![CDATA[param2]]></param>
+						</parameters>
+					</info>
+				</payInfo>
+				<!-- 免费视频预览,time标签值大于0时启用 -->
+<!-- 				<freePreview> -->
+<!-- 				    <time>600</time> -->
+<!-- 				    <buylink><![CDATA[http://www.sdfsdfsdf.com/buy.aspx?fcode=wriwreuweisd]]></buylink> -->
+<!-- 				</freePreview> -->
+				<!-- 能否进行拖放定位 -->
+				<seek>1</seek>
+				<!-- 密码 -->
+				<!--<playpwd>202CB962AC59075B964B07152D234B70</playpwd>-->
+				<!-- 时间提示点 -->
+<!-- 				<timeline> -->
+<!-- 					<point time="00:01"><![CDATA[00:01<br>提示点1]]></point> -->
+<!-- 					<point time="00:06"><![CDATA[00:06 提示点2提示点2提示点2]]></point> -->
+<!-- 					<point time="00:10"><![CDATA[00:10 提示点3提示点3提示点3]]></point> -->
+<!-- 					<point time="01:08"><![CDATA[01:08 提示点4提示点4提示点4提示点4]]></point> -->
+<!-- 					<point time="02:06"><![CDATA[02:06 提<br>示<br>点<br>5<br>提<br>示点<br>5提<br>示<br>点<br>5]]></point> -->
+<!-- 					<point time="03:53"><![CDATA[03:53 提示点6提示点6提示点6]]></point> -->
+<!-- 				</timeline> -->
+				<!--  预览缩略图序列 col列数 row行数 num有效图片数 gap间隔-->
+				<!--  示例使用的是10x10的1280x720的JPG图片, 有效图片数为89-->
+<!-- 				<thumbgroup col="10" row="10" num="89" gap="1"> -->
+<!-- 					<![CDATA[playerdata/image/shotgroup.jpg]]> -->
+<!-- 				</thumbgroup> -->
+				<!--<src>playerdata/media/f4vpp_fix_rec.flv</src>-->
+				<!--<src lb="playerdata/text/balancer.xml">rtmp://localhost/vod/sample1_1500kbps.flv</src>-->
+				<!--<src video="ovideo" lb="playerdata/text/balancer.xml">rtmp://origin/live/</src>-->
+				<!--<src lb="http://localhost/ovideoplayer/src/playerdata/balancer.xml">http://abc.flv</src>-->
+				<!--<src video="ovideo" lb="http://localhost/ovideoplayer/src/playerdata/balancer.xml">rtmp://192.168.62.214/live/</src>-->
+				<!--
+				<src>
+					<uri live="0">rtmp://localhost/vod/</uri>
+					<stream bit="150">mp4:sample1_150kbps.f4v</stream>
+					<stream bit="500">mp4:sample1_500kbps.f4v</stream>
+					<stream bit="700">mp4:sample1_700kbps.f4v</stream>
+					<stream bit="1000">mp4:sample1_1000kbps.f4v</stream>
+					<stream bit="1500">mp4:sample1_1500kbps.f4v</stream>
+				</src>
+				-->
+				<!--
+				<src>
+					<uri live="1">rtmp://live.linksoon.net/live</uri>
+					<stream bit="600">cctv1</stream>
+					<stream bit="300">cctv2</stream>
+				</src>
+				-->
+				<!--
+				<src>
+					<![CDATA[<embed src="http://player.youku.com/player.php/sid/XMTE1MDI5MDgw/v.swf" quality="high" width="100%" height="100%" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" wmode="opaque"></embed>]]>
+				</src>
+				-->
+				<!--
+				<src>
+					<![CDATA[http://player.youku.com/player.php/sid/aaa/v.swf]]>
+				</src>
+				-->
+				
+				<!--<src>rtmp://localhost/vod/mp4:sample1_1500kbps.f4v</src>-->
+				<!-- 本地负载均衡测试地址 -->
+				<!--
+				<src video="cctv1" lb="http://localhost:30468/Web/default.aspx?rtmp://192.168.62.214/live+cctv">rtmp://192.168.62.214/live/</src>
+				-->
+				<!--
+				<src video="test" lb="http://localhost:3408/Web/default.aspx?rtmp://192.168.62.214/live/">rtmp://192.168.62.214/live/</src>
+				-->
+				
+<!-- 				<src>http://vo.hinews.cn/video//2013/20131210/zdm/qimu.mp4</src> -->
+<!-- 				<zones>-1,-2</zones> -->
+				
+				
+				<src>playerdata/media/wow.flv</src>
+				<zones>-1,-2</zones>
+				
+				
+<!-- 				<src>http://vsfile.demo.linksoon.net/files/2011-11/c5tbk7d5lc1ugz7c.mp4?key=57497534e26f65b81c3b7d74670b3347</src> -->
+<!-- 				<src>rtmp://localhost/dvrcast//raw:test</src> -->
+<!-- 				<hd> -->
+<!-- 					<file>http://vsfile.demo.linksoon.net/files/2011-11/vg6f8y0i6jog3aw1_3g.mp4?key=1cc73cf5ff27663365da6c11372935b1</file> -->
+<!-- 					<file>http://vsfile.demo.linksoon.net/files/2011-11/vg6f8y0i6jog3aw1.mp4?key=1cc73cf5ff27663365da6c11372935b1</file> -->
+<!-- 					<file></file> -->
+<!-- 				</hd> -->
+				
+<!-- 				<src><![CDATA[http://vsfile.demo.linksoon.net/files/2011-12/gi16o8t8kn15v88o.mp4?key=16833d5dfd5f57901d51a75dd2f419ef]]></src> -->
+<!-- 				<hd> -->
+<!-- 					<file><![CDATA[http://vsfile.demo.linksoon.net/files/2011-12/gi16o8t8kn15v88o_3g.mp4?key=16833d5dfd5f57901d51a75dd2f419ef]]></file> -->
+<!-- 					<file><![CDATA[http://vsfile.demo.linksoon.net/files/2011-12/gi16o8t8kn15v88o.mp4?key=16833d5dfd5f57901d51a75dd2f419ef]]></file> -->
+<!-- 					<file></file> -->
+<!-- 				</hd> -->
+				
+<!-- 				<src video="linksoon1">rtmp://www.linksoon.net/live</src> -->
+				<!--<src lb="playerdata/text/balancer.xml">rtmp://localhost/vod/sample1_1500kbps.flv</src>-->
+				
+				
+<!-- 				<src video="cctv?fms.multicast.type=3&fms.multicast.groupspec=G%3A01012105bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a010c130e666d732e6d756c7469636173742e74657374210e7474b87794c56a72f0cc92a3ae57086425c5dfd0feb9bbf13d786a308fd423ec000715313131313131"> -->
+<!--                     rtmfp://61.150.109.232/multicast/a -->
+<!--                 </src> -->
+				
+<!-- 				<src video="qqq?fms.multicast.type=3&fms.multicast.groupspec=G%3A01012105bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a010c160e666d732e6d756c7469636173742e6578616d706c65210ea7ea9becae93cda7ea11df183c9595138ce7d9a0978b1b50c2045baf519d30f2000715313131313131"> -->
+<!--                      rtmfp://live.linksoon.net/multicast/a -->
+<!--                 </src> -->
+				<!--<src>rtmp://oe.linksoon.net:1936/vod/mp4:ceshi_2010-5-29_15-51-10_15-53-10_0_0_1577.mp4</src>-->
+<!-- 				<src>http://hkbflv.demo.linksoon.net/files/2012-06/xh6sh15xlo1if1g0.mp4?key=</src> -->
+<!-- 				<src>rtmp://localhost/vod/mp4:sample1_1500kbps.f4v</src> -->
+<!-- 				<src lb="playerdata/text/balancer.xml">rtmp://localhost/vod/sample</src> -->
+<!-- 				<src lb="playerdata/text/balancer.xml">rtmp://localhost/vod//f5vgfdxmtn/2011-09/qrdu6tlmu8lp10bc.mp4</src> -->
+<!-- 				<zones>-1,-2</zones> -->
+<!-- 				<src>http://anyfile.demo.linksoon.net/files/2013-03/t2px4j1vgp58z41q.flv</src> -->
+<!-- 				<zones>-1,-2</zones> -->
+				
+				<ad>
+<!-- 					<begin type="flash" src="playerdata/zhang.swf" link="" delay="10"/> -->
+<!-- 					<begin type="video" delay="3" src="playerdata/media/video.flv" link="http://www.linksoon.net"/> -->
+<!-- 					<pause type="flash" delay="10" src="playerdata/zhang.swf" link="http://www.baidu.com"/> -->
+<!--                     <begin type="flash" delay="3" src="playerdata/zhangyan.swf" link="http://www.baidu.com"/> -->
+<!--                     <begin type="video" src="playerdata/media/wow.flv" link=""/> -->
+<!-- 					<begin type="image" delay="3" src="playerdata/image/head.jpg" link="http://www.linksoon.net"/> -->
+<!-- 					<pause type="image" delay="10" src="playerdata/image/head.jpg" link="http://www.baidu.com"/> -->
+<!-- 					<begin type="text" delay="2" src="" link="http://www.aobo.com"> -->
+<!-- 						<![CDATA[<font size="30" face="黑体" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,world</a></b></font>]]> -->
+<!-- 					</begin> -->
+<!-- <begin type="video" delay="3" src="playerdata/media/video.flv" link="http://www.linksoon.net"/> -->
+<!-- <begin type="image" delay="3" src="playerdata/image/head.jpg" link="http://www.linksoon.net"/> -->
+<!-- <begin type="flash" src="playerdata/zhang.swf" link="" delay="3"/> -->
+<!-- 					<text> -->
+<!-- 						<item><![CDATA[<u><font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font></u>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<u><font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font></u>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 						<item><![CDATA[<font size="14" face="微软雅黑" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">Hello,worldHello</a></b></font>]]></item> -->
+<!-- 					</text> -->
+<!-- 					<playback roll="1"> -->
+<!-- 						<![CDATA[<font size="14" face="黑体" color="#FFFFFF" ><b><a href="http://www.baidu.com" target="_blank">Hello,world</a></b></font>]]> -->
+<!-- 					</playback> -->
+<!-- 					<playback roll="1"><![CDATA[<font size="14" face="黑体" color="#FF0000" ><b><a href="http://www.linksoon.net" target="_blank">Hello,官方站 1111111111111111111</a></b></font>]]></playback> -->
+					<!--<end type="flash" delay="5" src="playerdata/ovideo.swf" link="http://www.aobo.com"/>-->
+					<!-- 
+				   	<timer time="10" delay="5" link="http://www.linksoon.net">
+				    	<style bgClr="0xFFFFFF" bgAlpha="0.5" showClose="false" showTime="false"/>
+				    	<layout w="" h="" l="5" c="" r="" t="5" m="" b=""/>
+				        <content type="image">
+				        	<![CDATA[playerdata/image/head_logo.png]]>
+				        </content>
+				    </timer>
+				    
+				    <timer time="11" delay="5" link="http://www.linksoon.net">
+				    	<style bgClr="0xFFFFFF" bgAlpha="0.5" showClose="false" showTime="false"/>
+				    	<layout w="" h="" l="5" c="" r="" t="" m="" b="5"/>
+				        <content type="image">
+				        	<![CDATA[playerdata/image/head_logo.png]]>
+				        </content>
+				    </timer>
+				    
+				    <timer time="0:0:12" delay="5" link="http://www.linksoon.net">
+				    	<style bgClr="0xFFFFFF" bgAlpha="0.5" showClose="false" showTime="false"/>
+				    	<layout w="" h="" l="" c="" r="5" t="" m="" b="5"/>
+				        <content type="image">
+				        	<![CDATA[playerdata/image/head_logo.png]]>
+				        </content>
+				    </timer>
+				    
+				    <timer time="00:00:13" delay="5" link="http://www.linksoon.net">
+				    	<style bgClr="0xFFFFFF" bgAlpha="0.5" showClose="false" showTime="false"/>
+				    	<layout w="" h="" l="" c="" r="5" t="5" m="" b=""/>
+				        <content type="image">
+				        	<![CDATA[playerdata/image/head_logo.png]]>
+				        </content>
+				    </timer>
+				    
+				    <timer time="00:14" delay="5" link="http://www.linksoon.net">
+				    	<style alpha="0.5" bgClr="0xFFFFFF" bgAlpha="0.5" showClose="false" showTime="false"/>
+				    	<layout w="" h="" l="" c="0" r="" t="" m="0" b=""/>
+				        <content type="image">
+				        	<![CDATA[playerdata/image/head_logo.png]]>
+				        </content>
+				    </timer>
+				    
+				    
+				    <timer time="00:00:05" delay="8" link="">
+				    	<style bgClr="0xFFFFFF" bgAlpha="0.1" showClose="false" showTime="false"/>
+				    	<layout w="" h="" l="" c="0" r="" t="" m="0" b=""/>
+				        <content type="text">
+				        	<![CDATA[<font size="30" face="黑体" color="#FF0000" ><b><a href="http://www.oblog.cn" target="_blank">oVideo</a></b></font>]]>
+				    	</content>
+				    </timer>
+					 -->
+				</ad>
+				
+				<!-- 一个或多个(多语言)字幕文件 -->
+				<!-- 
+				<sublist defaultIndex="1">
+					<sub label="简体中文" tp="srt" charset="utf-8">playerdata/lrc/test.lrc</sub>
+					<sub label="English" tp="ssa" charset="gb2312">playerdata/lrc/As Long As You Love Me.ssa</sub>
+					<sub label="日本语" tp="srt" charset="gb2312">playerdata/lrc/test-ANSI.zip</sub>
+				</sublist>
+				 -->
+			</flv>
+			
+			<flv playtype="0">
+				<title><![CDATA[Super Music Maker]]></title>
+				<shot>playerdata/image/audio_logo.jpg</shot>
+				<sn>a</sn>
+				<enplay>1</enplay>
+				<src>playerdata/media/video.flv</src>
+				<seek>1</seek>
+			</flv>
+			<!--
+			<flv playtype="2">
+				<title><![CDATA[SWF Test]]></title>
+				<sn>aaaaaa</sn>
+				<enplay>0</enplay>
+				<src>
+					<![CDATA[<embed src="http://player.youku.com/player.php/sid/XMTE1MDI5MDgw/v.swf" quality="high" width="640" height="360" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" wmode="opaque"></embed>]]>
+				</src>
+				<seek>1</seek>
+				<playpwd>e10adc3949ba59abbe56e057f20f883e</playpwd>
+			</flv>
+			<flv playtype="0">
+				<title><![CDATA[Garnet Moon]]></title>
+				<sn>b</sn>
+				<enplay>1</enplay>
+				<src>playerdata/media/video.flv</src>
+				<seek>1</seek>
+				<sublist defaultIndex="1">
+					<sub label="日本语" tp="lrc" charset="gb2312">playerdata/lrc/Garnet_Moon.lrc</sub>
+				</sublist>
+			</flv>
+			<flv playtype="0">
+				<title><![CDATA[冰河世纪3]]></title>
+				<sn>c</sn>
+				<enplay>1</enplay>
+				<src>playerdata/media/Ice_Age_3_Trailer.mp4</src>
+				<seek>1</seek>
+			</flv>
+			<flv playtype="0">
+				<title><![CDATA[LOCALHOST/LIVE/CCTV]]></title>
+				<sn>c</sn>
+				<enplay>1</enplay>
+				<src video="cctv">rtmp://localhost/live</src>
+				<seek>1</seek>
+			</flv>
+			-->
+<!-- 			<flv playtype="0"> -->
+<!-- 				<title><![CDATA[Garnet Moon]]></title> -->
+<!-- 				<sn>b</sn> -->
+<!-- 				<enplay>1</enplay> -->
+<!-- 				<src>playerdata/media/video.flv</src> -->
+<!-- 				<hd>  -->
+<!--  					<file><![CDATA[playerdata/media/video.flv]]></file> -->
+<!-- 					<file><![CDATA[playerdata/media/video.flv]]></file> -->
+<!-- 					<file></file>  -->
+<!-- 				</hd> -->
+<!-- 				<seek>1</seek> -->
+<!-- 				<sublist defaultIndex="1"> -->
+<!-- 					<sub label="日本语" tp="lrc" charset="gb2312">playerdata/lrc/Garnet_Moon.lrc</sub> -->
+<!-- 				</sublist> -->
+<!-- 			</flv> -->
+		</list>
+	</flvlist>
+	<!--<itemList flipTime="5" src="playerdata/ItemList.swf" loadAllFirst="0">-->
+	<itemList flipTime="5" src="playerdata/ItemList.swf" loadAllFirst="0">
+		<item>
+			<title><![CDATA[丨湘丨屮的高速]]></title>
+			<publish>oywfgiw</publish>
+			<times>2</times>
+			<duration>00:23</duration>
+			<rank>0</rank>
+			<shot>http://flv.demo.linksoon.net/files/2009-3/img/dcaff60b906a73f2_3.jpg</shot>
+			<link>play.html?c=dcaff60b906a73f2</link>
+		</item>
+		<item><title><![CDATA[嘿嘿]]></title><publish>famichina</publish><times>1</times><duration>01:02</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/images/audio.jpg</shot><link>play.html?c=231a0252331a7ca5</link></item>
+		<item><title><![CDATA[林家小妹—职业讨债经理人]]></title><publish>林家小妹</publish><times>2</times><duration>05:02</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/5d7e96620bc1142d_3.jpg</shot><link>play.html?c=5d7e96620bc1142d</link></item>
+		<item><title><![CDATA[林家小妹愚人节特辑-鬼遮眼]]></title><publish>林家小妹</publish><times>0</times><duration>07:01</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/f7d58ea537dfb41d_3.jpg</shot><link>play.html?c=f7d58ea537dfb41d</link></item>
+		<item><title><![CDATA[片头]]></title><publish>yarken</publish><times>7</times><duration>00:14</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/c6ecaf4007b56054_3.jpg</shot><link>play.html?c=c6ecaf4007b56054</link></item>
+		<item><title><![CDATA[林家小妹校园篇－请假]]></title><publish>林家小妹</publish><times>17</times><duration>03:09</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/f4a192dee31b9338_3.jpg</shot><link>play.html?c=f4a192dee31b9338</link></item>
+		<item><title><![CDATA[狗儿蛋和小雨的美女养成计]]></title><publish>梧桐引凤</publish><times>2</times><duration>01:09</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/c9fd1d217271f93f_3.jpg</shot><link>play.html?c=c9fd1d217271f93f</link></item>
+		<item><title><![CDATA[林家小妹《遇鬼篇》第十九集：夜遇女鬼]]></title><publish>林家小妹</publish><times>1</times><duration>04:16</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/7903fb5251201f21_3.jpg</shot><link>play.html?c=7903fb5251201f21</link></item>
+		<item><title><![CDATA[3.24日浙江宁波江东小诺]]></title><publish>spwmf</publish><times>12</times><duration>00:06</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/35694c2d5d5771a4_1.jpg</shot><link>play.html?c=35694c2d5d5771a4</link></item>
+		<item><title><![CDATA[wode]]></title><publish>jinggegezj</publish><times>1</times><duration>03:09</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/images/audio.jpg</shot><link>play.html?c=5d802bf05b7af64a</link></item>
+		<item><title><![CDATA[3.22日江苏南京市江宁区邵小姐]]></title><publish>spwmfdg</publish><times>14</times><duration>04:50</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/7e28acfa7ef7d02a_3.jpg</shot><link>play.html?c=7e28acfa7ef7d02a</link></item>
+		<item><title><![CDATA[3.21上海市徐汇区顾小姐]]></title><publish>spwmf</publish><times>11</times><duration>04:24</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/5027ade82f66aaaa_3.jpg</shot><link>play.html?c=5027ade82f66aaaa</link></item>
+		<item><title><![CDATA[3.21湖北武汉武昌区张小姐]]></title><publish>spwmf</publish><times>23</times><duration>03:21</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/26ef978d5b0e7bce_3.jpg</shot><link>play.html?c=26ef978d5b0e7bce</link></item>
+		<item><title><![CDATA[3.20日上海浦东新何小姐]]></title><publish>spwmf</publish><times>7</times><duration>06:58</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/b616b6ef233d2339_3.jpg</shot><link>play.html?c=b616b6ef233d2339</link></item>
+		<item><title><![CDATA[zibonews_20090320_073005_074506_0_0_34187973244268877.flv]]></title><publish>beijing</publish><times>6</times><duration>14:59</duration><rank>0</rank><shot>http://flv.demo.linksoon.net/files/2009-3/img/731447eb58d1c4fa_3.jpg</shot><link>play.html?c=731447eb58d1c4fa</link></item>
+	</itemList>
+</config>

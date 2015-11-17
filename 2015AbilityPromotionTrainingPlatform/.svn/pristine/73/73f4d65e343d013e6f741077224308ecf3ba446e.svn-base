@@ -1,0 +1,233 @@
+﻿@{
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <div class="d-form">
+            <ol class="breadcrumb">
+            <li><a href="CourseDetail?TrainingId=@ViewBag.TrainingId">课程制作</a></li>
+            <li class="active">设定考核比例</li>
+            </ol>
+            <div id="blk_ct_course_setup_ratio" class="blk_ct_course_setup_ratio">
+                <h4 class="text-center">设定考核比例（@ViewBag.TrainingInfo.Title）</h4>
+                <div class="row">
+                  <div class="col-xs-12">
+		                <table class="table table-bordered">
+                      <tr>
+                        <td width="180" class="text-right">阅读、影音内容</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="ReadingRate" type="text" class="form-control" maxlength="30"> 
+                            }
+      			            else
+                            {
+                                <input id ="ReadingRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.ReadingRate"> 
+                            }
+                            % 
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">讨论</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="DisscusRate" type="text" class="form-control" maxlength="30"> 
+                            }
+      			            else
+                            {
+                                <input id ="DisscusRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.DisscusRate"> 
+                            }
+                            %
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">作业</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="HomeWorkRate" type="text" class="form-control" maxlength="30"> 
+                            }
+      			            else
+                            {
+                                <input id ="HomeWorkRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.HomeWorkRate"> 
+                            }
+                            %
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">单元测试</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="QuestionRate" type="text" class="form-control" maxlength="30">  
+                            }
+      			            else
+                            {
+                                <input id ="QuestionRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.QuestionRate"> 
+                            }
+                            %
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">结业考试</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="TestingRate" type="text" class="form-control" maxlength="30">  
+                            }
+      			            else
+                            {
+                                <input id ="TestingRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.TestingRate"> 
+                            }
+                            %
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="180" class="text-right">教师评价</td>
+                        <td>
+                            @if(ViewBag.TestRateInfo == null)
+                            {
+                                <input id ="CommentRate" type="text" class="form-control" maxlength="30">  
+                            }
+      			            else
+                            {
+                                <input id ="CommentRate" type="text" class="form-control" maxlength="30" value ="@ViewBag.TestRateInfo.CommentRate"> 
+                            }
+                            %
+                        </td>
+                      </tr>
+                    </table>
+	                </div>
+	                <div class="col-xs-12">
+		                <hr>
+		                <button id ="btnSubmit" class="btn btn-success" style="width:150px;">提交</button>
+		                &nbsp;&nbsp;&nbsp;&nbsp;<a href="/Course/CourseCreate/CourseDetail?TrainingId=@ViewBag.TrainingId">取消</a>
+	                </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+
+        function isFloat(str)   
+        {   
+            if(/^(-?\d+)(\.\d+)?$/.test(str))   
+            {   
+                return true;   
+            }   
+            return false;   
+        }   
+
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            //$('input.input-date').datepicker({});
+
+            //提交按钮单击事件
+            $('#btnSubmit').click(function () {
+                if ($('#ReadingRate').val().trim() == '') {
+                    Alert('请填写阅读、影音内容考核比例！');
+                    $('#ReadingRate').focus();
+                    return false;
+                }
+                else {
+                    if (!isFloat($('#ReadingRate').val()))
+                    {
+                        Alert('阅读、影音内容考核比例为浮点数！');
+                        $('#ReadingRate').focus();
+                        return false;
+                    }
+                }
+
+                if ($('#DisscusRate').val().trim() == '') {
+                    Alert('请填写讨论考核比例！');
+                    $('#DisscusRate').focus();
+                    return false;
+                }
+                else {
+                    if (!isFloat($('#DisscusRate').val())) {
+                        Alert('讨论考核比例为浮点数！');
+                        $('#DisscusRate').focus();
+                        return false;
+                    }
+                }
+
+                if ($('#HomeWorkRate').val().trim() == '') {
+                    Alert('请填写作业内容考核比例！');
+                    $('#HomeWorkRate').focus();
+                    return false;
+                }
+                else {
+                    if (!isFloat($('#HomeWorkRate').val())) {
+                        Alert('作业考核比例为浮点数！');
+                        $('#HomeWorkRate').focus();
+                        return false;
+                    }
+                }
+
+                if ($('#QuestionRate').val().trim() == '') {
+                    Alert('请填写单元测试考核比例！');
+                    $('#QuestionRate').focus();
+                    return false;
+                }
+                else {
+                    if (!isFloat($('#QuestionRate').val())) {
+                        Alert('单元测试考核比例为浮点数！');
+                        $('#QuestionRate').focus();
+                        return false;
+                    }
+                }
+
+                if ($('#TestingRate').val().trim() == '') {
+                    Alert('请填写结业考试考核比例！');
+                    $('#TestingRate').focus();
+                    return false;
+                }
+                else {
+                    if (!isFloat($('#TestingRate').val())) {
+                        Alert('结业考试比例为浮点数！');
+                        $('#TestingRate').focus();
+                        return false;
+                    }
+                }
+
+                if ($('#CommentRate').val().trim() == '') {
+                    Alert('请填写教师评价考核比例！');
+                    $('#CommentRate').focus();
+                    return false;
+                }
+                else {
+                    if (!isFloat($('#CommentRate').val())) {
+                        Alert('教师评价考核比例为浮点数！');
+                        $('#CommentRate').focus();
+                        return false;
+                    }
+                }
+
+                var obj = JSON.stringify({ TrainingId: "@ViewBag.TrainingId", ReadingRate: $("#ReadingRate").val(), DisscusRate: $("#DisscusRate").val(), HomeWorkRate: $("#HomeWorkRate").val(), QuestionRate: $("#QuestionRate").val(), TestingRate: $("#TestingRate").val(), CommentRate: $("#CommentRate").val() });
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    contentType: 'application/json',
+                    url: '/CourseCreate/EditCourseDetail',
+                    data: obj,
+                    dataType: 'json',
+                    success: function (data) {
+                        Alert(data.Msg);
+                    },
+                    error: function () {
+                    }
+                });
+            });
+        });
+    });
+</script>

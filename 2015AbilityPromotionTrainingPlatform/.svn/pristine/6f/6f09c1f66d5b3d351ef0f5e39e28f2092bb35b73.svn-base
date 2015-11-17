@@ -1,0 +1,35 @@
+﻿@using Dianda.AP.Model;
+@{
+    ViewBag.Title = "培训公告详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    News_Detail Model = ViewBag.Model as News_Detail;
+}
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div class="d-announcement">
+                    <ol class="breadcrumb">
+                        @if(ViewData["State"].ToString()=="Index")
+                        {
+                             <li><a href="@Url.Action("Index", "News")">返回培训公告管理</a></li>
+                        }else{
+                            <li><a href="@Url.Action("List", "News")">返回培训公告列表</a></li>
+                        }
+                    </ol>
+                    <div id="blk_announcement" class="blk_announcement">
+
+                        <h3 class="text-center">@Model.Title</h3>
+                            <div class="text-center">@Model.PublishDate.ToString("yyyy-MM-dd")</div>
+                            <hr>
+                        <div class="content"><pre style="background-color:transparent;word-break:break-all; word-wrap:break-word;overflow:hidden;border:none;font-size:15px;">@Model.Content</pre></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

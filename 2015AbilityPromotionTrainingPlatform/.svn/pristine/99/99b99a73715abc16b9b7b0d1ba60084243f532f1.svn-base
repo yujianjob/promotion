@@ -1,0 +1,39 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-3"><a href="#" class="logo"><img src="/jnpx/dist/common/i/logo.png"></a></div>
+		<div class="col-xs-4">
+			<form class="form-inline">
+			  <div class="form-group">
+			    <div class="input-group">
+			      <div class="input-group-addon">
+			      	<span class="glyphicon glyphicon-th-list"></span>&nbsp;
+			      	<span>目录</span>
+			      </div>
+			      <input type="text" class="form-control" style="width:240px;">
+			      <div class="input-group-addon bg-white">
+			      	<span class="glyphicon glyphicon-search"></span>
+			      </div>
+			    </div>
+			  </div>
+			</form>
+		</div>
+		<div class="col-xs-5 text-right">
+			<a href="/jnpx/dist/admincity/announcement-list.html" class="i">培训公告</a>
+			<span class="i">
+				管理功能&nbsp;<span class="caret"></span>
+				<div class="menu">
+					<div class="sub">
+						<a href="/jnpx/dist/admincity/audit-course-list.html">课程审核</a>
+						<a href="/jnpx/dist/admincity/audit-class-list.html">班级审核</a>
+						<a href="/jnpx/dist/admincity/certificate-list.html">证书管理</a>
+						<a href="/jnpx/dist/admincity/setup-term.html">学期设置</a>
+						<a href="/jnpx/dist/admincity/setup-period.html">标准设定-学时设定</a>
+						<a href="/jnpx/dist/admincity/setup-range.html">标准设定-必选课程设定</a>
+						<a href="/jnpx/dist/admincity/import-exemption-credit.html">免修学分导入</a>
+					</div>
+				</div>
+			</span>
+			<a href="#" class="i b">冯伟</a>
+		</div>
+	</div>
+</div>

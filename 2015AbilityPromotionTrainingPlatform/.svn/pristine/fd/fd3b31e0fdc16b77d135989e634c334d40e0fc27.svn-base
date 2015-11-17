@@ -1,0 +1,135 @@
+<div class="d-search">
+
+	<form class="form-inline">
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部状态</option>
+	    	<option value="">待审核</option>
+        <option value="">已通过</option>
+        <option value="">不通过</option>
+	    </select>
+	  </div>
+		<div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部教师</option>
+	    	<option value="">李红</option>
+	    	<option value="">王晓明</option>
+	    	<option value="">孙俪</option>
+	    </select>
+	  </div>
+		<div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部类型</option>
+        <option value="">活动</option>
+        <option value="">晒课</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <input type="text" class="form-control" placeholder="姓名、师训编号、身份证、课程名称搜索" style="width:300px;">
+	  </div>
+	  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+	</form>
+
+	<div class="action">
+		<a href="teacher-practice-add.html" class="btn btn-success">新增实践记录</a>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>姓名</th>
+				<th>师训编号</th>
+				<th>课程名称</th>
+				<th>上传时间</th>
+				<th>上传者</th>
+        <th>类型</th>
+        <th>课时</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+      <tr>
+				<td>李红</td>
+				<td>11023101231</td>
+				<td>学校化学学科组教师实践活动</td>
+				<td>2015-09-02</td>
+				<td>郑焕新</td>
+        <td>活动</td>
+        <td>10课时</td>
+				<td>
+					<a href="javascript:;" onclick="">重新审核</a>
+				</td>
+			</tr>
+      <tr>
+        <td>李红</td>
+        <td>11023101231</td>
+        <td>化学课程</td>
+        <td>2015-09-01</td>
+        <td>李红</td>
+        <td>晒课</td>
+        <td>15课时</td>
+        <td>
+          <a href="javascript:;" onclick="">审核</a>
+        </td>
+      </tr>
+      <tr>
+        <td>王晓华</td>
+        <td>11023101231</td>
+        <td>学校化学学科组教师实践活动</td>
+        <td>2015-09-02</td>
+        <td>郑焕新</td>
+        <td>活动</td>
+        <td>10课时</td>
+        <td>
+          <a href="javascript:;" onclick="">重新审核</a>
+        </td>
+      </tr>
+      <tr>
+        <td>王明明</td>
+        <td>11023101231</td>
+        <td>学校化学学科组教师实践活动</td>
+        <td>2015-09-02</td>
+        <td>郑焕新</td>
+        <td>活动</td>
+        <td>10课时</td>
+        <td>
+          <a href="javascript:;" onclick="">重新审核</a>
+        </td>
+      </tr>
+      <tr>
+        <td>李丽</td>
+        <td>11023101231</td>
+        <td>学校化学学科组教师实践活动</td>
+        <td>2015-09-02</td>
+        <td>郑焕新</td>
+        <td>活动</td>
+        <td>10课时</td>
+        <td>
+          <a href="javascript:;" onclick="">重新审核</a>
+        </td>
+      </tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

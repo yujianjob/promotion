@@ -1,0 +1,412 @@
+﻿@model IList<Dianda.AP.Model.Class_Detail>
+@{
+    ViewBag.Title = "班级开班";
+    Layout = Url.Content("~/Views/Shared/LinkLayout.cshtml");
+}
+<body>
+
+    <div class="d-h">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="d-page-title">班级开班</div>
+                    <hr>
+                    <div data-km-htm="blk_ac_audit_class_list.html" class="blk_ac_audit_class_list" id="blk_ac_audit_class_list">
+                        <div class="d-search">
+
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <select class="form-control" id="plan" style="width: 200px">
+                                        <option value="">全部选课学期</option>
+                                        @if (ViewBag.PlanList != null && ViewBag.PlanList.Count > 0)
+                                        {
+                                            foreach (var item in ViewBag.PlanList)
+                                            {
+                                            <option value="@item.Id">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="subject">
+                                        <option value="">全部学科</option>
+                                        @if (ViewBag.SubjectList != null && ViewBag.SubjectList.Count > 0)
+                                        {
+                                            foreach (var item in ViewBag.SubjectList)
+                                            {
+                                            <option value="@item.Id">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="organ">
+                                        <option value="">全部机构</option>
+                                        @if (ViewBag.OrganList != null && ViewBag.OrganList.Count > 0)
+                                        {
+                                            foreach (var item in ViewBag.OrganList)
+                                            {
+                                            <option value="@item.Id">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="status">
+                                        <option value="">全部状态</option>
+                                        <option value="2">待审核</option>
+                                        <option value="3">已通过</option>
+                                        <option value="4">不通过</option>
+                                        <option value="5">已开班</option>
+                                        <option value="6">已结业</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input id="searchTxt" type="text" placeholder="课程、班级搜索" class="form-control">
+                                </div>
+                                <button class="btn btn-default" type="button" onclick="search();"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                            </form>
+
+                            <div class="action">
+                                <a class="btn btn-success" href="#" onclick="Audit('1')">批量通过</a>
+
+                                <a class="btn btn-success" href="#" onclick="Audit('0')">批量不通过</a>
+                            </div>
+
+                        </div>
+
+                        <div class="d-datatable">
+
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="form-group">
+                                                <label class="chk vtack">
+                                                    <input id="chkAll" onclick="chkAll();" type="checkbox" value="1" name="a11"></label>
+
+                                            </div>
+                                        </th>
+                                        <th>班级名称</th>
+                                        <th>课程名称</th>
+                                        <th>辅导员</th>
+                                        <th>报名日期</th>
+                                        <th>开班日期</th>
+                                        <th>审核状态</th>
+                                        <th>报名进度</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Count > 0)
+                                    {
+                                        var traningBll = new Dianda.AP.BLL.Traning_DetailBLL();
+                                        var managerBll = new Dianda.AP.BLL.PlatformManager_DetailBLL();
+                                        var memberBll = new Dianda.AP.BLL.Member_BaseInfoBLL();
+                                        foreach (var item in Model)
+                                        {
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+
+                                                    @if (item.Status == 2)
+                                                    {
+                                                        <label class="chk">
+                                                            <input onclick="chk();" type="checkbox" value="@item.Id" name="a12"></label>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td nowrap>@item.Title</td>
+                                            <td nowrap>@{ 
+                                                    var traing = traningBll.GetModel(item.TraningId, "");
+                                                    if (traing != null)
+                                                    {
+                                                @traing.Title
+                                                    }
+                                            }</td>
+                                            <td nowrap>@{ if (item.Instructor != 0)
+                                                          {
+                                                              var platform = new Dianda.AP.BLL.PlatformManager_DetailBLL().GetModel(item.Instructor, "");
+                                                              if (platform != null)
+                                                              {
+                                                                  var member = memberBll.GetListModel(" AccountId=" + platform.AccountId);
+                                                                  if (member != null && member.Count > 0)
+                                                                  { @member.First().RealName <span>&nbsp;</span> @member.First().Mobile}
+                                                              }
+                                                          }
+                                            }
+                                            </td>
+                                            <td nowrap>@{ @item.SignUpStartTime.ToString("yyyy-MM-dd")<span></span> @item.SignUpEndTime.ToString("yyyy-MM-dd") }</td>
+                                            <td nowrap>@{ @item.OpenClassFrom.ToString("yyyy-MM-dd")<span></span> @item.OpenClassTo.ToString("yyyy-MM-dd") }</td>
+                                            <td nowrap>
+                                                @{ 
+                                                          string style = "";
+                                                          string status = "";
+                                                          switch (item.Status)
+                                                          {
+                                                              case 1:
+                                                                  style = "text-warning";
+                                                                  status = "草稿";
+                                                                  break;
+                                                              case 2:
+                                                                  style = "text-warning";
+                                                                  status = "待审核";
+                                                                  break;
+                                                              case 3:
+                                                                  style = "text-success";
+                                                                  status = "已通过";
+                                                                  break;
+                                                              case 4:
+                                                                  style = "text-danger";
+                                                                  status = "不通过";
+                                                                  break;
+                                                              case 5:
+                                                                  style = "text-primary";
+                                                                  status = "已开班";
+                                                                  break;
+                                                              case 6:
+                                                                  style = "text-muted";
+                                                                  status = "已结业";
+                                                                  break;
+                                                              case 7:
+                                                                  style = "text-muted";
+                                                                  status = "已撤销";
+                                                                  break;
+                                                          }
+                                                    <span class='@style'>@status</span>
+                                                }
+                                            </td>
+                                            <td nowrap>@{ @item.People}/@{if (item.LimitPeopleCnt == -1)
+                                                                          {@("不限")}
+                                                                          else
+                                                                          {@(item.LimitPeopleCnt) } }</td>
+                                            <td nowrap>
+                                                <a   href="@Url.Action("ClassAuditDetail", "ClassAudit", new { id = item.Id, doaction = "doaction" })">查看&nbsp;</a>
+
+                                                @if (item.Status == 1 || item.Status == 2)
+                                                {
+                                                    <a  target="_blank" href="@Url.Action("ClassAuditDetail", "ClassAudit", new { id = item.Id })">审核&nbsp;</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                        }
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                        @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, pagecount = @ViewBag.totalPage, basecount = @ViewBag.basecount })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function doAudit(id) {
+            $('#ClassId').val(id);
+            $('#myModal').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function auditSubmit() {
+            if ($("input[name='a13']:checked").val() == undefined) {
+                Alert('请选择审核结果!');
+                return;
+            }
+            if ($("input[name='a13']:checked").val() == '0' && $("#Remark").val() == '') {
+                Alert('请填审核内容!');
+                return;
+            }
+            var ids = $('#ClassId').val();
+            ClassAction('audit', ids, $("input[name='a13']:checked").val(), $("#Remark").val());
+        }
+        function Audit(val) {
+            var ids = '';
+            $("input[name='a12']:checked").each(function () {
+                ids += $(this).val() + ',';
+
+            });
+
+            if (ids == '') {
+                alert('请选择班级!');
+                return;
+            }
+            if (confirm('确定进行批量操作吗?'))
+                ClassAction('audit', ids, val);
+        }
+        function chk(id) {
+            if ($('#' + id).attr('checked') == undefined || $('#' + id).attr('checked') == '') {
+                $('#' + id).attr('checked', "checked");
+            }
+            else {
+                $('#' + id).removeAttr('checked');
+            }
+            if (id == 'r2') {
+                document.getElementById('UnpassRemark').style.display = "block";
+            }
+            else {
+                document.getElementById('UnpassRemark').style.display = "none";
+            }
+        }
+        function chkAll() {
+
+            if ($("#chkAll").attr('checked') == undefined || $("#chkAll").attr('checked') == '') {
+                $("#chkAll").attr('checked', "checked");
+            }
+            else {
+                $("#chkAll").removeAttr('checked');
+            }
+
+            $("input[name='a12']").each(function () {
+                $(this).prop('checked', $("#chkAll").prop('checked'));
+            });
+
+        }
+
+        $(".chk :radio").on('click', function () {
+            if ($(this).attr('checked') == undefined || $(this).attr('checked') == '') {
+                $(this).attr('checked', "checked");
+            }
+            else {
+                $(this).removeAttr('checked');
+            }
+        });
+
+        function getParamValue(paramName) {
+            var url = window.location.href;
+            var paramIndex = url.indexOf('?');
+            var param = url.substring(paramIndex + 1, url.length);
+            var paraArr = param.split('&');
+            for (var i = 0; i < paraArr.length; i++) {
+                if (paraArr[i].indexOf(paramName) > -1) {
+                    return paraArr[i].split('=')[1];
+                }
+            }
+            return -1;
+        }
+        $(document).ready(function () {
+            $('#ClassId').val('');
+            $("input[name='a12']").each(function () {
+                $(this).prop('checked', '');
+            });
+            $("input[name='a13']").each(function () {
+                $(this).prop('checked', '');
+            });
+            $('#Remark').val('');
+            if (getParamValue('param_plan') > -1) {
+                $('#plan').val(getParamValue('param_plan'));
+            }
+            if (getParamValue('param_subject') > -1) {
+                $('#subject').val(getParamValue('param_subject'));
+            }
+            if (getParamValue('param_status') > -1) {
+                $('#status').val(getParamValue('param_status'));
+            }
+            if (getParamValue('param_organ') > -1) {
+                $('#organ').val(getParamValue('param_organ'));
+            }
+            if (getParamValue('param_searchTxt') > -1) {
+                $('#searchTxt').text(getParamValue('param_searchTxt'));
+            }
+        });
+        function search() {
+            var param_plan = $("#plan").val();
+            var param_subject = $("#subject").val();
+            var param_status = $("#status").val();
+            var param_organ = $("#organ").val();
+            var param_searchTxt = $("#searchTxt").val();
+
+            window.location.href = "?param_plan=" + param_plan + "&param_subject=" + param_subject + "&param_organ=" + param_organ
+            + "&param_status=" + param_status + "&param_searchTxt=" + param_searchTxt;
+        }
+
+        function ClassAction(action, id, val, remark) {
+            $.ajax({
+                type: 'get',
+                url: '/ClassAudit/ClassAction',
+                data: { strAction: action, Ids: id, Val: val, Remark: remark },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        Alert(result.Msg);
+                        window.location.reload();
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    alert('服务器错误！');
+                }
+            });
+        }
+    </script>
+    <input id="ClassId" type="hidden" />
+
+    <div class="modal fade blk_modal_add_class_notify" id="myModal" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">开班审核</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <label class="control-label">审核结果 <span class="text-danger">*</span></label>
+                                <label class="chk">
+                                    <input id="r1" onclick="chk('r1');" type="radio" name="a13" value="1">
+                                    通过
+                                </label>
+                                <label class="chk">
+                                    <input id="r2" onclick="chk('r2');" type="radio" name="a13" value="0">
+                                    不通过
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-8" id="UnpassRemark" style="display: none;">
+                            <div class="form-group">
+                                <label class="control-label">原因 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" maxlength="30" id="Remark">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                @* <div class="modal-body">
+                    
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="chk vtack">
+                                    <input onclick="chk();" type="radio" value="1" name="a13"></label>通过
+                                   <label class="chk vtack">
+                                       <input onclick="chk();" type="radio" value="0" name="a13"></label>不通过
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label">内容</label>
+                                <textarea style="height: 200px;" class="form-control" id="Remark"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>*@
+                <div class="modal-footer">
+                    <button onclick="auditSubmit()" class="btn btn-success" type="button">提交</button>
+                    <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>

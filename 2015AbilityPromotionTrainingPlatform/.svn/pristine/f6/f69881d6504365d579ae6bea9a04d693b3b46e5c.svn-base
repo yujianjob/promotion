@@ -1,0 +1,138 @@
+﻿@using Dianda.AP.Model;
+@{
+    ViewBag.Title = "培训公告列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<SelectListItem> planlist = ViewData["Plan"] as List<SelectListItem>;
+    List<News_Detail> list = ViewBag.GetList as List<News_Detail>;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+@{
+    List<SelectListItem> newslist = new List<SelectListItem>
+     {
+        new SelectListItem{Text="市级公告",Value="1"},
+        new SelectListItem{Text="区级公告",Value="2"},
+        new SelectListItem{Text="培训机构公告",Value="3"},
+        new SelectListItem{Text="进修学校公告",Value="4"},
+        new SelectListItem{Text="校级公告",Value="5"}
+     };
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">培训公告</div>
+                <hr>
+                <div id="blk_ln_course_notice" class="blk_ln_course_notice">
+                    <div class="d-search">
+                        @using (Html.BeginForm("List", "News", FormMethod.Post, new { @class = "form-inline" }))
+                        {
+                            <div class="form-group">
+                                @Html.DropDownList("wheretype", newslist, "请选择公告", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.DropDownList("whereplan", planlist, "请选择计划", new { @class = "form-control" })
+                            </div>
+                            <div style="display: none;">
+                                <input type="submit" value="查询" class="btn-1" />
+                            </div>
+                        }
+                    </div>
+                    <hr>
+                        @if(list.Count>0)
+                        {
+                        for (int i = 0; i < list.Count; i++)
+                        { 
+                            <div class="i" style="word-break:break-all; word-wrap:break-word;">
+                             <a href="@Url.Action("Details", "News", new { id=list[i].Id,State="List"})"><span class="title">@list[i].Title</span></a>
+                            <span class="date">@list[i].PublishDate.ToString("yyyy-MM-dd")</span>
+                            @if(list[i].Content.Length>50)
+                                {
+                                    <div class="content">@list[i].Content.Substring(0,50) ...</div>
+                                }else
+                                {
+                                    <div class="content">@list[i].Content</div>
+                                }
+                            <div class="action">&nbsp;</div>
+                    </div>
+                            
+                        }
+                        }else
+                        {
+                            <div class="i">
+                                <span style="font-size:18px;">暂无公告！！！</span>
+                            </div>
+                        }
+                    <hr>
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            @if(@ViewData["pageCount"].ToString()=="0")
+                            {
+                                <span>总页数 1</span>
+                            }else
+                            {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                            }
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="@Url.Action("List", "News", new { PageIndex = 1, Type = ViewData["Type"] })">首页</a>
+                            <a id="OnPage" href="@Url.Action("List", "News", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) - 1, Type = ViewData["Type"] })">上一页</a>
+                            <a id="NextPage" href="@Url.Action("List", "News", new { PageIndex = int.Parse(ViewData["pageIndex"].ToString()) + 1, Type = ViewData["Type"] })">下一页</a>
+                            <a id="LastPage" href="@Url.Action("List", "News", new { PageIndex = int.Parse(ViewData["pageCount"].ToString()), Type = ViewData["Type"] })">尾页</a>
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#GoBtn").click(function () {      //输入页数跳转页面
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (parseInt(index) > parseInt(pagecount)) {
+            alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = '/Prepare/News/List?wheretype=@ViewData["wheretype"]&whereplan=@ViewData["whereplan"]&pageIndex=' + index + '';
+        }
+    });
+
+    $(document).ready(function () {     //页面加载事件
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10 || index == pagecount) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+    })
+
+    $("#wheretype").change(function () {
+        $(".btn-1").click();
+    })
+
+    $("#whereplan").change(function () {
+        $(".btn-1").click();
+    })
+
+</script>

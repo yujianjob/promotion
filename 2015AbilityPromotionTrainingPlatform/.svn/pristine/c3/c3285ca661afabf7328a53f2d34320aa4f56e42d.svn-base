@@ -1,0 +1,465 @@
+﻿@using Dianda.AP.Model;
+
+@model Traning_Detail
+
+@{
+    ViewBag.Title = "新增";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+
+<div class="d-h">
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <div class="d-form">
+            <ol class="breadcrumb">
+            <li><a href="@Url.Action("List")">课程上报</a></li>
+            <li class="active">上报新课程</li>
+            </ol>
+            <div id="blk_course_add" class="blk_course_add">
+
+                @using (Html.BeginForm("Add", "TrainingApply", null, FormMethod.Post, new { id = "FormAdd", enctype = "multipart/form-data" }))
+                {
+
+                <h4 class="text-center">上报新课程</h4>
+                <div class="row">
+	                <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">课程名称 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="Title">此项为必填内容</span></label>
+                            @Html.TextBoxFor(model => model.Title, new { @class = "form-control", maxlength = "30" })
+		                </div>
+	                </div>
+
+                    <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">培训平台类型 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="OutSideTypeValue">此项为必填内容</span></label>
+                            <label class="chk">
+                                <input type="radio" name="OutSideType" class="OutSideType" value="-1" /> 内部平台
+                            </label>
+                            <label class="chk">
+                                <input type="radio" name="OutSideType" class="OutSideType" value="0" /> 外部平台
+                            </label>
+                            @Html.Hidden("OutSideTypeValue")
+		                </div>
+	                </div>
+
+                    <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">区级/市级 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="RangeValue">此项为必填内容</span></label>
+			                <label class="chk">
+				                <input type="radio" name="Range" class="Range" value="1"> 区级
+			                </label>
+			                <label class="chk">
+				                <input type="radio" name="Range" class="Range" value="2"> 市级
+			                </label>
+                            @Html.Hidden("RangeValue")
+		                </div>
+	                </div>
+
+	                <div class="col-xs-6 out-side-link" style="display:none;">
+		                <div class="form-group">
+			                <label class="control-label">外部平台关联标识 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="OutSideLink">此项为必填内容</span></label>
+                            @Html.TextBoxFor(model => model.OutSideLink, new { @class = "form-control", maxlength = "30" })
+		                </div>
+	                </div>
+
+	                <div class="col-xs-10 Training-Field">
+		                <div class="form-group">@Html.Hidden("TraingFieldValue")
+			                <label class="control-label">课程类别 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TraingFieldValue">此项为必填内容</span></label>
+			                <label class="chk">
+				                <input type="radio" name="TraingField" value="1" onclick="SelectField(this);"> 通识课程
+			                </label>
+			                <label class="chk">
+				                <input type="radio" name="TraingField" value="2" onclick="SelectField(this);"> 专业课程
+			                </label>
+		                </div>
+	                </div>
+
+
+
+                    <div class="col-xs-12 Training-Category" style="display:none;">
+		                <div class="form-group">@Html.Hidden("TraingCategoryValue")
+			                <label class="control-label">课程小类 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TraingCategoryValue">此项为必填内容</span></label>
+			                    
+		                </div>
+	                </div>
+
+                    <div class="col-xs-12 Training-Topic" style="display:none;">
+		                <div class="form-group">@Html.Hidden("TraingTopicValue")
+			                <label class="control-label">课程主题 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TraingTopicValue">此项为必填内容</span></label>
+			                    
+		                </div>
+	                </div>
+
+	                <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">适用培训对象 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TraningObject">此项为必填内容</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.TrainingObjectData)
+                            {
+                                <label class="chk">
+                                    <input type="checkbox" value="@item.Id"> @item.Title
+                                </label>
+                            }
+                            @Html.Hidden("TraningObject")
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">任教学科 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="Subject">此项为必填内容</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.SubjectData)
+                            {
+                                <label class="chk">
+                                    <input type="checkbox" value="@item.Id"> @item.Title
+                                </label>
+                            }
+                            @Html.Hidden("Subject")
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">任教学段 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="StudyLevel">此项为必填内容</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.StudyLevelData)
+                            {
+                                <label class="chk">
+                                    <input type="checkbox" value="@item.Id"> @item.Title
+                                </label>
+                            }
+                            @Html.Hidden("StudyLevel")
+		                </div>
+	                </div>
+	                <div class="col-xs-6">
+		                <div class="form-group">
+			                <label class="control-label">课程课时 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TotalTime">此项为必填内容</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TotalTime" validtype="number">必须为数字</span></label>
+			                @*<input type="text" class="form-control" maxlength="30">*@
+                            @Html.TextBoxFor(model => model.TotalTime, new { @class = "form-control", maxlength = "30" })
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group form-inline">
+			                <label class="control-label">课程图标 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="PicValue PicType">此项为必填内容</span></label>
+			                <button class="btn btn-default" type="button" style="margin-bottom:10px;" onclick="doSelectPicture()">选择提供的图片</button>&nbsp;
+			                <input type="file" maxlength="30" class="form-control" id="Pic" name="Pic" accept=".jpg,.jpeg,.gif,.png" />
+                            @Html.Hidden("PicValue")
+                            @Html.Hidden("PicType")
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">培训形式 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TrainingFormValue">此项为必填内容</span></label>
+                            @foreach (Traning_InfoFk item in ViewBag.TrainingFormData)
+                            {
+                                <label class="chk" style="width:160px;">
+                                    <input type="radio" name="TrainingForm" class="TrainingForm" value="@item.Id"> @item.Title
+                                </label>
+                            }
+                            @Html.Hidden("TrainingFormValue")
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group form-inline">
+			                <label class="control-label">课程讲师 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="TeacherName TeacherFrom TeacherPic TeacherTitleValue">此项为必填内容</span></label>
+                            @Html.DropDownList("TeacherTitle", new SelectList(ViewBag.TeacherTitleData, "Id", "Title"), "选择称谓", new { @class = "form-control" })&nbsp;
+			                <input type="text" class="form-control" placeholder="讲师名称" name="TeacherName" id="TeacherName">&nbsp;
+			                <input type="text" class="form-control" placeholder="来自..." name="TeacherFrom" id="TeacherFrom">&nbsp;
+			                <input type="file" class="form-control" name="TeacherPic" id="TeacherPic" accept=".jpg,.jpeg,.gif,.png">
+                            @Html.Hidden("TeacherTitleValue")
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">课程简介 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="Content">此项为必填内容</span></label>
+			                <textarea class="form-control" name="Content" id="Content" style="height:200px;"></textarea>
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">课程大纲 <span class="text-danger">*</span> <span class="input-valid" style="color:#ff0000;font-weight:normal;display:none;" validfor="Outline">此项为必填内容</span></label>
+			                <textarea class="form-control" name="Outline" id="Outline" style="height:200px;"></textarea>
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <div class="form-group">
+			                <label class="control-label">相关申请材料附件</label>
+                            <div class="form-control" style="overflow:hidden;height:auto;">
+                                <div style="float:left;width:300px;">
+			                        <input type="file" maxlength="30" id="AttachUpload">
+                                    <a href="javascript:$('#AttachUpload').uploadify('upload', '*')">上传</a>
+                                </div>
+                                <div style="float:right;width:500px;padding:5px 0;" id="AttachNameList">
+                                        
+                                </div>
+                                @Html.Hidden("AttachPathList")
+                            </div>
+		                </div>
+	                </div>
+	                <div class="col-xs-12">
+		                <hr>
+                        <button class="btn btn-success" style="width:100px;" name="submit" value="保存">保存</button>&nbsp;
+		                <button class="btn btn-success" style="width:150px;" name="submit" value="保存并提交">保存并提交</button>
+		                &nbsp;&nbsp;&nbsp;&nbsp;<a href="@Url.Action("List")">取消</a>
+	                </div>
+                </div>
+
+                }
+
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+    
+
+<div id="blk_modal_select_picture" class="modal fade blk_modal_select_picture">
+    @Html.Partial("SelectTrainingPicParital")
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            var msg = '@TempData["Msg"]';
+            if (msg != '') {
+                Alert(msg);
+            }
+
+            $('input.input-date').datepicker({});
+
+            //提交时验证表单
+            $('#FormAdd').submit(function () {
+                var result = true;
+                //验证表单
+                $('.input-valid').each(function () {
+                    $(this).css('display', 'none');
+                    if (typeof ($(this).attr('validfor')) != 'undefined') {
+                        var validFields = $(this).attr('validfor').split(' ');
+                        for (var i = 0; i < validFields.length; i++) {
+                            var field = validFields[i];
+                            //验证必填
+                            if ($('#' + field).val() == '') {
+                                $(this).css('display', 'inline-block');
+                                result = false;
+                                break;
+                            }
+                            //验证数字
+                            if ($(this).attr('validtype') == 'number' && !(/^[0-9]*$/).test($('#' + field).val())) {
+                                $(this).css('display', 'inline-block');
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                return result;
+            });
+
+            //上传附件
+            $('#AttachUpload').UploadFile({
+                multi: true,
+                queueSizeLimit: 3,
+                fileTypeExts: '*.zip; *.rar; *.7z; *.pdf; *.doc; *.txt; *.xls',
+                uploader: '/Entrance/Login/UploadAttach',
+                onUploadSuccess: function (file, data, response) {
+                    if (response) {
+                        var myData = $.parseJSON(data);
+                        if (myData.Result) {
+                            $('#AttachNameList').append('<p>' + file.name + ' <a href="javascript:void(0)" onclick="RemoveAttach(this);" fileid="0" src="' + myData.Msg + '" filename="' + file.name + '">删除</a></p>');
+                            $('#AttachPathList').val($('#AttachPathList').val() + '0|' + file.name + '|' + myData.Msg + ':');
+                        } else {
+                            Alert(myData.Msg);
+                        }
+                    }
+                    else {
+                        Alert('服务器没有响应！');
+                    }
+                }
+            });
+
+            //选择学科
+            var objects = $('#Subject').parent().find('input[type=checkbox]');
+            objects.click(function () {
+                var str = '';
+                $('#Subject').parent().find('input[type=checkbox]:checked').each(function () {
+                    str += $(this).val() + ',';
+                });
+                if (str.length > 0)
+                    str = str.substr(0, str.length - 1);
+                $('#Subject').val(str);
+            });
+
+            //选择学段
+            var objects = $('#StudyLevel').parent().find('input[type=checkbox]');
+            objects.click(function () {
+                var str = '';
+                $('#StudyLevel').parent().find('input[type=checkbox]:checked').each(function () {
+                    str += $(this).val() + ',';
+                });
+                if (str.length > 0)
+                    str = str.substr(0, str.length - 1);
+                $('#StudyLevel').val(str);
+            });
+
+            //选择培训对象
+            var objects = $('#TraningObject').parent().find('input[type=checkbox]');
+            objects.click(function () {
+                var str = '';
+                $('#TraningObject').parent().find('input[type=checkbox]:checked').each(function () {
+                    str += $(this).val() + ',';
+                });
+                if (str.length > 0)
+                    str = str.substr(0, str.length - 1);
+                $('#TraningObject').val(str);
+            });
+
+            //选择培训平台类型
+            $('.OutSideType').click(function () {
+                $('#OutSideTypeValue').val($(this).val());
+                if ($(this).val() == '-1') {
+                    $('.out-side-link').attr("style", "display:none");
+                    $('.out-side-link .input-valid').removeAttr('validfor');
+                }
+                if ($(this).val() == '0') {
+                    $('.out-side-link').removeAttr("style");
+                    $('.out-side-link .input-valid').attr('validfor', 'OutSideLink');
+                }
+            });
+
+            //选择区/市
+            $('.Range').click(function () {
+                $('#RangeValue').val($(this).val());
+            });
+
+            //选择培训形式
+            $('.TrainingForm').click(function () {
+                $('#TrainingFormValue').val($(this).val());
+            });
+
+            //选择讲师称谓
+            $('#TeacherTitle').change(function () {
+                $('#TeacherTitleValue').val($(this).val());
+            });
+
+            //选择教视图标
+            $('#TeacherPic').change(function () {
+                $('#TeacherPicValue').val($(this).val());
+            });
+
+            //选择课程图标
+            $('#Pic').change(function () {
+                $('#PicValue').val($(this).val());
+                $('#PicType').val(2);
+            });
+
+        });
+    });
+
+    var fieldId = 0, categoryId = 0, topicId = 0;
+
+    //课程大类选择事件
+    function SelectField(e) {
+        if ($(e).val() != fieldId) {
+            $('.Training-Topic').attr('style', 'display:none');
+            $('#TraingCategoryValue').val('');
+            categoryId = 0;
+            $('#TraingTopicValue').val('');
+            topicId = 0;
+            fieldId = $(e).val();
+            $('#TraingFieldValue').val(fieldId);
+            $.ajax({
+                url: 'AjaxTrainingCategory',
+                type: 'get',
+                dataType: 'text',
+                data: { FieldId: fieldId },
+                success: function (data) {
+                    var myData = $.parseJSON(data);
+                    $('.Training-Category .control-label').nextAll().remove();
+                    for (var i = 0; i < myData.length; i++) {
+                        var category = myData[i];
+                        $('.Training-Category .form-group').append('<label class="chk"><input type="radio" onclick="SelectCategory(this);" name="TraingCategory" value="' + category.Id + '" /> ' + category.Title.substring(0, 6) + '</label>');
+                    }
+                    $('.Training-Category').attr('style', 'display:block');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    if (XMLHttpRequest.status == 302) {
+                        eval(XMLHttpRequest.responseText);
+                    }
+                }
+            });
+        }
+    }
+
+    //课程小类选择事件
+    function SelectCategory(e) {
+        if ($(e).val() != categoryId) {
+            $('#TraingTopicValue').val('');
+            topicId = 0;
+            categoryId = $(e).val();
+            $('#TraingCategoryValue').val(categoryId);
+            $.ajax({
+                url: 'AjaxTrainingTopic',
+                type: 'get',
+                dataType: 'text',
+                data: { CategoryId: categoryId },
+                success: function (data) {
+                    var myData = $.parseJSON(data);
+                    $('.Training-Topic .control-label').nextAll().remove();
+                    for (var i = 0; i < myData.length; i++) {
+                        var topic = myData[i];
+                        $('.Training-Topic .form-group').append('<label class="chk"><input type="radio" onclick="SelectTopic(this);" name="TraingTopic" value="' + topic.Id + '" /> ' + topic.Title.substring(0, 6) + '</label>');
+                    }
+                    $('.Training-Topic').attr('style', 'display:block');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    if (XMLHttpRequest.status == 302) {
+                        eval(XMLHttpRequest.responseText);
+                    }
+                }
+            });
+        }
+    }
+
+    //课程主题选择事件
+    function SelectTopic(e) {
+        if ($(e).val() != categoryId) {
+            topicId = $(e).val();
+            $('#TraingTopicValue').val(topicId);
+        }
+    }
+
+    //移除附件
+    function RemoveAttach(e) {
+        var path = $(e).attr('src');
+        var fileName = $(e).attr('filename');
+        $('#AttachPathList').val($('#AttachPathList').val().replace('0,' + fileName + ',' + path + ':', ''));
+        $(e).parent().remove();
+    }
+
+    //选择本地图片
+    function doSelectPicture(){
+        $('#blk_modal_select_picture').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+
+    //function doSelectPictureSubmit(){
+    //    $('#blk_modal_select_picture').modal('hide');
+    //}
+
+    //本地图片子窗体触发事件
+    function AfterSelectPictureSubmit(data) {
+        $('#blk_modal_select_picture').modal('hide');
+        $('#PicValue').val(data);
+        $('#PicType').val(1);
+    }
+
+    $('#blk_modal_select_picture').on('shown.bs.modal', function (e) {
+        console.log('modal shown');
+    });
+
+    $('#blk_modal_select_picture').on('hidden.bs.modal', function (e) {
+        console.log('modal hidden');
+    });
+</script>

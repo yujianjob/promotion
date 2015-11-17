@@ -1,0 +1,149 @@
+﻿@model IEnumerable<Dianda.AP.Model.Traning_Field>
+@using Dianda.AP.Model;
+@using System.Data;
+
+@{
+    ViewBag.Title = "我的学分";
+    Layout = "~/Areas/Learn/Views/Shared/_LearnLayout.cshtml";
+    ViewBag.MenuId = "d_learner_credit";
+}
+
+<div class="col-xs-9">
+            <div class="d-page-title">我的学时</div>
+            <hr>
+            <div class="blk_ln_credit" id="blk_ln_credit"><div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>课程类型</th>
+				<th>结业标准</th>
+				<th>已获学时</th>
+				<th>在学课程学时</th>
+			</tr>
+		</thead>
+		<tbody>
+            @foreach (var item in Model)
+            {
+                Training_Credits baseCredit = ((List<Training_Credits>)ViewBag.BaseCredit).FirstOrDefault(t => t.TraningField.Equals(item.Id));//标准学时
+                DataRow[] received = ((DataTable)ViewBag.ReceivedCredit).Select("TraingField=" + item.Id);//已获取的学分（非实践）
+                DataRow[] receivedPractice = ((DataTable)ViewBag.ReceivedPracticeCredit).Select("TraingField=" + item.Id);//已获取的学分（实践）
+                DataRow[] exemption = ((DataTable)ViewBag.ExemptionCredit).Select("TrainingField=" + item.Id);//免修学分
+                DataRow[] training = ((DataTable)ViewBag.TrainingCredit).Select("TraingField=" + item.Id);//学习中的学分（非实践）
+                DataRow[] practice = ((DataTable)ViewBag.PracticeCredit).Select("TraingField=" + item.Id);//学习中的学分（实践）
+
+                string receivedTimeString = "", inTimeString = "";
+                
+                if (item.Id == 3)//实践
+                {
+                    double exemptionTime = 0, receivedTime = 0, inTime = 0;
+                    foreach (DataRow row in receivedPractice)
+                    {
+                        receivedTime += Convert.ToDouble(row["Credit"]);
+                    }
+                    foreach (DataRow row in exemption)
+                    {
+                        exemptionTime += Convert.ToDouble(row["Credits"]);
+                    }
+                    receivedTimeString = (receivedTime + exemptionTime).ToString();
+
+                    foreach (DataRow row in practice)
+                    {
+                        inTime += Convert.ToDouble(row["Credit"]);
+                    }
+                    inTimeString = inTime.ToString();
+                }
+                else//非实践
+                {
+                    double exemptionTime_SJ = 0, receivedTime_SJ = 0, inTime_SJ = 0;
+                    double exemptionTime_QJ = 0, receivedTime_QJ = 0, inTime_QJ = 0;
+                    
+                    foreach (DataRow row in received)
+                    {
+                        if (row["Range"].ToString() == "2")
+                        {
+                            receivedTime_SJ += Convert.ToDouble(row["Credit"]);
+                        }
+                        else
+                        {
+                            receivedTime_QJ += Convert.ToDouble(row["Credit"]);
+                        }
+                    }
+                    foreach (DataRow row in exemption)
+                    {
+                        exemptionTime_QJ += Convert.ToDouble(row["Credits"]);
+                    }
+                    receivedTimeString = "市级（" + (exemptionTime_SJ + receivedTime_SJ).ToString()
+                        + "）区级（" + (exemptionTime_QJ + receivedTime_QJ).ToString() + "）";
+
+                    foreach (DataRow row in training)
+                    {
+                        if (row["Range"].ToString() == "2")
+                        {
+                            inTime_SJ += Convert.ToDouble(row["Credit"]);
+                        }
+                        else
+                        {
+                            inTime_QJ += Convert.ToDouble(row["Credit"]);
+                        }
+                    }
+                    inTimeString = "市级（" + inTime_SJ
+                        + "）区级（" + inTime_QJ + "）";
+                }
+                
+                <tr>
+                    <td>@item.Title</td>
+                    
+                    @if (baseCredit != null)
+                    {
+                        <td>@baseCredit.MinValue</td>
+                    }
+                    else
+                    {
+                        <td>0</td>
+                    }
+
+                    <td><span class="n text-danger">@receivedTimeString</span></td>
+                    <td>@inTimeString</td>
+                </tr>
+            }
+            @{
+                double sumBase = 0, sumReceived = 0, sumInLearn = 0;
+                foreach (Training_Credits t in ViewBag.baseCredit)
+                {
+                    sumBase += t.MinValue;
+                }
+
+                foreach (DataRow row in ViewBag.ReceivedCredit.Rows)
+                {
+                    sumReceived += Convert.ToDouble(row["Credit"]);
+                }
+                foreach (DataRow row in ViewBag.ReceivedPracticeCredit.Rows)
+                {
+                    sumReceived += Convert.ToDouble(row["Credit"]);
+                }
+                foreach (DataRow row in ViewBag.ExemptionCredit.Rows)
+                {
+                    sumReceived += Convert.ToDouble(row["Credits"]);
+                }
+                
+                foreach (DataRow row in ViewBag.TrainingCredit.Rows)
+                {
+                    sumInLearn += Convert.ToDouble(row["Credit"]);
+                }
+                foreach (DataRow row in ViewBag.PracticeCredit.Rows)
+                {
+                    sumInLearn += Convert.ToDouble(row["Credit"]);
+                }
+            }
+            <tr>
+				<td>总计</td>
+				<td>@sumBase</td>
+				<td><span class="n text-danger">@sumReceived</span></td>
+				<td>@sumInLearn</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</div>
+          </div>

@@ -1,0 +1,424 @@
+using Dianda.AP.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+
+namespace Dianda.AP.DAL
+{
+	public partial class Member_ClassRegisterDAL
+	{
+		/// <summary>
+		/// 新增一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Add(Member_ClassRegister model)
+		{
+            StringBuilder sql = new StringBuilder();
+            sql.Append("insert into [dbo].[Member_ClassRegister] ([ClassId],[PlanId],[AccountId],[Status],[ApplyRemark],[BatchCode],[ManagerId],[IsPass],[CurrentSchedule],[TotalSchedule],[ReadingScore],[DiscussScore],[HomeWorkScore],[TestingScore],[ExaminationScore],[CommentScore],[TotalScore],[Result],[ResultCreater],[Delflag],[CreateDate],[TrainingId],[OtherScore])");
+            sql.Append(" values (@ClassId,@PlanId,@AccountId,@Status,@ApplyRemark,@BatchCode,@ManagerId,@IsPass,@CurrentSchedule,@TotalSchedule,@ReadingScore,@DiscussScore,@HomeWorkScore,@TestingScore,@ExaminationScore,@CommentScore,@TotalScore,@Result,@ResultCreater,@Delflag,@CreateDate,@TrainingId,@OtherScore)");
+            sql.Append(" set @Id=@@IDENTITY");
+            SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id, Direction = ParameterDirection.Output },
+				new SqlParameter("@ClassId", SqlDbType.Int, 4) { Value = model.ClassId },
+				new SqlParameter("@PlanId", SqlDbType.Int, 4) { Value = model.PlanId },
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = model.AccountId },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@ApplyRemark", SqlDbType.VarChar, 500) { Value = model.ApplyRemark },
+				new SqlParameter("@BatchCode", SqlDbType.UniqueIdentifier, 16) { Value = model.BatchCode },
+				new SqlParameter("@ManagerId", SqlDbType.Int, 4) { Value = model.ManagerId },
+				new SqlParameter("@IsPass", SqlDbType.Bit, 1) { Value = model.IsPass },
+				new SqlParameter("@CurrentSchedule", SqlDbType.Int, 4) { Value = model.CurrentSchedule },
+				new SqlParameter("@TotalSchedule", SqlDbType.Int, 4) { Value = model.TotalSchedule },
+				new SqlParameter("@ReadingScore", SqlDbType.Float, 8) { Value = model.ReadingScore },
+				new SqlParameter("@DiscussScore", SqlDbType.Float, 8) { Value = model.DiscussScore },
+				new SqlParameter("@HomeWorkScore", SqlDbType.Float, 8) { Value = model.HomeWorkScore },
+				new SqlParameter("@TestingScore", SqlDbType.Float, 8) { Value = model.TestingScore },
+				new SqlParameter("@ExaminationScore", SqlDbType.Float, 8) { Value = model.ExaminationScore },
+				new SqlParameter("@CommentScore", SqlDbType.Float, 8) { Value = model.CommentScore },
+				new SqlParameter("@TotalScore", SqlDbType.Float, 8) { Value = model.TotalScore },
+				new SqlParameter("@Result", SqlDbType.Int, 4) { Value = model.Result },
+				new SqlParameter("@ResultCreater", SqlDbType.Int, 4) { Value = model.ResultCreater },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = model.TrainingId },
+				new SqlParameter("@OtherScore", SqlDbType.Float, 8) { Value = model.OtherScore }
+			};
+            int result = Convert.ToInt32(MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams));
+            model.Id = Convert.ToInt32(cmdParams[0].Value);
+            return result;
+		}
+
+		/// <summary>
+		/// 更新一条记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public int Update(Member_ClassRegister model)
+		{
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update [dbo].[Member_ClassRegister] set ");
+            sql.Append("[ClassId]=@ClassId,[PlanId]=@PlanId,[AccountId]=@AccountId,[Status]=@Status,[ApplyRemark]=@ApplyRemark,[BatchCode]=@BatchCode,[ManagerId]=@ManagerId,[IsPass]=@IsPass,[CurrentSchedule]=@CurrentSchedule,[TotalSchedule]=@TotalSchedule,[ReadingScore]=@ReadingScore,[DiscussScore]=@DiscussScore,[HomeWorkScore]=@HomeWorkScore,[TestingScore]=@TestingScore,[ExaminationScore]=@ExaminationScore,[CommentScore]=@CommentScore,[TotalScore]=@TotalScore,[Result]=@Result,[ResultCreater]=@ResultCreater,[Delflag]=@Delflag,[CreateDate]=@CreateDate,[TrainingId]=@TrainingId,[OtherScore]=@OtherScore");
+            sql.Append(" where [Id]=@Id");
+            SqlParameter[] cmdParams = new SqlParameter[] {
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = model.Id },
+				new SqlParameter("@ClassId", SqlDbType.Int, 4) { Value = model.ClassId },
+				new SqlParameter("@PlanId", SqlDbType.Int, 4) { Value = model.PlanId },
+				new SqlParameter("@AccountId", SqlDbType.Int, 4) { Value = model.AccountId },
+				new SqlParameter("@Status", SqlDbType.Int, 4) { Value = model.Status },
+				new SqlParameter("@ApplyRemark", SqlDbType.VarChar, 500) { Value = model.ApplyRemark },
+				new SqlParameter("@BatchCode", SqlDbType.UniqueIdentifier, 16) { Value = model.BatchCode },
+				new SqlParameter("@ManagerId", SqlDbType.Int, 4) { Value = model.ManagerId },
+				new SqlParameter("@IsPass", SqlDbType.Bit, 1) { Value = model.IsPass },
+				new SqlParameter("@CurrentSchedule", SqlDbType.Int, 4) { Value = model.CurrentSchedule },
+				new SqlParameter("@TotalSchedule", SqlDbType.Int, 4) { Value = model.TotalSchedule },
+				new SqlParameter("@ReadingScore", SqlDbType.Float, 8) { Value = model.ReadingScore },
+				new SqlParameter("@DiscussScore", SqlDbType.Float, 8) { Value = model.DiscussScore },
+				new SqlParameter("@HomeWorkScore", SqlDbType.Float, 8) { Value = model.HomeWorkScore },
+				new SqlParameter("@TestingScore", SqlDbType.Float, 8) { Value = model.TestingScore },
+				new SqlParameter("@ExaminationScore", SqlDbType.Float, 8) { Value = model.ExaminationScore },
+				new SqlParameter("@CommentScore", SqlDbType.Float, 8) { Value = model.CommentScore },
+				new SqlParameter("@TotalScore", SqlDbType.Float, 8) { Value = model.TotalScore },
+				new SqlParameter("@Result", SqlDbType.Int, 4) { Value = model.Result },
+				new SqlParameter("@ResultCreater", SqlDbType.Int, 4) { Value = model.ResultCreater },
+				new SqlParameter("@Delflag", SqlDbType.Bit, 1) { Value = model.Delflag },
+				new SqlParameter("@CreateDate", SqlDbType.DateTime, 8) { Value = model.CreateDate },
+				new SqlParameter("@TrainingId", SqlDbType.Int, 4) { Value = model.TrainingId },
+				new SqlParameter("@OtherScore", SqlDbType.Float, 8) { Value = model.OtherScore }
+			};
+            return MSEntLibSqlHelper.ExecuteNonQueryBySql(sql.ToString(), cmdParams);
+		}
+
+		/// <summary>
+		/// 取得一条记录
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="where"></param>
+		/// <returns></returns>
+		public Member_ClassRegister GetModel(int id, string where)
+		{
+			string sql = "select * from [dbo].[Member_ClassRegister] where [Id]=@Id";
+			if (!string.IsNullOrEmpty(where))
+				sql += " and " + where;
+			SqlParameter[] cmdParams = new SqlParameter[]{
+				new SqlParameter("@Id", SqlDbType.Int, 4) { Value = id }
+			};
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql, cmdParams))
+			{
+				if (reader.Read())
+				{
+					Member_ClassRegister model = new Member_ClassRegister();
+					ConvertToModel(reader, model);
+					return model;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+
+        public Member_ClassRegister GetModel(string where)
+        {
+            string sql = "select * from [dbo].[Member_ClassRegister]";
+            if (!string.IsNullOrEmpty(where))
+                sql += " where " + where;
+            
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql))
+            {
+                if (reader.Read())
+                {
+                    Member_ClassRegister model = new Member_ClassRegister();
+                    ConvertToModel(reader, model);
+                    return model;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+		/// <summary>
+		/// 获取数据集
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public List<Member_ClassRegister> GetList(string where, string orderBy)
+		{
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from [dbo].[Member_ClassRegister]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			if (!string.IsNullOrEmpty(orderBy))
+				sql.Append(" order by " + orderBy);
+			List<Member_ClassRegister> list = new List<Member_ClassRegister>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Member_ClassRegister model = new Member_ClassRegister();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取分页数据集
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public List<Member_ClassRegister> GetList(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Member_ClassRegister]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+			sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Member_ClassRegister]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			List<Member_ClassRegister> list = new List<Member_ClassRegister>();
+			using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+			{
+				while (reader.Read())
+				{
+					Member_ClassRegister model = new Member_ClassRegister();
+					ConvertToModel(reader, model);
+					list.Add(model);
+				}
+			}
+			return list;
+		}
+
+		/// <summary>
+		/// 获取DataTable
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <returns></returns>
+		public DataTable GetTable(string where, string orderBy)
+		{
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select [Id],[ClassId],[PlanId],[AccountId],[Status],[ApplyRemark],[BatchCode],[ManagerId],[IsPass],[CurrentSchedule],[TotalSchedule],[ReadingScore],[DiscussScore],[HomeWorkScore],[TestingScore],[ExaminationScore],[CommentScore],[TotalScore],[Result],[ResultCreater],[Delflag],[CreateDate],[TrainingId],[OtherScore] from [dbo].[Member_ClassRegister]");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            if (!string.IsNullOrEmpty(orderBy))
+                sql.Append(" order by " + orderBy);
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		/// <summary>
+		/// 获取分页DataTable
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="where"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="recordCount"></param>
+		/// <returns></returns>
+		public DataTable GetTable(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+		{
+			if (string.IsNullOrEmpty(orderBy))
+				throw new ArgumentNullException();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("select count(1) from [dbo].[Member_ClassRegister]");
+			if (!string.IsNullOrEmpty(where))
+				sb.Append(" where " + where);
+			recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+			int start = (pageIndex - 1) * pageSize + 1;
+			int end = pageIndex * pageSize;
+			StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select [Id],[ClassId],[PlanId],[AccountId],[Status],[ApplyRemark],[BatchCode],[ManagerId],[IsPass],[CurrentSchedule],[TotalSchedule],[ReadingScore],[DiscussScore],[HomeWorkScore],[TestingScore],[ExaminationScore],[CommentScore],[TotalScore],[Result],[ResultCreater],[Delflag],[CreateDate],[TrainingId],[OtherScore],ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from [dbo].[Member_ClassRegister]");
+			if (!string.IsNullOrEmpty(where))
+				sql.Append(" where " + where);
+			sql.Append(") as T where [RowNum] between " + start + " and " + end);
+			return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+		}
+
+		private void ConvertToModel(IDataReader reader, Member_ClassRegister model)
+		{
+			if (reader["Id"] != DBNull.Value)
+				model.Id = Convert.ToInt32(reader["Id"]);
+			if (reader["ClassId"] != DBNull.Value)
+				model.ClassId = Convert.ToInt32(reader["ClassId"]);
+			if (reader["PlanId"] != DBNull.Value)
+				model.PlanId = Convert.ToInt32(reader["PlanId"]);
+			if (reader["AccountId"] != DBNull.Value)
+				model.AccountId = Convert.ToInt32(reader["AccountId"]);
+			if (reader["Status"] != DBNull.Value)
+				model.Status = Convert.ToInt32(reader["Status"]);
+			if (reader["ApplyRemark"] != DBNull.Value)
+				model.ApplyRemark = reader["ApplyRemark"].ToString();
+			if (reader["BatchCode"] != DBNull.Value)
+				model.BatchCode = (Guid)(reader["BatchCode"]);
+			if (reader["ManagerId"] != DBNull.Value)
+				model.ManagerId = Convert.ToInt32(reader["ManagerId"]);
+			if (reader["IsPass"] != DBNull.Value)
+				model.IsPass = Convert.ToBoolean(reader["IsPass"]);
+			if (reader["CurrentSchedule"] != DBNull.Value)
+				model.CurrentSchedule = Convert.ToInt32(reader["CurrentSchedule"]);
+			if (reader["TotalSchedule"] != DBNull.Value)
+				model.TotalSchedule = Convert.ToInt32(reader["TotalSchedule"]);
+			if (reader["ReadingScore"] != DBNull.Value)
+				model.ReadingScore = Convert.ToDouble(reader["ReadingScore"]);
+			if (reader["DiscussScore"] != DBNull.Value)
+				model.DiscussScore = Convert.ToDouble(reader["DiscussScore"]);
+			if (reader["HomeWorkScore"] != DBNull.Value)
+				model.HomeWorkScore = Convert.ToDouble(reader["HomeWorkScore"]);
+			if (reader["TestingScore"] != DBNull.Value)
+				model.TestingScore = Convert.ToDouble(reader["TestingScore"]);
+			if (reader["ExaminationScore"] != DBNull.Value)
+				model.ExaminationScore = Convert.ToDouble(reader["ExaminationScore"]);
+			if (reader["CommentScore"] != DBNull.Value)
+				model.CommentScore = Convert.ToDouble(reader["CommentScore"]);
+			if (reader["TotalScore"] != DBNull.Value)
+				model.TotalScore = Convert.ToDouble(reader["TotalScore"]);
+			if (reader["Result"] != DBNull.Value)
+				model.Result = Convert.ToInt32(reader["Result"]);
+			if (reader["ResultCreater"] != DBNull.Value)
+				model.ResultCreater = Convert.ToInt32(reader["ResultCreater"]);
+			if (reader["Delflag"] != DBNull.Value)
+				model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+			if (reader["CreateDate"] != DBNull.Value)
+				model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+			if (reader["TrainingId"] != DBNull.Value)
+				model.TrainingId = Convert.ToInt32(reader["TrainingId"]);
+            if (reader["OtherScore"] != DBNull.Value)
+                model.OtherScore = Convert.ToDouble(reader["OtherScore"]);
+		}
+
+        public List<ClassRegisterManage> GetListManage(int pageSize, int pageIndex, string where, string orderBy, out int recordCount)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            StringBuilder s = new StringBuilder();
+            s.Append(" (select mcr.*,mbi.RealName,ma.Nickname,ma.UserName,mbi.TeacherNo,td.Title as TTitle,cd.Title as CTitle,cd.SignUpStartTime,cd.SignUpEndTime,cd.Id as CId,cd.People,cd.LimitPeopleCnt ");
+            s.Append(" ,cd.OpenClassFrom,cd.OpenClassTo ");
+            s.Append("  from Member_ClassRegister mcr left join Member_Account ma on mcr.AccountId=ma.Id  ");
+            s.Append(" left join Member_BaseInfo mbi on ma.Id=mbi.AccountId  ");
+            s.Append(" left join Class_Detail cd on mcr.ClassId=cd.Id ");
+            s.Append(" left join Traning_Detail td on mcr.TrainingId=td.Id ");
+            s.Append(" where 1=1 and mcr.Delflag='false' and cd.delflag='false' and td.delflag='false' and td.Status=5 and cd.Status in(3,5,6)");
+            if (!string.IsNullOrEmpty(where))
+                s.Append(where);
+            s.Append(" and mcr.Delflag='false' and ma.Delflag='false'  and cd.Delflag='false' and td.Delflag='false') as tc ");
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select COUNT(1) from  ");
+            sb.Append(s.ToString());
+
+            recordCount = Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sb.ToString()));
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select *,ROW_NUMBER() over (order by " + orderBy + ") as [RowNum] from " + s);
+
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+            List<ClassRegisterManage> list = new List<ClassRegisterManage>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    ClassRegisterManage model = new ClassRegisterManage();
+                    ConvertToModelManage(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        private void ConvertToModelManage(IDataReader reader, ClassRegisterManage model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["ClassId"] != DBNull.Value)
+                model.ClassId = Convert.ToInt32(reader["ClassId"]);
+            if (reader["PlanId"] != DBNull.Value)
+                model.PlanId = Convert.ToInt32(reader["PlanId"]);
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+            if (reader["ApplyRemark"] != DBNull.Value)
+                model.ApplyRemark = reader["ApplyRemark"].ToString();
+            if (reader["BatchCode"] != DBNull.Value)
+                model.BatchCode = (Guid)(reader["BatchCode"]);
+            if (reader["ManagerId"] != DBNull.Value)
+                model.ManagerId = Convert.ToInt32(reader["ManagerId"]);
+            if (reader["IsPass"] != DBNull.Value)
+                model.IsPass = Convert.ToBoolean(reader["IsPass"]);
+            if (reader["CurrentSchedule"] != DBNull.Value)
+                model.CurrentSchedule = Convert.ToInt32(reader["CurrentSchedule"]);
+            if (reader["TotalSchedule"] != DBNull.Value)
+                model.TotalSchedule = Convert.ToInt32(reader["TotalSchedule"]);
+            if (reader["ReadingScore"] != DBNull.Value)
+                model.ReadingScore = Convert.ToDouble(reader["ReadingScore"]);
+            if (reader["DiscussScore"] != DBNull.Value)
+                model.DiscussScore = Convert.ToDouble(reader["DiscussScore"]);
+            if (reader["HomeWorkScore"] != DBNull.Value)
+                model.HomeWorkScore = Convert.ToDouble(reader["HomeWorkScore"]);
+            if (reader["TestingScore"] != DBNull.Value)
+                model.TestingScore = Convert.ToDouble(reader["TestingScore"]);
+            if (reader["ExaminationScore"] != DBNull.Value)
+                model.ExaminationScore = Convert.ToDouble(reader["ExaminationScore"]);
+            if (reader["CommentScore"] != DBNull.Value)
+                model.CommentScore = Convert.ToDouble(reader["CommentScore"]);
+            if (reader["OtherScore"] != DBNull.Value)
+                model.OtherScore = Convert.ToDouble(reader["OtherScore"]);
+            if (reader["TotalScore"] != DBNull.Value)
+                model.TotalScore = Convert.ToDouble(reader["TotalScore"]);
+            if (reader["Result"] != DBNull.Value)
+                model.Result = Convert.ToInt32(reader["Result"]);
+            if (reader["ResultCreater"] != DBNull.Value)
+                model.ResultCreater = Convert.ToInt32(reader["ResultCreater"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["TrainingId"] != DBNull.Value)
+                model.TrainingId = Convert.ToInt32(reader["TrainingId"]);
+            if (reader["RealName"] != DBNull.Value)
+                model.RealName = reader["RealName"].ToString();
+            if (reader["Nickname"] != DBNull.Value)
+                model.Nickname = reader["Nickname"].ToString();
+            if (reader["UserName"] != DBNull.Value)
+                model.UserName = reader["UserName"].ToString();
+            if (reader["TeacherNo"] != DBNull.Value)
+                model.TeacherNo = reader["TeacherNo"].ToString();
+            if (reader["TTitle"] != DBNull.Value)
+                model.TTitle = reader["TTitle"].ToString();
+            if (reader["CTitle"] != DBNull.Value)
+                model.CTitle = reader["CTitle"].ToString();
+            if (reader["SignUpStartTime"] != DBNull.Value)
+                model.SignUpStartTime = Convert.ToDateTime(reader["SignUpStartTime"].ToString());
+            if (reader["SignUpEndTime"] != DBNull.Value)
+                model.SignUpEndTime = Convert.ToDateTime(reader["SignUpEndTime"].ToString());
+            if (reader["OpenClassFrom"] != DBNull.Value)
+                model.OpenClassFrom = Convert.ToDateTime(reader["OpenClassFrom"].ToString());
+            if (reader["OpenClassTo"] != DBNull.Value)
+                model.OpenClassTo = Convert.ToDateTime(reader["OpenClassTo"].ToString());
+            if (reader["CId"] != DBNull.Value)
+                model.CId = Convert.ToInt32(reader["CId"]);
+            if (reader["People"] != DBNull.Value)
+                model.People = Convert.ToInt32(reader["People"]);
+            if (reader["LimitPeopleCnt"] != DBNull.Value)
+                model.LimitPeopleCnt = Convert.ToInt32(reader["LimitPeopleCnt"]);
+        }
+
+	}
+}

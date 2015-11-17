@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7521E120-F6D5-4B76-A30C-177D58F3B8E9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dianda.AP.DAL</RootNamespace>
+    <AssemblyName>Dianda.AP.DAL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common">
+      <HintPath>..\..\Tools\Lib\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data">
+      <HintPath>..\..\Tools\Lib\Microsoft.Practices.EnterpriseLibrary.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="accountDAL.cs" />
+    <Compile Include="AccountEditDAL.cs" />
+    <Compile Include="answer_infoDAL.cs" />
+    <Compile Include="APIDAL.cs" />
+    <Compile Include="CertificateDAL.cs" />
+    <Compile Include="ClassDomain\Class_DetailDAL.cs" />
+    <Compile Include="ClassDomain\Course_UnitContentDAL.cs" />
+    <Compile Include="ClassDomain\Member_AccountDAL.cs" />
+    <Compile Include="ClassDomain\Member_ClassRegisterDAL.cs" />
+    <Compile Include="ClassDomain\Organ_DetailDAL.cs" />
+    <Compile Include="Class_ApplyApplicationDAL.cs" />
+    <Compile Include="Class_DetailDAL.cs" />
+    <Compile Include="Class_GroupDAL.cs" />
+    <Compile Include="Class_GroupMemberDAL.cs" />
+    <Compile Include="Class_HomeWorkDAL.cs" />
+    <Compile Include="Class_HomeWorkMissionDAL.cs" />
+    <Compile Include="Class_NoticeDAL.cs" />
+    <Compile Include="Class_StudySectionDAL.cs" />
+    <Compile Include="Class_TeachGradeDAL.cs" />
+    <Compile Include="Class_TeachSubjectDAL.cs" />
+    <Compile Include="Class_TraningCommentAnswerDAL.cs" />
+    <Compile Include="Class_TraningCommentQuestionDAL.cs" />
+    <Compile Include="Class_TraningCommentResultDAL.cs" />
+    <Compile Include="Course_DetailDAL.cs" />
+    <Compile Include="Course_UnitContentDAL.cs" />
+    <Compile Include="Course_UnitDetailDAL.cs" />
+    <Compile Include="Course_UnitHomeWorkDAL.cs" />
+    <Compile Include="Course_UnitQuestionDAL.cs" />
+    <Compile Include="Course_UnitReplyDetailDAL.cs" />
+    <Compile Include="Course_UnitTestDAL.cs" />
+    <Compile Include="EntranceHomeDAL.cs" />
+    <Compile Include="EntranceLoginDAL.cs" />
+    <Compile Include="LearnMyCourseDAL.cs" />
+    <Compile Include="LearnMyLearnDAL.cs" />
+    <Compile Include="LearnMyPracticeDAL.cs" />
+    <Compile Include="LearnMyTestDAL.cs" />
+    <Compile Include="Member_AccountDAL.cs" />
+    <Compile Include="Member_BaseInfoDAL.cs" />
+    <Compile Include="Member_ClassCommentDAL.cs" />
+    <Compile Include="Member_ClassContentNoteDAL.cs" />
+    <Compile Include="Member_ClassRegisterApplicationDAL.cs" />
+    <Compile Include="Member_ClassRegisterDAL.cs" />
+    <Compile Include="Member_ClassUnitContentScheduleDAL.cs" />
+    <Compile Include="Member_ContentAnswerResultDAL.cs" />
+    <Compile Include="Member_CourseContentAnswerDAL.cs" />
+    <Compile Include="Member_CourseContentTestAnswerDAL.cs" />
+    <Compile Include="Member_CourseContentTestAnswerResultDAL.cs" />
+    <Compile Include="Member_Course_UnitContentTestAnswerResultDAL.cs" />
+    <Compile Include="Member_InfoFKDAL.cs" />
+    <Compile Include="Member_PlanOverallDAL.cs" />
+    <Compile Include="Member_PracticalCourseApplicationDAL.cs" />
+    <Compile Include="Member_PracticalCourseDAL.cs" />
+    <Compile Include="Member_TrainingReditDAL.cs" />
+    <Compile Include="MSEntLibSqlHelper.cs" />
+    <Compile Include="LearnMyCreditDAL.cs" />
+    <Compile Include="NationalAbility_CourseDAL.cs" />
+    <Compile Include="NationalAbility_SCourseFieldInCourseDAL.cs" />
+    <Compile Include="News_DetailDAL.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="Organ_DetailDAL.cs" />
+    <Compile Include="Partition_DetailDAL.cs" />
+    <Compile Include="PeriodDAL.cs" />
+    <Compile Include="PlanExemptionDAL.cs" />
+    <Compile Include="PlatformManager_DetailDAL.cs" />
+    <Compile Include="PlatformManager_GroupsDAL.cs" />
+    <Compile Include="PlatformManager_RoleDAL.cs" />
+    <Compile Include="PracticalCourse_AttachmentDAL.cs" />
+    <Compile Include="PracticalCourse_DetailDAL.cs" />
+    <Compile Include="PracticalCourse_RoleCreditsDAL.cs" />
+    <Compile Include="PracticalCourse_RoleDAL.cs" />
+    <Compile Include="PrepareTrainingApplyDAL.cs" />
+    <Compile Include="PrepareTrainingCheckDAL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="recommendDAL.cs" />
+    <Compile Include="scoreDAL.cs" />
+    <Compile Include="Sys_MessageDAL.cs" />
+    <Compile Include="Training_CreditsDAL.cs" />
+    <Compile Include="Traning_ApplyApplicationDAL.cs" />
+    <Compile Include="Training_PlanDAL.cs" />
+    <Compile Include="Traning_AttachmentDAL.cs" />
+    <Compile Include="Traning_CategoryDAL.cs" />
+    <Compile Include="Traning_DetailDAL.cs" />
+    <Compile Include="Traning_FieldDAL.cs" />
+    <Compile Include="Traning_InfoFkDAL.cs" />
+    <Compile Include="Traning_OutCourseTypeDAL.cs" />
+    <Compile Include="Traning_TeacherDAL.cs" />
+    <Compile Include="Traning_TopicDAL.cs" />
+    <Compile Include="UserDAL.cs" />
+    <Compile Include="UtilsDAL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dianda.AP.Model\Dianda.AP.Model.csproj">
+      <Project>{e86c34d1-3382-4252-948b-e882cf515e72}</Project>
+      <Name>Dianda.AP.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Release\" />
+    <Folder Include="obj\Debug\TempPE\" />
+    <Folder Include="PracticalCourse\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\Dianda.AP.DAL.dll" />
+    <Content Include="bin\Debug\Dianda.AP.DAL.pdb" />
+    <Content Include="bin\Debug\Dianda.AP.Model.dll" />
+    <Content Include="bin\Debug\Dianda.AP.Model.pdb" />
+    <Content Include="bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll" />
+    <Content Include="bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll" />
+    <Content Include="obj\Debug\Dianda.AP.DAL.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\Dianda.AP.DAL.dll" />
+    <Content Include="obj\Debug\Dianda.AP.DAL.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\Dianda.AP.DAL.csprojResolveAssemblyReference.cache" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,406 @@
+﻿@{
+    ViewBag.Title = "在线学习 - 视频";
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<script src="~/Resources/Scripts/Video/html5media.min.js"></script>
+<link href="http://vjs.zencdn.net/4.11/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/4.11/video.js"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId })" class="title">@ViewBag.TraningDetailTitle</a>
+                    <span class="action">
+                        <a href="javascript:;" onclick="showNote(this)">显示笔记</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h d-h-video">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 rel">
+                <div id="blk_ln_course_video" class="blk_ln_course_video" data-km-htm="blk_ln_course_video.html">
+                    <div class="video-container">
+                        @if (ViewBag.Model_Course_UnitContent != null)
+                        {
+                            Dianda.AP.Model.Course_UnitContent Video_Model = ViewBag.Model_Course_UnitContent;
+                            <div class="video-player">
+                                <video id="example_video_1" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" width="1000" height="500" data-setup="{}">
+                                    @*poster="http://video-js.zencoder.com/oceans-clip.png"*@
+                                    <source src="@Video_Model.Content" type='video/mp4' />
+                                    <!--<track kind="captions" src="captions.vtt" srclang="zh-CN" label="zh-CN" />-->
+                                    <!-- Tracks need an ending tag thanks to IE9 -->
+                                </video>
+                            </div>                            
+                            <div class="video-info">
+                                <span class="title">@Video_Model.Title</span>
+                                <span class="duration">@Html.Raw(Video_Model.TimeLength + "分钟")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div id="d_note" class="d-note-float">
+                    <div id="blk_ln_course_note" class="blk_ln_course_note" data-km-htm="blk_ln_course_note.html">
+                        <div class="h">
+                            我的笔记
+	                        <a href="javascript:;" class="add" onclick="$('#d_new').show()">
+                                <span class="glyphicon glyphicon-plus"></span>&nbsp;新建笔记
+                            </a>
+                        </div>
+
+                        <div id="d_new" class="new">
+                            <div class="ta">
+                                <textarea class="form-control" style="height: 150px; margin-bottom: 10px;" id="newText"></textarea>
+                                <button type="button" class="btn btn-success" onclick="EditSave('')">保存</button>&nbsp;&nbsp;<a href="javascript:;" onclick="$('#d_new').hide();">取消</a>
+                            </div>
+                        </div>
+
+                        @foreach (Dianda.AP.Model.Member_ClassContentNote itemMember in ViewBag.List_Member_ClassContentNote)
+                        {
+                            <div class="i" id="NoteList_@itemMember.Id">
+                                <pre id="divNote_@itemMember.Id" class="content">@Html.Raw(itemMember.Content.Length > 100 ? itemMember.Content.Substring(0, 100) + "..." : itemMember.Content)</pre>
+                                <div class="date">@itemMember.CreateDate.ToString("yyyy-MM-dd HH:mm")</div>
+                                <div class="action">
+                                    <a href="javascript:;" class="del" onclick="DelMember('@itemMember.Id')">删除</a>&nbsp;
+                                    <a href="javascript:;" class="edit" onclick="EditMember('@itemMember.Id')">编辑</a>
+                                </div>
+                            </div>
+                            
+                            <div id="editNote_@itemMember.Id" class="new" style="display:none;">
+                                <div class="ta">
+                                    <textarea class="form-control" style="height: 150px; margin-bottom: 10px;" id="editText_@itemMember.Id"></textarea>
+                                    <button type="button" class="btn btn-success" onclick="EditSave('@itemMember.Id')">保存</button>&nbsp;&nbsp;
+                                    <a href="javascript:;" onclick="$('#editNote_@itemMember.Id').hide();$('#NoteList_@itemMember.Id').show();">取消</a>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav dark">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-discuss-wide">
+                    <div id="blk_ln_course_discuss" class="blk_ln_course_discuss" data-km-htm="blk_ln_course_discuss.html">
+                        <div class="course-d">
+                            <div class="d-discuss-subject">
+                                <div class="h">学习讨论</div>
+                                <div class="action">
+                                    <a href="javascript:;" onclick="$('#txtDisContent').focus();">我要发言</a>
+                                </div>
+                            </div>
+
+                            @foreach (KeyValuePair<Dianda.AP.Model.Course_UnitReplyDetailOther, List<Dianda.AP.Model.Course_UnitReplyDetailOther>> TopicItem in ViewBag.Topic_Reply_Dictry)
+                            {
+                                Dianda.AP.Model.Course_UnitReplyDetailOther TopicOtherModel = TopicItem.Key;
+                                List<Dianda.AP.Model.Course_UnitReplyDetailOther> List_Reply = TopicItem.Value;
+                                <!-- 话题 -->
+                                <div class="i">
+                                    <a href="#" class="thumb">
+                                        <img src="@TopicOtherModel.Pic"></a>
+                                    <div class="u">
+                                        <span class="name">@TopicOtherModel.NickName</span>
+                                        <span class="school">@TopicOtherModel.OrganDetailTitle</span>
+                                        <span class="action">
+                                            <a href="javascript:;" onclick="DelDiscuss('@TopicOtherModel.CourseUnitReplyDetail.Id','@TopicOtherModel.CourseUnitReplyDetail.ParentReplyId')">删除</a>&nbsp;
+                                            <a href="javascript:;" onclick="$('#txtDisContent').focus();$('#hidReplyId').val('@TopicOtherModel.CourseUnitReplyDetail.Id');">回应</a>
+                                        </span>
+                                    </div>
+                                    <div class="d">
+                                        @TopicOtherModel.CourseUnitReplyDetail.Content
+                                    </div>
+                                </div>
+                                <!-- 回复 -->
+                                <div class="reply">
+
+                                    @foreach (Dianda.AP.Model.Course_UnitReplyDetailOther ReplyItem in List_Reply)
+                                    {
+                                        <div class="i">
+                                            <a href="#" class="thumb">
+                                                <img src="@TopicOtherModel.Pic"></a>
+                                            <div class="u">
+                                                <span class="name">@ReplyItem.NickName</span>
+                                                <span class="school">@ReplyItem.OrganDetailTitle</span>
+                                                <span class="action">
+                                                    <a href="javascript:;" onclick="DelDiscuss('@ReplyItem.CourseUnitReplyDetail.Id','@ReplyItem.CourseUnitReplyDetail.ParentReplyId')">删除</a>&nbsp;
+                                                    <a href="javascript:;" onclick="$('#txtDisContent').focus();$('#hidReplyId').val('@TopicOtherModel.CourseUnitReplyDetail.Id');">回应</a>
+                                                </span>
+                                            </div>
+                                            <div class="d">
+                                                @ReplyItem.CourseUnitReplyDetail.Content
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                            <!-- 学习讨论 -->
+                            <div class="d-pagination clearfix">
+                                <div class="pull-center text-center">
+                                    <a href="@Url.Action("LearnOnLineVideoView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, TopicPageIndex = 1 })">首页</a>
+                                    <a href="@Url.Action("LearnOnLineVideoView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, TopicPageIndex = ViewBag.TopicPageIndex - 1 })">上一页</a>
+                                    <a href="@Url.Action("LearnOnLineVideoView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, TopicPageIndex = ViewBag.TopicPageIndex + 1 })">下一页</a>
+                                    <a href="@Url.Action("LearnOnLineVideoView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, TopicPageIndex = ViewBag.TopicPageIndex })">尾页</a>
+                                    <input class="form-control input-sm" type="text" id="InputPageTo" />
+                                    <button class="btn btn-sm" id="BtnPageTo">跳转» </button>
+                                    <script type="text/javascript">
+                                        $('#BtnPageTo').click(function () {
+                                            window.location.href = 'LearnOnLineVideoView?TrainingId=@ViewBag.TrainingId&UnitContent=@ViewBag.UnitContent&TopicPageIndex=' + $('#InputPageTo').val();
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                            <input type="hidden" id="hidReplyId" />
+                            <!-- 我来说两句 -->
+                            <div class="post">
+                                <div class="h">我来说两句</div>
+                                <div class="editor">
+                                    <textarea id="txtDisContent" class="form-control"></textarea>
+                                </div>
+                                <div class="action">
+                                    <button id="btnSubmit" type="button" class="btn btn-success">提交</button>&nbsp;&nbsp;<a href="javascript:;" onclick="$('#txtDisContent').val('');$('#txtDisContent').focus();">清空内容</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+
+            //提交
+            $("#btnSubmit").click(function () {
+                var txtContent = $("#txtDisContent").val().trim();
+
+                if (txtContent == '') {
+                    Alert('请输入讨论内容!');
+                    $("#txtDisContent").focus();
+                    return;
+                }
+
+                if (txtContent.length > 2000) {
+                    Alert('输入的字数不能大于2000!');
+                    $("#txtDisContent").focus();
+                    return;
+                }
+
+                var hidReplyIdVal = $("#hidReplyId").val();
+                var ParentReplyId = hidReplyIdVal == '' ? "0" : hidReplyIdVal;
+
+                var jsonData = JSON.stringify({
+                    UnitContent: "@ViewBag.UnitContent",
+                    ClassId: "@ViewBag.ClassId",
+                    Content: txtContent,
+                    AccountId: "@ViewBag.AccountId",
+                    ParentReplyId: ParentReplyId,
+                    AttList: ""
+                });
+
+                $("#hidReplyId").val('');//清空回复Id
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/EditCourseUnitReply',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        //if (ParentReplyId == "0")//话题新增
+                        //    Alert("话题新增" + data.Msg);
+                        //else
+                        //    Alert("话题回应" + data.Msg);
+
+                        location.href = window.location.href;
+                        $("#txtDisContent").focus();
+                    },
+                    error: function () {
+                    }
+                });
+            });
+
+
+        });
+    });
+
+    function showNote(eo) {
+        if ($('#d_note').css('display') == 'none') {
+            $(eo).text('隐藏笔记');
+            $('#d_note').show();
+        } else {
+            $(eo).text('显示笔记');
+            $('#d_note').hide();
+        }
+    }
+
+    //删除
+    function DelMember(delId) {
+        if (confirm('你确定要删除该条记录吗?')) {
+            var jsonData = JSON.stringify({ Id: delId });
+            $.ajax({
+                cache: false,
+                url: '/LearnOnLine/DelContentNote',
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (data) {
+                    //Alert(data.Msg);
+                    location.href = window.location.href;
+                },
+                error: function () {
+                }
+            });
+        }
+    }
+
+    //编辑
+    function EditMember(editId) {
+
+        if ($('#editNote_' + editId).css('display') == 'none') {
+            $('#NoteList_' + editId).hide();//隐藏笔记文本显示
+            $('#editText_' + editId).text($("#divNote_" + editId).html());
+            $('#editNote_' + editId).show();
+        }
+    }
+
+    //[修改],[新增]保存--我的笔记
+    function EditSave(editId) {
+        var txtContent = editId == '' ? $('#newText').val().trim() : $('#editText_' + editId).val().trim();
+        var IsNew = editId == '' ? true : false;
+        editId = editId == '' ? "0" : editId;
+
+        if (txtContent.length <= 0) {
+            Alert('笔记内容不能为空!');
+            if (editId == "0") {
+                $('#newText').focus();
+            } else {
+                $('#editText_' + editId).focus();
+            }
+            return;
+        }
+
+        if (txtContent.length > 8000) {
+            Alert('输入的字数不能大于8000.');
+            if (editId == "0") {
+                $('#newText').focus();
+            } else {
+                $('#editText_' + editId).focus();
+            }
+            return;
+        }
+
+        var jsonData = JSON.stringify({
+            Id: editId,
+            Content: txtContent,
+            ClassId: "@ViewBag.ClassId",
+            TrainingId: "@ViewBag.TrainingId",
+            AccountId: "@ViewBag.AccountId",
+            UnitContent: "@ViewBag.UnitContent"
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/EditContentNote',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                //Alert(data.Msg);
+                if (IsNew) {
+                    $('#d_new').hide();
+                }
+                else {
+                    $('#editNote_' + editId).hide();
+                    $('#NoteList_' + editId).show();
+                }
+                //location.href = "/Learn/LearnOnLine/LearnOnLineReadingView";
+                location.href = window.location.href;
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+    //删除
+    function DelDiscuss(Id, ParentReplyId) {
+        var alertStr = ParentReplyId == "0" ? "删除该话题,所有的回复信息一起删除,确定继续么?" : "你确定要删除该回复么?";
+        if (confirm(alertStr)) {
+
+            var jsonData = JSON.stringify({ Id: Id, ParentReplyId: ParentReplyId });
+
+            $.ajax({
+                cache: false,
+                async: true,
+                url: '/LearnOnLine/EditCourseUnitReply',
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (data) {
+                    //Alert(data.Msg);
+                    location.href = window.location.href;
+                },
+                error: function () {
+                }
+            });
+        }
+    }
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>

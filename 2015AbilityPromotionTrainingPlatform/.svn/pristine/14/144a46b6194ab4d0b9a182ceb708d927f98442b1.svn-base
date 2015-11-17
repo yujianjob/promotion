@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "密码设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<script type="text/javascript" src="~/Resources/Scripts/md5.js"></script>
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            @using (Html.BeginForm("UpdPass", "PassWordEdit", FormMethod.Post, new { @class = "form-inline" }))
+            {
+                <div class="col-xs-5">
+
+                    <div class="d-page-title">密码设置</div>
+                    <hr>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <label class="control-label">当前密码 <span class="text-danger">*</span></label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    @Html.Password("PassWord", null, new { @class = "form-control" })
+                                </div>
+                            </td>
+                            <td style="width:500px;">
+                                <span id="PassWordSpan" style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <label class="control-label">新密码 <span class="text-danger">*</span></label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">@Html.Password("NewPassWord", null, new { @class = "form-control" })</div>
+                            </td>
+                            <td style="width:500px;">
+                                <span id="NewPassWordSpan" style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <label class="control-label">再输入一次新密码 <span class="text-danger">*</span></label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    @Html.Password("NewPassWordTo", null, new { @class = "form-control" })
+                                </div>
+                            </td>
+                            <td style="width:500px;">
+                                <span id="NewPassWordToSpan" style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" id="Submit" class="btn btn-success" style="width: 150px;" value="保存新密码" />
+                            </td>
+                            <td>
+                                <a href="#">取消</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#Submit").click(function () {
+        $("#PassWordSpan").text("");
+        $("#NewPassWord").text("");
+        $("#NewPassWordTo").text("");
+        var YuanPass = '@ViewData["UserPass"]';
+        var PassWord = $("#PassWord").val();
+        var NewPassWord = $("#NewPassWord").val();
+        var NewPassWordTo = $("#NewPassWordTo").val();
+        if (PassWord == "" || PassWord == null)
+        {
+            $("#PassWordSpan").text("请输入旧密码");
+            return false;
+        } else if (NewPassWord == "" || NewPassWord == null)
+        {
+            $("#NewPassWordSpan").text("请输入新密码");
+            return false;
+        } else if (NewPassWordTo == "" || NewPassWordTo == null)
+        {
+            $("#NewPassWordToSpan").text("请再次输入新密码");
+            return false;
+        } else if (hex_md5(NewPassWord).toUpperCase() != YuanPass)
+        {
+            $("#PassWordSpan").text("旧密码输入错误");
+            return false;
+        } else if (NewPassWord != NewPassWordTo)
+        {
+            $("#NewPassWordToSpan").text("两次输入的密码不一致");
+            return false;
+        }
+        var NewPassWordMD5 = hex_md5(NewPassWord).toUpperCase();
+
+        $.ajax({
+            url: '@Url.Action("UpdPass")',
+             type: 'get',
+             data: { PassWord: NewPassWordMD5 },
+             cache: false,
+             dataType: 'text',
+             timeout: 30000,
+             success: function (data) {
+                 var src = data.split(':');
+                 if (src[0] == "yes") {
+                     alert(src[1]);
+                     location.href = "";
+                 } else {
+                     alert(src[1]);
+                     return false;
+                 }
+
+             },
+             error: function (xmlHttpRequest, errorMessage, exception) {
+                 alert(errorMessage);
+             }
+         });
+    })
+</script>
+

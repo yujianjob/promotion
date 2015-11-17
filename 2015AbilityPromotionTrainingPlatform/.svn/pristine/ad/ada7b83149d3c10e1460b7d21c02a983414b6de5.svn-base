@@ -1,0 +1,368 @@
+﻿$(function () {
+    $proto.init(function () {
+        /* 页面加载后立即执行的代码写在这里 */
+        var ChapterModel = $("#ChapterModel div:eq(0)");
+
+        var obj = JSON.stringify({ TrainingId:TrainingId,ParentId: 0 });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/CourseCreate/ChapterSectionInfo',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                $("#CourseInfo").html(Loading);
+
+                if (!data || !data.Data || data.Data.length == 0) {
+                    $("#CourseInfo").html(noDataTip);
+                    return;
+                }
+
+                var htmls = "";
+
+                for (var i = 0; i < data.Data.length; i++) {
+                    var eleCon = ChapterModel.clone(true);
+
+                    eleCon.find("#ChapTitle").html(data.Data[i]["Title"]);
+                    eleCon.find("#TotalTimeLength").html(GetTotalTimeLength(data.Data[i]["Id"]));
+                    eleCon.find("#ChapContent").html(data.Data[i]["Content"]);
+                    eleCon.find("#ChapEdit").attr("href", "/Course/CourseCreate/CourseUnitEdit?TrainingId=" + TrainingId + "&CourseID=" + data.Data[i]["Id"]);
+                    eleCon.find("#ChapDelete").attr("onclick", "ChapSecDelete(" + data.Data[i]["Id"] + ");");
+
+                    //根据章显示状态显示文本
+                    if (data.Data[i]["Display"]) {
+                        eleCon.find("#ChapterDisplay").html("不显示");
+                    }
+                    else {
+                        eleCon.find("#ChapterDisplay").html("显示");
+                    }
+
+                    eleCon.find("#ChapterDisplay").attr("onclick", "ChapSecDisplay(this," + data.Data[i]["Id"] + ");");
+                    eleCon.find("#ChapterActivity").html(GetChapterSectionActivity(data.Data[i]["Id"]));
+                    eleCon.find("#SectionContent").html(GetSectionContent(data.Data[i]["Id"]));
+
+                    htmls += $(eleCon)[0].outerHTML;
+                }
+
+                //增加结业考试HTML
+                htmls += GetExamContent(TrainingId);
+
+                $("#CourseInfo").html(htmls);
+            },
+            error: function () {
+            }
+        });
+    });
+});
+
+//获取指定章下面节HTML
+function GetSectionContent(ParentID) {
+    var htmls = "";
+    var SectionModel = $("#SectionModel div:eq(0)");
+
+    var obj = JSON.stringify({ TrainingId: TrainingId, ParentID: ParentID });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/ChapterSectionInfo',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            if (!data || !data.Data || data.Data.length == 0) {
+                return;
+            }
+
+            for (var i = 0; i < data.Data.length; i++) {
+                var eleCon = SectionModel.clone(true);
+
+                eleCon.find("#SecTitle").html(data.Data[i]["Title"]);
+                eleCon.find("#SecEdit").attr("href", "/Course/CourseCreate/CourseUnitEdit?TrainingId=" + TrainingId + "&CourseID=" + data.Data[i]["Id"]);
+                eleCon.find("#SecDelete").attr("onclick", "ChapSecDelete(" + data.Data[i]["Id"] + ");");
+
+                //根据节显示状态显示文本
+                if (data.Data[i]["Display"]) {
+                    eleCon.find("#SecDisplay").html("不显示");
+                }
+                else {
+                    eleCon.find("#SecDisplay").html("显示");
+                }
+
+                eleCon.find("#SecDisplay").attr("onclick", "ChapSecDisplay(this," + data.Data[i]["Id"] + ");");
+                eleCon.find("#SectionActivity").html(GetChapterSectionActivity(data.Data[i]["Id"]));
+
+                htmls += $(eleCon)[0].outerHTML;
+            }
+        },
+        error: function () {
+        }
+    });
+
+    return htmls;
+}
+
+//获取指定章节总时长
+function GetTotalTimeLength(TimeLengthId) {
+    var TotalTimeLength;
+    var obj = JSON.stringify({ TimeLengthId: TimeLengthId });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/TotalTimeLength',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            if (!data || !data.Data || data.Data.length == 0) {
+                TotalTimeLength = 0;
+            }
+
+            TotalTimeLength = data.Data;
+        },
+        error: function () {
+        }
+    });
+
+    return TotalTimeLength;
+}
+
+//获取章节单元活动HTML
+function GetChapterSectionActivity(UnitID) {
+    var htmls = "";
+    var ActivityModel = $("#ActivityModel div:eq(0)");
+
+    var obj = JSON.stringify({ UnitID: UnitID });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/ActivityInfo',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            if (!data || !data.Data || data.Data.length == 0) {
+                return;
+            }
+
+            for (var i = 0; i < data.Data.length; i++) {
+                if (data.Data[i]["UnitType"] != 6)
+                {
+                    var eleCon = ActivityModel.clone(true);
+
+                    eleCon.find("#AcTitle").html(data.Data[i]["Title"]);
+                    switch (data.Data[i]["UnitType"]) {
+                        case 1:
+                            {
+                                eleCon.find("#AcType").html("阅读");
+                                eleCon.find("#ActivityEdit").attr("href", "/Course/CourseCreate/CourseActivityReadingEdit?TrainingId=" + TrainingId + "&UnitID=" + data.Data[i]["Id"]);
+                                break;
+                            }
+                        case 2:
+                            {
+                                eleCon.find("#AcType").html("<span class='glyphicon glyphicon-facetime-video'>");
+                                eleCon.find("#ActivityEdit").attr("href", "/Course/CourseCreate/CourseActivityVideoEdit?TrainingId=" + TrainingId + "&UnitID=" + data.Data[i]["Id"]);
+                                break;
+                            }
+                        case 3:
+                            {
+                                eleCon.find("#AcType").html("讨论");
+                                eleCon.find("#ActivityEdit").attr("href", "/Course/CourseCreate/CourseActivityDiscussEdit?TrainingId=" + TrainingId + "&UnitID=" + data.Data[i]["Id"]);
+                                break;
+                            }
+                        case 4:
+                            {
+                                eleCon.find("#AcType").html("作业");
+                                eleCon.find("#ActivityEdit").attr("href", "/Course/CourseCreate/CourseActivityTaskEdit?TrainingId=" + TrainingId + "&UnitID=" + data.Data[i]["Id"]);
+                                break;
+                            }
+                        case 5:
+                            {
+                                eleCon.find("#AcType").html("测试");
+                                eleCon.find("#ActivityEdit").attr("href", "/Course/CourseCreate/CourseActivityQuizEdit?TrainingId=" + TrainingId + "&UnitID=" + data.Data[i]["Id"]);
+                                break;
+                            }
+                        default:
+                            {
+                                eleCon.find("#AcType").html("-");
+                                eleCon.find("#ActivityEdit").attr("href", "/Course/CourseCreate/CourseActivityExamEdit?TrainingId=" + TrainingId + "&UnitID=" + data.Data[i]["Id"]);
+                                break;
+                            }
+                    }
+                    eleCon.find("#AcTimeLength").html(data.Data[i]["TimeLength"]);
+                    eleCon.find("#ActivityDelete").attr("onclick", "ActivityDelete(" + data.Data[i]["Id"] + ");");
+
+                    //根据活动显示状态显示文本
+                    if (data.Data[i]["Display"]) {
+                        eleCon.find("#ActivityDisplay").html("不显示");
+                    }
+                    else {
+                        eleCon.find("#ActivityDisplay").html("显示");
+                    }
+
+                    eleCon.find("#ActivityDisplay").attr("onclick", "ActivityDisplay(this," + data.Data[i]["Id"] + ");");
+
+                    htmls += $(eleCon)[0].outerHTML;
+                }
+            }
+        },
+        error: function () {
+        }
+    });
+    return htmls;
+}
+
+//获取指定章的结业考试
+function GetExamContent(TrainingId) {
+    var htmls = "";
+    var ExamModel = $("#ExamModel div:eq(0)");
+
+    var obj = JSON.stringify({ TrainingId: TrainingId });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/ExamInfo',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            if (!data || !data.Data || data.Data.length == 0) {
+                return;
+            }
+
+            var eleCon = ExamModel.clone(true);
+            eleCon.find("#ExamTitle1").html(data.Data[0]["Title"]);
+            eleCon.find("#ExamTitle2").html(data.Data[0]["Title"]);
+            eleCon.find("#ExamTitle2").attr("href", "/Learn/LearnOnLine/LearnOnLineExamView?TrainingId=" + TrainingId + "&UnitContent=" + data.Data[0]["Id"]);
+            eleCon.find("#ExamTimeLength").html(data.Data[0]["TimeLength"]);
+            eleCon.find("#ExamQuesCnt").html(ExamQuesCnt);
+            eleCon.find("#ExamEdit").attr("href", "/Course/CourseCreate/CourseActivityExamEdit?TrainingId=" + TrainingId + "&UnitId=" + data.Data[0]["Id"]);
+            eleCon.find("#ExamDelete").attr("onclick", "ActivityDelete(" + data.Data[0]["Id"] + ");");
+
+            //根据节显示状态显示文本
+            if (data.Data[0]["Display"]) {
+                eleCon.find("#ExamDisplay").html("不显示");
+            }
+            else {
+                eleCon.find("#ExamDisplay").html("显示");
+            }
+
+            eleCon.find("#ExamDisplay").attr("onclick", "ActivityDisplay(this," + data.Data[0]["Id"] + ");");
+
+            htmls += $(eleCon)[0].outerHTML;
+        },
+        error: function () {
+        }
+    });
+
+    return htmls;
+}
+
+//章节删除按钮单击事件
+function ChapSecDelete(id) {
+    var returnVal = window.confirm("是否确认删除?", "提示");
+
+    if (returnVal) {
+        var obj = JSON.stringify({ id: id });
+        $.ajax({
+            cache: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/CourseCreate/DeleteCourseUnit',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                location.href = location.href;
+            },
+            error: function () {
+            }
+        });
+    }
+}
+
+//活动删除按钮单击事件
+function ActivityDelete(id) {
+    var returnVal = window.confirm("是否确认删除?", "提示");
+
+    if (returnVal) {
+        var obj = JSON.stringify({ id: id });
+        $.ajax({
+            cache: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/CourseCreate/DeleteCourseAtivity',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                location.href = location.href;
+            },
+            error: function () {
+            }
+        });
+    }
+}
+
+//章节显示设置单击事件
+function ChapSecDisplay(e, id) {
+    var obj = JSON.stringify({ id: id });
+    $.ajax({
+        cache: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/DisplayCourseUnit',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            //根据章节显示状态显示文本
+            if (data.Display) {
+                $(e).html("不显示");
+            }
+            else {
+                $(e).html("显示");
+            }
+        },
+        error: function () {
+        }
+    });
+}
+
+//活动显示设置单击事件
+function ActivityDisplay(e, id) {
+    var obj = JSON.stringify({ id: id });
+    $.ajax({
+        cache: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/CourseCreate/DisplayCourseAtivity',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            //根据活动显示状态显示文本
+            if (data.Display) {
+                $(e).html("不显示");
+            }
+            else {
+                $(e).html("显示");
+            }
+        },
+        error: function () {
+        }
+    });
+}
+
+function doHideLecture() {
+    var e1 = $($d.elem($d.evt()));
+    var e2 = e1.parent().parent().find('.lecture');
+    if (e2.css('display') == 'block') {
+        e1.html('<span class="glyphicon glyphicon-chevron-down"></span>&nbsp;显示 ' + e2.size() + ' 项内容');
+        e2.hide();
+    } else {
+        e1.html('<span class="glyphicon glyphicon-chevron-up"></span>&nbsp;隐藏');
+        e2.show();
+    }
+}

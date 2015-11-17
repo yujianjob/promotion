@@ -1,0 +1,136 @@
+<div class="d-search">
+
+	<form class="form-inline">
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部学期</option>
+	    	<option value="">2015年秋季</option>
+	    	<option value="">2015年春季</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <select class="form-control">
+	    	<option value="">全部状态</option>
+	    	<option value="">待审核</option>
+	    	<option value="">已通过</option>
+	    	<option value="">不通过</option>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <input type="text" class="form-control" placeholder="姓名、师训编号、身份证、课程名称搜索" style="width:300px;">
+	  </div>
+	  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> 搜索</button>
+	</form>
+
+	<div class="action">
+		<a href="#" class="btn btn-success">批量审核通过</a>
+	<a href="#" class="btn btn-success">批量不通过</a>
+	</div>
+
+</div>
+
+<div class="d-datatable">
+
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th><input type="checkbox"></th>
+				<th>姓名</th>
+				<th>师训编号</th>
+				<th>课程名称</th>
+				<th>班级名称</th>
+				<th>上课日期</th>
+				<th>选课日期</th>
+				<th>审核状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th><input type="checkbox"></th>
+				<td>张晓明</td>
+				<td>11023101231</td>
+				<td>云服务在课堂教育中的应用</td>
+				<td>2015秋A班（在线）</td>
+				<td>2015-09-20至2015-12-20</td>
+				<td>2015-07-08</td>
+				<td><span class="text-info">待审核</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			<tr>
+				<th><input type="checkbox"></th>
+				<td>李敏</td>
+				<td>11023101231</td>
+				<td>云服务在课堂教育中的应用</td>
+				<td>2015秋A班（在线）</td>
+				<td>2015-09-20至2015-12-20</td>
+				<td>2015-07-08</td>
+				<td><span class="text-info">待审核</span></td>
+				<td>
+					<a href="javascript:;" onclick="">审核</a>
+				</td>
+			</tr>
+			<tr>
+				<th><input type="checkbox"></th>
+				<td>林宇</td>
+				<td>11023101231</td>
+				<td>云服务在课堂教育中的应用</td>
+				<td>2015秋A班（在线）</td>
+				<td>2015-09-20至2015-12-20</td>
+				<td>2015-07-08</td>
+				<td><span class="text-success">已通过</span></td>
+				<td>
+					<a href="javascript:;" onclick="">查看</a>
+					<a href="javascript:;" onclick="">重新审核</a>
+				</td>
+			</tr>
+			<tr>
+				<th><input type="checkbox"></th>
+				<td>王晓明</td>
+				<td>11023101231</td>
+				<td>云服务在课堂教育中的应用</td>
+				<td>2015秋A班（在线）</td>
+				<td>2015-09-20至2015-12-20</td>
+				<td>2015-07-08</td>
+				<td><span class="text-danger">不通过</span></td>
+				<td>
+					<a href="javascript:;" onclick="">查看</a>
+					<a href="javascript:;" onclick="">重新审核</a>
+				</td>
+			</tr>
+			<tr>
+				<th><input type="checkbox"></th>
+				<td>张晓明</td>
+				<td>11023101231</td>
+				<td>云服务在课堂教育中的应用</td>
+				<td>2015秋A班（在线）</td>
+				<td>2015-09-20至2015-12-20</td>
+				<td>2015-07-08</td>
+				<td><span class="text-danger">不通过</span></td>
+				<td>
+					<a href="javascript:;" onclick="">查看</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>

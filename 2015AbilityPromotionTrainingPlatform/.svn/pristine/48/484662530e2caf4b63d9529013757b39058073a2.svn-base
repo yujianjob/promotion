@@ -1,0 +1,340 @@
+﻿@model IList<Dianda.AP.Model.Member_BaseInfo>
+@{
+    ViewBag.Title = "考试批改";
+    Layout = Url.Content("~/Views/Shared/LinkLayout.cshtml");
+    var accountBll = new Dianda.AP.BLL.Member_AccountBLL();
+    var baseBll = new Dianda.AP.BLL.Member_BaseInfoBLL();
+    var organBll = new Dianda.AP.BLL.Organ_DetailBLL();
+    var scheduleBll = new Dianda.AP.BLL.Member_ClassUnitContentScheduleBLL();
+    var unitcontentBll = new Dianda.AP.BLL.Course_UnitContentBLL();
+
+    Dianda.AP.Model.Course_UnitContent contentModel = null;
+
+    Dianda.AP.Model.Course_UnitDetail coursedetailModel = null;
+
+    var traningDetailBll = new Dianda.AP.BLL.Traning_DetailBLL();
+    var coursedetailBll = new Dianda.AP.BLL.Course_UnitDetailBLL();
+    var classBll = new Dianda.AP.BLL.Class_DetailBLL();
+    var endtime = "";
+
+}
+<input  type="hidden" id="classId" value="@ViewBag.classId"/>
+<input  type="hidden" id="pageIndex" value="@ViewBag.pageIndex"/>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">@ViewBag.ClassName&nbsp;&nbsp;<span class="text-muted">@ViewBag.CourseName</span></div>
+                <div data-km-htm="blk_ct_menu_class.html" class="blk_ct_menu_class" id="blk_ct_menu_class">
+
+                    @RenderPage(@Url.Content("~/Views/Shared/ClassTeacherLink.cshtml"), new { classId = @ViewBag.classId })
+
+                </div>
+                <div data-km-htm="blk_ct_class_exam.html" class="blk_ct_class_exam" id="blk_ct_class_exam">
+                    <div class="form-group form-inline filter">
+                        <select class="form-control" id="status" onchange="search();">
+                            <option value="">全部状态</option>
+                            <option value="-1">未提交</option>
+                            <option value="0">未打分</option>
+                            <option value="1">已打分</option>
+                        </select>
+                        <div class="action">
+                           @* <a href="#">查看答题统计</a>*@
+                        </div>
+                    </div>
+
+                    @foreach (var item in Model)
+                    {
+                        var accout = accountBll.GetModel(item.AccountId, "");
+                        var organModel = organBll.GetModel(item.Organid);
+
+                        contentModel = unitcontentBll.GetModel(Convert.ToInt32(item.cqId), "");
+
+                        if (accout != null && organModel != null)
+                        {
+                            if (item.homeworkId > 0)
+                            {
+                                var examModel = scheduleBll.GetModel(Convert.ToInt32(item.homeworkId), "");
+                                
+                                coursedetailModel = coursedetailBll.GetModel(contentModel.UnitId.Value, "");
+                                if (traningDetailBll.GetModel(coursedetailModel.TrainingId.Value, "").OutSideType != -1)//外部课程不显示
+                                {
+
+                                }
+                                else
+                                {
+                        <div class="i">
+                            <div class="t">
+                                <div class="thumb">
+                                    <img style="width:40px;height:40px;" src="@accout.Pic">
+                                </div>
+                                <div class="name">@item.RealName</div>
+                                <div class="source trim">@organModel.Title</div>
+                            </div>
+                            <div class="form-group form-inline pg">
+                                <span class="title">测验：
+                                    @if (contentModel != null)
+                                    { 
+                                        @(contentModel.Title.Length > 10 ? contentModel.Title.Substring(0, 10) : contentModel.Title) ;
+                                    }
+
+                                </span>&nbsp;
+                               
+                                @{Dianda.AP.Model.Course_UnitContent unit = (Dianda.AP.Model.Course_UnitContent)unitcontentBll.GetModel(Convert.ToInt32(item.cqId), "");
+                                  if (unit != null)
+                                  {
+                                      endtime = unit.CreateDate.AddDays(unit.EndTime.Value).ToString("yyyy-MM-dd");
+                                      break;
+                                  }}
+                                <span class="date">截止日期 : @endtime</span>
+
+
+                                <a onclick="openExamAnswerList('@classBll.GetModel(ViewBag.classId).TraningId',@examModel.UnitContent)" href="javascript:;">查看答题卷</a>
+
+
+                                @*                                @if (examModel.score.HasValue)
+                                {
+                                    <a onclick="$(this).parent().find('.action .edit').toggle()" href="javascript:;">重新打分</a>
+                                }*@
+
+                                @if (!examModel.score.HasValue)
+                                {
+                                    <a onclick="$(this).parent().find('.action .edit').toggle()" href="javascript:;">打分</a>
+                                }
+                                <div class="action">
+                                    <div class="edit" style="display: none;">
+                                        <input id="@("score" + examModel.Id)" type="text" value="" style="width: 60px;" class="form-control">&nbsp;
+       
+                                    <button class="btn btn-success" type="button" onclick="doAction(@examModel.Id,@item.AccountId)">保存</button>&nbsp;
+       
+                                    <a href="javascript:;" onclick="$(this).parent().toggle()">取消</a>
+                                    </div>
+                                    @if (examModel.score > 0)
+                                    {
+                                        <span class="score">得分 : @examModel.score</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                                }
+                            }
+                            else
+                            {
+                        <div class="i">
+                            <div class="t">
+                                <div class="thumb">
+                                    <img src="@accout.Pic">
+                                </div>
+                                <div class="name">@item.RealName</div>
+                                <div class="source trim">@organModel.Title</div>
+                            </div>
+                            <div class="form-group form-inline pg">
+                                <span class="title">测验：
+                                    @if (contentModel != null)
+                                    { 
+                                        @(contentModel.Title.Length > 10 ? contentModel.Title.Substring(0, 10) : contentModel.Title) ;
+                                    }</span>&nbsp;
+                              
+                                <span class="date">截止日期 : @contentModel.CreateDate.AddDays(contentModel.EndTime.Value).ToString("yyyy-MM-dd")</span>
+
+
+                                <span class="status text-danger">未提交&nbsp;</span>
+
+                                <div class="action">
+                                    &nbsp;
+   
+                                </div>
+
+                            </div>
+                        </div>
+                            }
+                        }
+
+                    }
+                    <hr>
+                    @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, pagecount = @ViewBag.totalPage, basecount = @ViewBag.basecount })
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function getParamValue(paramName) {
+            var url = window.location.href;
+            var paramIndex = url.indexOf('?');
+            var param = url.substring(paramIndex + 1, url.length);
+            var paraArr = param.split('&');
+            for (var i = 0; i < paraArr.length; i++) {
+                if (paraArr[i].indexOf(paramName) > -1) {
+                    return paraArr[i].split('=')[1];
+                }
+            }
+            return -10;
+        }
+        $(document).ready(function () {
+
+            if (getParamValue('status') > -10) {
+                $('#status').val(getParamValue('status'));
+            }
+        });
+        function search() {
+            var param_status = $("#status").val();
+            var param_classId = $('#classId').val();
+            var index = $("#pageIndex").val();
+            var param_pageIndex = '';
+            if (index != '')
+                param_pageIndex = "&pageIndex=" + index;
+            window.location.href = "?classId=" + param_classId + "&status=" + param_status + param_pageIndex;
+        }
+
+        function doAction(id, AccountId) {
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/AddExamScore',
+                data: { classId: '@ViewBag.classId', planId: '@ViewBag.planId', Val: $('#score' + id).val(), ObjectId: id, AccountId: AccountId },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        window.location.reload();
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+
+        function openExamAnswerList(TraningId, UnitContentId) {
+
+
+            $('#radioList').empty();
+            $('#blk_modal_graduate').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/GetExamAnswerList',
+                data: { UnitContentId: UnitContentId },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    for (var i = 0; i < result.length; i++) {
+
+                        $('#radioList').append(" <a target='_blank' href='/Learn/LearnOnLine/LearnOnLineExamShowView?TrainingId=" + TraningId +
+                            "&UnitContent=" + UnitContentId + "&ClassId=" + '@ViewBag.classId' + "&UId=" + result[i].Id + "'><p style='width:300px'>查看试卷(" + result[i].CreateDate + ")</p></a>");
+                    }
+                    //<label class='chk'><input id='answerid" + result[i].Id + "' type='radio' name='a13'/></label>
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $proto.init(function () {
+                /* 页面加载后立即执行的代码写在这里 */
+
+                // $('#d_courseteacher_class_member').addClass('active');
+            });
+        });
+
+        function doManageGroup() {
+            $('#blk_modal_manage_group').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function doManageGroupSubmit() {
+
+            $('#blk_modal_manage_group').modal('hide');
+        }
+        $('#blk_modal_manage_group').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_modal_manage_group').on('hidden.bs.modal', function (e) {
+
+        });
+
+        function doAddGroup() {
+            $('#blk_modal_add_group').modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        function doAddGroupSubmit() {
+            var ids = '';
+            $("input[name='a10']:checked").each(function () {
+                ids += $(this).val() + ',';
+
+            });
+            if (ids == '') {
+                Alert('请选择小组成员!');
+                return;
+            }
+            if ($('#gtitle').val() == '') {
+                Alert('请填写小组名称!');
+                return;
+            }
+
+            $.ajax({
+                type: 'get',
+                url: '/ClassTeacher/AddClassGroupMember',
+                data: { classId: $('#classId').val(), groupTitle: $('#gtitle').val(), accountIds: ids },
+                contentType: 'application/json',
+                dataType: "text",
+                success: function (data) {
+                    var result = $.parseJSON(data);
+                    if (result.Code == 0) {
+                        Alert(result.Msg);
+                    }
+                    else {
+                        Alert(result.Msg);
+                    }
+                },
+                error: function () {
+                    Alert('服务器错误！');
+                }
+            });
+
+            $('#blk_modal_add_group').modal('hide');
+        }
+        $('#blk_modal_add_group').on('shown.bs.modal', function (e) {
+
+        });
+        $('#blk_modal_add_group').on('hidden.bs.modal', function (e) {
+
+        });
+    </script>
+</div>
+<div class="modal fade blk_modal_graduate" id="blk_modal_graduate">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">答案列表</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-1">
+                        <div class="form-group" id="radioList">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

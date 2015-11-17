@@ -1,0 +1,107 @@
+﻿using Dianda.AP.Model.Learn.MyLearn;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Dianda.AP.DAL
+{
+    public class LearnMyPracticeDAL
+    {
+        /// <summary>
+        /// 获取我的实践总记录数
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public int GetMyPracticeCount(string where)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select count(1)");
+            sql.Append(" from [dbo].[PracticalCourse_Detail] A");
+            sql.Append(" join Member_PracticalCourse B on A.Id=B.PracticalCourseId");
+            sql.Append(" join Member_Account C on B.AccountId=C.Id");
+            sql.Append(" join PracticalCourse_RoleCredits D on B.RoleId=D.Id");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            return Convert.ToInt32(MSEntLibSqlHelper.ExecuteScalarBySql(sql.ToString()));
+        }
+
+        /// <summary>
+        /// 获取我的实践分页数据集
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="where"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="recordCount"></param>
+        /// <returns></returns>
+        public List<MyPracticeInfo> GetMyPracticeList(int pageSize, int pageIndex, string where, string orderBy)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+                throw new ArgumentNullException();
+            int start = (pageIndex - 1) * pageSize + 1;
+            int end = pageIndex * pageSize;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from (select ROW_NUMBER() over (order by " + orderBy + ") as [RowNum],");
+            sql.Append("A.*,");
+            sql.Append("B.Status,");
+            sql.Append("C.NickName as AccountName,");
+            sql.Append("D.Credits");
+            sql.Append(" from [dbo].[PracticalCourse_Detail] A");
+            sql.Append(" join Member_PracticalCourse B on A.Id=B.PracticalCourseId");
+            sql.Append(" join Member_Account C on B.AccountId=C.Id");
+            sql.Append(" join PracticalCourse_RoleCredits D on B.RoleId=D.Id");
+            if (!string.IsNullOrEmpty(where))
+                sql.Append(" where " + where);
+            sql.Append(") as T where [RowNum] between " + start + " and " + end);
+
+            List<MyPracticeInfo> list = new List<MyPracticeInfo>();
+            using (IDataReader reader = MSEntLibSqlHelper.ExecuteDataReaderBySql(sql.ToString()))
+            {
+                while (reader.Read())
+                {
+                    MyPracticeInfo model = new MyPracticeInfo();
+                    ConvertToModel(reader, model);
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        #region
+        private void ConvertToModel(IDataReader reader, MyPracticeInfo model)
+        {
+            if (reader["Id"] != DBNull.Value)
+                model.Id = Convert.ToInt32(reader["Id"]);
+            if (reader["Title"] != DBNull.Value)
+                model.Title = reader["Title"].ToString();
+            if (reader["Content"] != DBNull.Value)
+                model.Content = reader["Content"].ToString();
+            if (reader["IsBatch"] != DBNull.Value)
+                model.IsBatch = Convert.ToBoolean(reader["IsBatch"]);
+            if (reader["OrganId"] != DBNull.Value)
+                model.OrganId = Convert.ToInt32(reader["OrganId"]);
+            if (reader["AccountId"] != DBNull.Value)
+                model.AccountId = Convert.ToInt32(reader["AccountId"]);
+            if (reader["PlanId"] != DBNull.Value)
+                model.PlanId = Convert.ToInt32(reader["PlanId"]);
+            if (reader["People"] != DBNull.Value)
+                model.People = Convert.ToInt32(reader["People"]);
+            if (reader["Display"] != DBNull.Value)
+                model.Display = Convert.ToBoolean(reader["Display"]);
+            if (reader["Delflag"] != DBNull.Value)
+                model.Delflag = Convert.ToBoolean(reader["Delflag"]);
+            if (reader["CreateDate"] != DBNull.Value)
+                model.CreateDate = Convert.ToDateTime(reader["CreateDate"]);
+            if (reader["AccountName"] != DBNull.Value)
+                model.AccountName = reader["AccountName"].ToString();
+            if (reader["Credits"] != DBNull.Value)
+                model.Credits = Convert.ToInt32(reader["Credits"]);
+            if (reader["Status"] != DBNull.Value)
+                model.Status = Convert.ToInt32(reader["Status"]);
+        }
+        #endregion
+    }
+}

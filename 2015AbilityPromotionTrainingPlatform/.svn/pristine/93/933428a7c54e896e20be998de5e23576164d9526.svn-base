@@ -1,0 +1,64 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 作业";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_task" class="blk_ln_course_task" data-km-htm="blk_ln_course_task.html">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent Theme_Model = ViewBag.Model_Course_UnitContent;
+                        <h3>作业：@Theme_Model.Title</h3>                        
+                        <div style="float: left; word-break: break-all; max-width: 650px; word-wrap: break-word;">
+                            <p>@Html.Raw(Theme_Model.Content.Length >= 90 ? Theme_Model.Content.Substring(0, 90) + "..." : Theme_Model.Content)</p>
+                        </div>
+                        <br />
+                    }
+
+                    @if (ViewBag.Model_Course_UnitHomeWork != null)
+                    {
+                        Dianda.AP.Model.Course_UnitHomeWork Model_Course_UnitHomeWork = ViewBag.Model_Course_UnitHomeWork;
+                        <div style="float: right;">[提交人:@ViewBag.NickName 提交时间: @Model_Course_UnitHomeWork.CreateDate.ToString("yyyy-MM-dd HH:mm")]</div>
+                        <br />
+                        <hr>
+                        <div class="post" style="height: auto; min-height: 430px;">
+                            <div class="h">提交作业 </div>
+                            <div class="ta">
+                                <textarea id="txtContent" class="form-control" readonly="readonly" style="height: 200px;">@Model_Course_UnitHomeWork.Content</textarea>
+                                <div style="float: left; padding: 5px 0;" id="AttachNameList">
+                                    @if (Model_Course_UnitHomeWork.AttList != null)
+                                    {
+                                        //解析Json
+                                        JavaScriptSerializer jr = new JavaScriptSerializer();
+                                        var HomeWorkAtt = jr.Deserialize<List<Dianda.AP.Model.Course_UnitHomeWorkOther>>(Model_Course_UnitHomeWork.AttList);
+                                        if (HomeWorkAtt != null && HomeWorkAtt.Count > 0)
+                                        {
+                                            foreach (var AttItem in HomeWorkAtt)
+                                            {                                        
+                                        <p><a href="DownloadFile?FilePath=@AttItem.AttPath&FileName=@AttItem.AttName">@AttItem.AttName</a></p>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+
+        });
+    });
+</script>

@@ -1,0 +1,140 @@
+﻿@{
+    @model Dianda.AP.Model.Member_Account
+}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="/Resources/Css/bootstrap.min.css" rel="stylesheet">
+    <link href="/Resources/Css/app.css" rel="stylesheet">
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/jquery-1.11.2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/vendor/ie10-viewport-bug-workaround.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/km.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Resources/Scripts/proto.js")"></script>
+
+    <script type="text/javascript">
+        if (window != top)
+            top.location.href = location.href;
+
+        //刷新验证码
+        function ChangeCode() {
+            var actionUrl = $('#code').attr('src');
+            actionUrl = actionUrl.substring(0, actionUrl.lastIndexOf('/') + 1);
+            $('#code').attr('src', actionUrl + new Date().getTime());
+        }
+
+        $(function () {
+            $proto.init(function () {
+                /* 页面加载后立即执行的代码写在这里 */
+
+                $('#code').click(function () {
+                    ChangeCode();
+                });
+
+                $('#btnSubmit').click(function () {
+                    if ($('#UserName').val() == '') {
+                        Alert('请填写用户名！');
+                        $('#UserName').focus();
+                        return false;
+                    }
+
+                    if ($('#Password').val() == '') {
+                        Alert('请填写密码！');
+                        $('#Password').focus();
+                        return false;
+                    }
+
+                    //if ($('#ValidCode').val() == '') {
+                    //    Alert('请填写验证码！');
+                    //    $('#ValidCode').focus();
+                    //    return false;
+                    //}
+
+                    var userName = $("#UserName").val();
+                    var password = $("#Password").val();
+                    var code = $("#ValidCode").val();
+
+                    //发送登录请求
+                    $.ajax({
+                        type: 'get',
+                        url: '@Url.Action("DoLogin","Login")',
+                        data: { 'UserName': userName, 'Password': password, 'ValidCode': code },
+                        content: 'application/json',
+                        dataType: 'text',
+                        success: function (data) {
+                            var myData = $.parseJSON(data);
+                            if (myData.Result) {
+                                window.location.href = '@Url.Action("Index", "Home", new { area = "Entrance" })';
+                            }
+                            else {
+                                Alert(myData.Msg);
+                                ChangeCode();
+                            }
+                        },
+                        error: function () {
+                            Alert('服务器错误！');
+                        }
+                    });
+                    return false;
+                });
+            });
+        });
+    </script>
+  </head>
+  <body style="background-color:#ededed;">
+    <div class="d-h">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-8 col-xs-offset-2">
+            <div class="d-login">
+              <div class="h">上海市中小学教师信息技术应用能力提升培训平台</div>
+              <ul class="nav nav-tabs">
+          	    <li class="active"><a href="#tab1" data-toggle="tab">用户登录</a></li>
+          	    <li><a href="#tab2" data-toggle="tab">登录说明</a></li>
+          	  </ul>
+                @using(Html.BeginForm())
+                {
+                  <div class="d-login-box">
+                    <div class="tab-content">
+                
+                      <div role="tabpanel" class="tab-pane t1 active" id="tab1">
+                        <div class="form-group">
+                          <label class="control-label sr-only">用户名</label>
+                          <input class="form-control input-lg" type="text" placeholder="用户名" name="UserName" id="UserName" value="admin" maxlength="25">
+                        </div>
+                        <div class="form-group">
+                          <label class="control-label sr-only">密码</label>
+                          <input class="form-control input-lg" type="password" placeholder="密码" name="Password" id="Password" value="123456" maxlength="50">
+                        </div>
+                        <div class="form-group form-inline">
+                          <label class="control-label sr-only">验证码</label>
+                          <input class="form-control input-lg" type="text" placeholder="验证码" style="width:224px;" name="ValidCode" id="ValidCode" maxlength="4">
+                          <img src="/Entrance/Login/ValidCode/@DateTime.Now.ToBinary()" id="code">
+                        </div>
+                        <div class="form-group">
+                          <button type="submit" class="btn btn-success btn-lg" id="btnSubmit">登录</button>
+                          <a href="javascript:">忘记密码？</a>
+                        </div>
+                      </div>
+                
+                      <div role="tabpanel" class="tab-pane t2" id="tab2">
+                        <p>请使用上海教师教育管理平台账号登录（师训账号）。</p>
+                        <p>使用浦东师训账号登录的用户，“用户名”等于师训编号。</p>
+                        <p>如咨询用户名、密码等问题，可咨询本校校级管理员进行查询和密码重置。</p>
+                        <p>客服电话：25653066（服务时间为8:00-22:00）</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              <div class="bottom">主管单位：上海市电化教育馆&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;承建单位：上海教育软件发展有限公司</div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

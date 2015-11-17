@@ -1,0 +1,38 @@
+﻿@using Dianda.AP.Model;
+@{
+    ViewBag.Title = "通知详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Sys_Message Model = ViewBag.model as Sys_Message;
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                @if (Model == null)
+                { 
+                    <p style="font-size:18px;">对不起，该通知不存在！！！</p>
+                }else{
+                <div class="d-announcement">
+                    <ol class="breadcrumb">
+                        <li><a href="@Url.Action("Index", "Message", new { Type=ViewData["Type"]})">返回通知提醒</a></li>
+                    </ol>
+                    <div id="blk_announcement" class="blk_announcement">
+                        <h3 class="text-center">@Model.Title</h3>
+                        <div class="text-center">@Model.CreateDate.ToString("yyyy-MM-dd")</div>
+                        <hr>
+                        <p>@Model.Content</p>
+                        <p>&nbsp;</p>
+                        <p style="text-align: right">@Model.Creater</p>
+                        <p style="text-align: right">@Model.CreateDate.ToString("yyyy-MM-dd")</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

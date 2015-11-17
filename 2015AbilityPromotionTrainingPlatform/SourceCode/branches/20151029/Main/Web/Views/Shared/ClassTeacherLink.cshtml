@@ -1,0 +1,52 @@
+﻿@{
+    string classId =  PageData["classId"];
+
+}
+<div class="d-navmenu">
+    <a class="i " href="@Url.Action("ClassProgress", "ClassTeacher", new { classId = classId , area = "ClassDomain"})" id="d_courseteacher_class_progress">学习进度</a>
+    <a class="i " href="@Url.Action("ClassGroup", "ClassTeacher", new { classId = classId  , area = "ClassDomain"})" id="d_courseteacher_class_member">班级学员</a>
+    <a class="i "  href="@Url.Action("ClassTask", "ClassTeacher", new { classId =  classId  , area = "ClassDomain"})" id="d_courseteacher_class_task">作业批改</a>
+    <a class="i "  href="@Url.Action("ClassDiscuss", "ClassTeacher", new { classId =  classId  , area = "ClassDomain"})" id="d_courseteacher_class_discuss">小组讨论</a>
+    <a class="i "  href="@Url.Action("ClassQuiz", "ClassTeacher", new { classId =  classId  , area = "ClassDomain"})" id="d_courseteacher_class_quiz">测试成绩</a>
+    <a class="i " href="@Url.Action("ClassExam", "ClassTeacher", new { classId =  classId  , area = "ClassDomain"})" id="d_courseteacher_class_exam">考试批改</a>
+    <a class="i "  href="@Url.Action("ClassGraduate", "ClassTeacher", new { classId =  classId  , area = "ClassDomain"})" id="d_courseteacher_class_graduate">结业评价</a>
+
+    <a class="i"  href="@Url.Action("Index", "ClassMessage", new { classId = classId , area = "Prepare" })" id="d_courseteacher_class_message">班级通知</a>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        var url = window.location.href;
+        if (url.indexOf('?') == -1)
+        { $('#d_courseteacher_class_progress').addClass('active'); }
+        else
+        {
+            if (url.indexOf('ClassProgress') > -1) {
+                $('#d_courseteacher_class_progress').addClass('active');
+            }
+            if (url.indexOf('ClassGroup') > -1) {
+                $('#d_courseteacher_class_member').addClass('active');
+            }
+            if (url.indexOf('ClassTask') > -1) {
+                $('#d_courseteacher_class_task').addClass('active');
+            }
+            if (url.indexOf('ClassDiscuss') > -1) {
+                $('#d_courseteacher_class_discuss').addClass('active');
+            }
+            if (url.indexOf('ClassQuiz') > -1) {
+                $('#d_courseteacher_class_quiz').addClass('active');
+            }
+            if (url.indexOf('ClassExam') > -1) {
+                $('#d_courseteacher_class_exam').addClass('active');
+            }
+            if (url.indexOf('ClassGraduate') > -1) {
+                $('#d_courseteacher_class_graduate').addClass('active');
+            }
+            if (url.indexOf('Message') > -1) {
+                $('#d_courseteacher_class_message').addClass('active');
+            }
+        }
+    }
+    );
+</script>

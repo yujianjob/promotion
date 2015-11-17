@@ -1,0 +1,112 @@
+﻿@using Dianda.AP.Model.Course.CourseCreate;
+
+@{
+    ViewBag.Title = "课程列表";
+    Layout = "../Shared/_Layout.cshtml";
+    List<Course_CourseInfo> TrainingInfoList = ViewBag.TrainingInfoList as List<Course_CourseInfo>;
+}
+
+<script type="text/javascript" src="@Url.Content("/Resources/Scripts/Course/CourseList.js")"></script>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+            @using (Html.BeginForm("CourseList", "CourseCreate", FormMethod.Post))
+            {
+                <div class="d-page-title">课程制作
+                    <div class="search form-inline">
+                        <div class="form-group">
+                        <select class="form-control" name="SubjectId" id="SubjectId">
+                            <option>全部学科</option>
+                            @foreach (Course_SubjectInfo item in ViewBag.Subject)
+                              {
+                                  if (item.Id == ViewBag.SubjectId)
+                                  {
+                                      <option selected="selected" value="@item.Id">@item.Name</option>
+                                  }
+                                  else
+                                  {
+                                      <option value="@item.Id">@item.Name</option>
+                                  }
+                              }
+                        </select>
+                        </div>
+                        <div class="form-group">
+                        <input type="text" value="@ViewBag.KeyWords" class="form-control" placeholder="课程搜索" style="width:300px;" name="KeyWords" id="KeyWords">
+                        <button type="submit" class="btn btn-default">搜索</button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <hr>
+            <div id="blk_ct_course_list" class="d-courseauthor-list blk_ct_course_list">
+            @if (TrainingInfoList.Count() == 0)
+            {
+                <h4>无课程信息……</h4>
+            }
+            @foreach (var item in TrainingInfoList)
+            {
+                <div class="i">
+                    <a href="/Course/CourseCreate/TrainingDetail?Id=@item.Id" class="thumb">
+		                <img src="@item.Pic" width="200" height="125">
+		                <div class="text-muted">累计培训 @item.Trainers 人</div>
+	                </a>
+                    <span class="source">@item.OrganName</span><br>
+                    <a href="/Course/CourseCreate/TrainingDetail?Id=@item.Id" class="title">@item.Title</a>
+                    <span class="teacher">@item.TeacherTitleName : @item.TeacherName</span>
+                    <div class="desc text-justify">@item.Content</div>
+                    <div class="subject">学科 : 
+                        @foreach (var subject in ViewBag.SubjectData)
+                        {
+                            string[] array = item.Subject.Split(',');
+                            foreach (string s in array)
+                            {
+                                if (s == subject.Id.ToString())
+                                {
+                                    <span>@subject.Title</span><span>&nbsp;</span>
+                                }
+                            }
+                        }
+                    </div>
+                    <div class="action">
+                       <a href="/Course/CourseCreate/CourseDetail?TrainingId=@item.Id" class="btn btn-primary">课程制作</a>
+                        @* @if (item.Status == 3)
+                        {
+		                    
+                        }
+                        @if (item.Status == 6)
+                        {
+                            <span class="status bg-warning">已下架&nbsp;<span class="glyphicon glyphicon-minus"></span></span>
+                        }
+                        @if (item.Status == 5)
+                        {
+                            <span class="status bg-warning">已上架&nbsp;<span class="glyphicon glyphicon-minus"></span></span>
+                        }*@
+                    </div>
+                        @if (item.TraingField == 1)
+                        {
+                            <span class="sign bg-sign orange">通识<span class="hour">@item.TotalTime 课时</span></span>
+                        }
+                        @if (item.TraingField == 2)
+                        {
+                            <span class="sign bg-sign blue">专业<span class="hour">@item.TotalTime 课时</span></span>
+                        }
+                    </div>
+            }
+                
+            <hr>
+            @if (ViewBag.RecordCount > ViewBag.PageSize)
+            {
+                @RenderPage(Url.Content("~/Views/Shared/PageingPartial.cshtml"),
+                    new { pageindex = ViewBag.PageIndex, basecount = ViewBag.PageSize, pagecount = @ViewBag.RecordCount })
+            }
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var index = "@ViewBag.PageIndex", count = "@ViewBag.RecordCount";
+</script>

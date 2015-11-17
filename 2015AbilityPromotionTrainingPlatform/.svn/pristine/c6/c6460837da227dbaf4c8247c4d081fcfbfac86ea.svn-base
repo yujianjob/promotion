@@ -1,0 +1,269 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "在线学习 - 单元测试";
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="course-bar">
+                    <span class="back"><span class="glyphicon glyphicon-chevron-left"></span></span>
+                    <a href="@Url.Action("../../Course/CourseCreate/CourseLearn", new { TrainingId = ViewBag.TrainingId, ClassId = ViewBag.ClassId })" onclick="return confirm('确定放弃当前的单元测试么?');" class="title">@ViewBag.TraningDetailTitle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="blk_ln_course_quiz" class="blk_ln_course_quiz" data-km-htm="blk_ln_course_quiz.html">
+                    @if (ViewBag.Model_Course_UnitContent != null)
+                    {
+                        Dianda.AP.Model.Course_UnitContent modelContent = ViewBag.Model_Course_UnitContent;
+                        <h3>@modelContent.Title：@modelContent.Content</h3>
+                        <p class="text-danger">答题规则 : 共 @ViewBag.QuizQuestionCount 道题目，答对 @modelContent.PassLine 题可以过关，限时 @modelContent.TimeLimit 分钟。</p>                        
+                        <div class="text-danger">
+                            <label id="totalScore" itemid="@modelContent.PrintScore.Value"></label>
+                        </div>
+                    }
+                    <hr>
+
+                    <div id="QuizQuestions">
+
+                        @if (ViewBag.List_Course_UnitQuestion != null && ViewBag.List_Course_UnitQuestion.Count > 0)
+                        {
+                            List<Dianda.AP.Model.Course_UnitQuestion> List_Course_UnitQuestion = ViewBag.List_Course_UnitQuestion;
+                            for (int i = 1; i <= List_Course_UnitQuestion.Count; i++)
+                            {
+                                Dianda.AP.Model.Course_UnitQuestion UnitQuestionModel = List_Course_UnitQuestion[i - 1];
+
+                                //解析Json
+                                JavaScriptSerializer jr = new JavaScriptSerializer();
+                                var UnitTestQuestion = jr.Deserialize<List<Dianda.AP.Model.Course_UnitTestQuestion>>(UnitQuestionModel.Question);
+                            
+                            <div class="item">
+                                <div class="h" style="word-break: break-all; word-wrap: break-word;">@i. @Html.Raw(UnitQuestionModel.Content) ( @UnitQuestionModel.Credit 分)</div>
+                                <div class="ques" id="unit_@UnitQuestionModel.Id" itemid="@UnitQuestionModel.Credit">
+                                    <input type="hidden" value="@UnitQuestionModel.Id" itemid="@UnitQuestionModel.Verson" />
+                                    @if (UnitQuestionModel.QTtype == 1)//单选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitQuestionModel.QTtype == 2)//多选题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="checkbox" />@Quitem.Content</label>
+                                        }
+                                    }
+                                    else if (UnitQuestionModel.QTtype == 3)//判断题
+                                    {
+                                        foreach (var Quitem in UnitTestQuestion)
+                                        {
+                                        <label class="i" style="word-break: break-all; word-wrap: break-word;">
+                                            <input name="a1_@UnitQuestionModel.Id" itemid="@Quitem.Id" class="chk" type="radio" />@Html.Raw(Quitem.Content == "1" ? '对' : '错')</label>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                            }
+                        }
+                    </div>
+
+                    <div>
+                        <hr>
+                        @*<a href="@Url.Action("LearnOnLineQuizShowView", new { TrainingId = ViewBag.TrainingId, UnitContent = ViewBag.UnitContent, ClassId = ViewBag.ClassId, UId = 12 }) ">查看单元测试</a>*@
+                        <button class="btn btn-success" id="btnSubmit" style="width: 150px;">提交</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:" id="refash">重新做题</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-course-nav fixed">
+        <a href="javascript:;" onclick="PageRedirected(0);" class="arrow prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+        <a href="javascript:;" onclick="PageRedirected(1);" class="arrow next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+            $('#totalScore').attr('style', "display:none;");//隐藏总分
+
+            /****************************************************** 提交 开始 ******************************************************/
+            /* 页面加载后立即执行的代码写在这里 */
+            $("#btnSubmit").click(function () {
+                if (false == window.confirm("提交单元考试.确定继续吗?", "友情提示")) {
+                    return;
+                }
+
+                var UnfinishedCount = 0;
+                //得到用户的考题答案
+                var arrExamResult = new Array();
+                var jsonData = "";
+                var parent = $("#QuizQuestions");
+                if (parent != null) {
+                    var inputs = parent.find('input');
+                    var iLen = inputs.length;
+                    for (i = 1; i <= iLen; i++) {
+
+                        if ($("input:hidden")[i] == null) break;
+
+                        var Id = $("input:hidden")[i].value;
+                        var Verson = $($("input:hidden")[i]).attr("itemid");//获取题目版本号
+                        var quesChosenItems = $("#unit_" + Id).find('input');//获取题目的选项
+                        var quesCerdit = $($("#unit_" + Id)).attr("itemid");//该题目的分值
+                        var itemAnswer = "";//用户答案集合
+
+                        if (quesChosenItems.length <= 0) continue;
+
+                        for (var j = 0; j < quesChosenItems.length; j++) {
+                            var item = quesChosenItems[j];
+
+                            if (item.tagName == "INPUT" && item.type == "radio") {
+                                if (item.checked) {
+                                    itemAnswer = $(item).attr("itemid"); //选中答案
+                                }
+                            }
+                            else if (item.tagName == "INPUT" && item.type == "checkbox") {
+                                if (item.checked) {
+                                    if (itemAnswer == "") {
+                                        itemAnswer = $(item).attr("itemid");
+                                    }
+                                    else {
+                                        itemAnswer += "," + $(item).attr("itemid");
+                                    }
+                                }
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "text") {
+                                if (item.checked) {
+                                    itemAnswer = $(item).attr("itemid");
+                                }
+                            }
+
+                        }
+                        UnfinishedCount = itemAnswer == "" ? UnfinishedCount + 1 : UnfinishedCount;
+                        itemAnswer = itemAnswer == "" ? "-1" : itemAnswer;
+
+                        if (jsonData == "")
+                            jsonData = "{Id:" + Id + ",Answer:'" + itemAnswer + "',Credits:'" + quesCerdit + "',Verson:'" + Verson + "',UnitContentId:'" +@ViewBag.UnitContent +"',ClassId:'" +@ViewBag.ClassId +"',TrainingId:'" +@ViewBag.TrainingId +"'}";
+                        else
+                            jsonData += "," + "{Id:" + Id + ",Answer:'" + itemAnswer + "',Credits:'" + quesCerdit + "',Verson:'" + Verson + "',UnitContentId:'" +@ViewBag.UnitContent +"',ClassId:'" +@ViewBag.ClassId +"',TrainingId:'" +@ViewBag.TrainingId +"'}";
+                    }
+                }
+
+                jsonData = "[" + jsonData + "]";
+
+                if (UnfinishedCount > 0)
+                {
+                    if (false == window.confirm("当前测试中您有 " + UnfinishedCount + " 道题目未完成答题,确定继续吗?")) {
+                        return;
+                    }
+                }
+
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/LearnOnLine/LearnOnLineQuizEdit',
+                    type: 'Post',
+                    contentType: "application/json; charset=utf-8",
+                    data: jsonData,
+                    success: function (data) {
+                        if (data.Result == true) {
+                            $('#totalScore').attr('style', "display:block;");
+                            //显示总分
+                            var printScore = Boolean($('#totalScore').attr("itemid"));
+                            if (printScore == true) {
+                                $('#totalScore').text("总分 : " + data.TotalScore);
+                            }
+                        }
+                        else {
+                            $('#totalScore').attr('style', "display:none;");
+                        }
+
+                        var pagePath = window.location.protocol + "//" + window.location.host + "/" + 'Course/CourseCreate/CourseLearn?TrainingId=@ViewBag.TrainingId&ClassId=@ViewBag.ClassId';
+                        Alert(data.Msg, 'window.location = \'' + pagePath + '\'');
+                        
+                    },
+                    error: function () {
+                    }
+                });
+            });
+            /****************************************************** 提交 结束 ******************************************************/
+
+            /****************************************************** 重新做题 开始 ******************************************************/
+            //重新做题
+            $("#refash").click(function () {
+                if (confirm("重新做题将清空当前页面,确定继续么?")) {
+
+                    var parent = $("#QuizQuestions");
+                    if (parent != null) {
+                        var inputs = parent.find('input');
+                        for (var iLen = inputs.length, i = 0; i < iLen; i++) {
+                            if (inputs[i].tagName == "INPUT" && inputs[i].type == "text") {
+                                inputs[i].value = "";
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "radio") {
+
+                                $("input:radio").attr("checked", false);
+                            }
+                            else if (inputs[i].tagName == "INPUT" && inputs[i].type == "checkbox") {
+                                $("input:checkbox").attr("checked", false);
+                            }
+                        }
+                    }
+
+                }
+            });
+            /******************************************************重新做题 结束******************************************************/
+        });
+    });
+
+    //左右活动分页切换
+    function PageRedirected(IsNext) {
+        if (confirm("确定放弃当前的单元测试么?") == false) {
+            return;
+        }
+
+        var TrainingId = Number(@ViewBag.TrainingId);
+        var UnitContent = Number(@ViewBag.UnitContent);
+        var ClassId = Number(@ViewBag.ClassId);
+
+        var jsonData = JSON.stringify({
+            IsNext: IsNext,
+            TrainingId: TrainingId,
+            UnitContent: UnitContent,
+            ClassId: ClassId
+        });
+
+        $.ajax({
+            cache: false,
+            async: true,
+            url: '/LearnOnLine/RedirectedPage',
+            type: 'Post',
+            contentType: "application/json; charset=utf-8",
+            data: jsonData,
+            success: function (data) {
+                var pagePath = window.location.protocol + "//" + window.location.host + data.RedirectedPagePath;
+                window.location.href = pagePath;
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>

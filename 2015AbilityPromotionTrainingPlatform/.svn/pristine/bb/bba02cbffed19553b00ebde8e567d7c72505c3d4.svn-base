@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Dianda.AP.Model;
+using System.Data;
+
+namespace Dianda.AP.DAL
+{
+    public class CertificateDAL
+    {
+
+        public DataTable GetTrainingFie()
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select Id,Title from Traning_Field where DisPlay = 1 and Delflag = 0 ");
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+
+        public DataTable GetList(int pageSize, string where)
+        {
+            DataTable dt = GetTrainingFie();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(" select top " + pageSize + " * from ( ");
+            sql.Append(" select distinct a.RealName,a.TeacherNo,c.Title, ");
+            sql.Append(" CONVERT(varchar,b.Credits)+'/'+CONVERT(varchar,f.MinValue) as value,d.Result ");
+            sql.Append(" from dbo.Member_TrainingRedit b ");
+            sql.Append(" inner join Member_BaseInfo a on a.AccountId = b.AccountId ");
+            sql.Append(" inner join Traning_Field c on b.TrainingField = c.Id ");
+            sql.Append(" inner join Member_PlanOverall d on a.AccountId = d.AccountId ");
+            sql.Append(" inner join Organ_Detail e on a.Organid = e.Id  ");
+            sql.Append(" inner join Training_Credits f on f.TraningField = b.TrainingField ");
+            sql.Append(" where a.Delflag = 0 and f.Level = 2 ");
+            if (!string.IsNullOrEmpty(where))
+            {
+                sql.Append(where);
+            }
+            sql.Append(") t pivot ( Max(value) for t.Title in ( ");
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i != dt.Rows.Count - 1)
+                {
+                    sql.Append("[" + dt.Rows[i][1].ToString() + "],");
+                }
+                else
+                {
+                    sql.Append("[" + dt.Rows[i][1].ToString() + "]");
+                }
+            }
+            sql.Append(" )) as ourpivot ");
+
+            return MSEntLibSqlHelper.ExecuteDataSetBySql(sql.ToString()).Tables[0];
+        }
+    }
+}

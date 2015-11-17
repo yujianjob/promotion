@@ -1,0 +1,7 @@
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\bin\Debug\Dianda.DALSqlServer.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\bin\Debug\Dianda.DALSqlServer.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\obj\Debug\Dianda.DALSqlServer.dll
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\obj\Debug\Dianda.DALSqlServer.pdb
+F:\workspace\2015AbilityPromotionTrainingPlatform\SourceCode\trunk\PublicLib\Dianda.DALSqlServer\obj\Debug\Dianda.DALSqlServer.csprojFakesResolveAssemblyReference.cache

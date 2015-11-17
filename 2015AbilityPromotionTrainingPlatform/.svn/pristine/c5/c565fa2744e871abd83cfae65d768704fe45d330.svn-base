@@ -1,0 +1,1009 @@
+﻿@using System.Data;
+@using Dianda.AP.Model;
+@using Dianda.Common;
+@{
+    ViewBag.Title = "用户信息管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<UserModel> list = ViewBag.GetList as List<UserModel>;
+    int GroupId = Convert.ToInt32(ViewData["GroupId"]);
+}
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    List<SelectListItem> newslist = new List<SelectListItem>
+     {
+        new SelectListItem{Text="讲师",Value="5"},
+        new SelectListItem{Text="辅导员",Value="6"}
+     };
+}
+
+<script type="text/javascript" src="~/Resources/Scripts/md5.js"></script>
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">用户信息管理</div>
+                <hr>
+                <div id="blk_at_user_list" class="blk_at_user_list">
+                    <div class="d-search">
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="text" id="SearchText" class="form-control" placeholder="姓名搜索...">
+                            </div>
+                            <button type="button" id="SearchBtn" class="btn btn-default"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                        </form>
+
+                        <div class="action">
+                            <a href="javascript:;" onclick="doAddUser()" class="btn btn-success">新增用户</a>
+                        </div>
+
+                    </div>
+
+                    <div class="d-datatable">
+                        @if (list.Count > 0)
+                        {
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>所属机构</th>
+                                    <th>账号状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (list.Count != 0)
+                                {
+                                    for (int i = 0; i < list.Count; i++)
+                                    { 
+                                    <tr>
+                                    <td>@list[i].NickName</td>
+                                    <td>@list[i].OrganTitle</td>
+                                     @if (list[i].Status == 2)
+                                     {
+                                        <td><span id="span+@list[i].UserId" class="text-success">启用中</span></td>
+                                     }
+                                     else
+                                     {
+                                        <td><span id="span+@list[i].UserId" class="text-danger">禁用中</span></td>
+                                     }
+                                    
+                                    <td>
+                                        @if (GroupId == 3)
+                                        {
+                                             <a href="javascript:;" onclick="doEditUser(@list[i].UserId)">编辑</a>   
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:;" onclick="doEditUserXJ(@list[i].UserId)">编辑</a>  
+                                        }
+                                        <a href="javascript:;" onclick="onUserId('@list[i].UserId','@list[i].PassWord')">重置密码</a>&nbsp; 
+                                        @if (list[i].Status == 2)
+                                        {
+                                            <a href="javascript:;" id="a+@list[i].UserId" onclick="CloseUser(@list[i].UserId)">禁用</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:;" id="a+@list[i].UserId" onclick="OpenUser(@list[i].UserId)">启用</a>
+                                        }
+                                        
+                                        &nbsp;<a href="javascript:;" onclick="DelUser(@list[i].UserId)">删除</a></td>
+                                </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        }
+                        else
+                        {
+                            <div id="blk_ct_course_list" class="d-courseauthor-list blk_ct_course_list">
+                             <h4 class="No_Content_Title">暂无信息……</h4>
+                            <hr>
+                            </div>
+                           <br />
+                           <br />
+                        }
+                    </div>
+
+                    <div class="d-pagination clearfix">
+                        <div class="pull-left">
+                            当前页<span>@ViewData["pageIndex"]</span>
+                            @if (@ViewData["pageCount"].ToString() == "0")
+                            {
+                                <span>总页数 1</span>
+                            }
+                            else
+                            {
+                                <span>总页数 @ViewData["pageCount"]</span>
+                            }
+                            总记录<span>@ViewData["recordCount"]</span>
+                            每页显示条数<span>@ViewData["pageSize"]</span>
+                        </div>
+                        <div class="pull-right text-right">
+                            <a id="HomePage" href="/Prepare/UserList/Index?PageIndex=@QueryString.UrlEncrypt(1)&where=@ViewData["where"]">首页</a>
+
+                            <a id="OnPage" href="/Prepare/UserList/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) - 1)&where=@ViewData["where"]">上一页</a>
+
+                            <a id="NextPage" href="/Prepare/UserList/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageIndex"].ToString()) + 1)&where=@ViewData["where"]">下一页</a>
+
+                            <a id="LastPage" href="/Prepare/UserList/Index?PageIndex=@QueryString.UrlEncrypt(int.Parse(ViewData["pageCount"].ToString()))&where=@ViewData["where"]">尾页</a>
+
+                            跳转到第<input type="text" class="form-control input-sm" id="GoPageIndex" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">页
+	
+                            <button class="btn btn-sm" id="GoBtn">» </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (GroupId == 3)
+{
+<div id="blk_at_new_user_add" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新增用户</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" id="UserName" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">密码 <span class="text-danger">*</span></label>
+                            <input type="password" id="PassWord" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">确认密码 <span class="text-danger">*</span></label>
+                            <input type="password" id="ConfirmPass" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">姓名 <span class="text-danger">*</span></label>
+                            <input type="text" id="NickName" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">邮箱 <span class="text-danger">*</span></label>
+                            <input type="text" id="Email" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">用户角色 <span class="text-danger">*</span></label>
+                            @Html.DropDownList("UserGroup", newslist, "请选择", new { @class = "form-control", @id = "UserGroup" })
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <label class="control-label">状态 <span class="text-danger">*</span></label>
+                            <label class="chk">
+                                <input type="radio" name="a1" value="2" checked>
+                                启用
+                            </label>
+                            <label class="chk">
+                                <input type="radio" name="a1" value="3">
+                                禁用
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="Message" style="float:left; color:red;"></span>
+                <button type="button" class="btn btn-success" onclick="doUserSubmit()" style="width: 150px;">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="blk_at_new_user_edit" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改用户信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label">ID<span class="text-danger">*</span></label>
+                            <input type="text" id="EditUserId" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" id="EditUserName" class="form-control" readonly="readonly" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">姓名 <span class="text-danger">*</span></label>
+                            <input type="text" id="EditNickName" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">邮箱 <span class="text-danger">*</span></label>
+                            <input type="text" id="EditEmail" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">用户角色 <span class="text-danger">*</span></label>
+                            @Html.DropDownList("EUserGroup", newslist, "请选择", new { @class = "form-control", @id = "EUserGroup" })
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <label class="control-label">状态 <span class="text-danger">*</span></label>
+                            <label class="chk">
+                                <input type="radio" name="Edita1" value="2" checked>
+                                启用
+                            </label>
+                            <label class="chk">
+                                <input type="radio" name="Edita1" value="3">
+                                禁用
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="EMessage" style="float:left; color:red;"></span>
+                <button type="button" class="btn btn-success" onclick="EditdoUserSubmit()" style="width: 150px;">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+}
+else
+{
+    <div id="blk_at_new_user_add" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新增用户</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" id="UserName" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">密码 <span class="text-danger">*</span></label>
+                            <input type="password" id="PassWord" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">确认密码 <span class="text-danger">*</span></label>
+                            <input type="password" id="ConfirmPass" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">姓名 <span class="text-danger">*</span></label>
+                            <input type="text" id="NickName" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">邮箱 <span class="text-danger">*</span></label>
+                            <input type="text" id="Email" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <label class="control-label">状态 <span class="text-danger">*</span></label>
+                            <label class="chk">
+                                <input type="radio" name="a1" value="2" checked>
+                                启用
+                            </label>
+                            <label class="chk">
+                                <input type="radio" name="a1" value="3">
+                                禁用
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="Message" style="float:left; color:red;"></span>
+                <button type="button" class="btn btn-success" onclick="doUserSubmitXJ()" style="width: 150px;">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="blk_at_new_user_edit" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改用户信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label">ID<span class="text-danger">*</span></label>
+                            <input type="text" id="EditUserId" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" id="EditUserName" class="form-control" readonly="readonly" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">姓名 <span class="text-danger">*</span></label>
+                            <input type="text" id="EditNickName" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">邮箱 <span class="text-danger">*</span></label>
+                            <input type="text" id="EditEmail" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <label class="control-label">状态 <span class="text-danger">*</span></label>
+                            <label class="chk">
+                                <input type="radio" name="Edita1" value="2" checked>
+                                启用
+                            </label>
+                            <label class="chk">
+                                <input type="radio" name="Edita1" value="3">
+                                禁用
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="EMessage" style="float:left; color:red;"></span>
+                <button type="button" class="btn btn-success" onclick="EditdoUserSubmitXJ()" style="width: 150px;">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+}
+<div id="blk_at_new_user_editpass" class="modal fade blk_at_new_user_add in">
+    <div class="modal-dialog">
+        <div class="modal-content d-form" style="padding: 0;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">重置密码</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-4" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label">ID<span class="text-danger">*</span></label>
+                            <input type="text" id="EditPassWordID" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+@*                    <div class="col-xs-4" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label">旧密码<span class="text-danger">*</span></label>
+                            <input type="text" id="EditToPass" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label">旧密码<span class="text-danger">*</span></label>
+                            <input type="password" id="EditToPassWord" class="form-control" maxlength="30">
+                        </div>
+                    </div>*@
+                    <div class="col-xs-4" style="width:280px;">
+                        <div class="form-group">
+                            <label class="control-label">新密码<span class="text-danger">*</span></label>
+                            <input type="password" id="EditPassWord" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col-xs-4" style="width:280px;">
+                        <div class="form-group">
+                            <label class="control-label">确认新密码<span class="text-danger">*</span></label>
+                            <input type="password" id="EditConfirmPass" class="form-control" maxlength="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="PMessage" style="float:left; color:red;"></span>
+                <button type="button" class="btn btn-success" onclick="EditdoPassSubmit()" style="width: 150px;">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $proto.init(function () {
+            $('input.input-date').datepicker({});
+        });
+    });
+
+    function EditdoPassSubmit()      //修改密码
+    {
+        $("#PMessage").text("");
+
+        var id = $("#EditPassWordID").val();
+        var password = $("#EditPassWord").val();
+        var comfirmpass = $("#EditConfirmPass").val();
+        //if (Trim(topassword) == "" || Trim(topassword) == null)
+        //{
+        //    $("#PMessage").text("请输入原密码");
+        //    return false;
+        //}
+        if (Trim(password) == "" || Trim(password) == null) {
+            $("#PMessage").text("请输入新密码");
+            return false;
+        } else if (Trim(comfirmpass) == "" || Trim(comfirmpass) == null) {
+            $("#PMessage").text("请再次输入新密码");
+            return false;
+        }
+        //else if (topass != topassword)
+        //{
+        //    $("#PMessage").text("旧密码输入错误");
+        //    return false;
+        //}
+        else if (password != comfirmpass) {
+            $("#PMessage").text("两次输入密码不一致");
+            $("#EditPassWord").val("");
+            $("#EditConfirmPass").val("");
+            return false;
+        }
+
+
+        $.ajax({
+            url: '@Url.Action("UpdPass")',
+            type: 'get',
+            data: { id: id, PassWord: password },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                if (src[0] == "yes") {
+                    alert(src[1]);
+                    location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                } else {
+                    Alert(src[1]);
+                    return false;
+                }
+
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+        $('#blk_at_new_user_editpass').modal('hide');
+    }
+
+    $("#GoBtn").click(function () {      //输入页数跳转页面
+        var index = $("#GoPageIndex").val();
+        var pagecount = "@ViewData["pageCount"].ToString()";
+        if (pagecount == "0") {
+            pagecount = "1";
+        }
+        if (index == "0") {
+            Alert('请输入正确的页数！！！');
+            return false;
+        }
+        else if (parseInt(index) > parseInt(pagecount)) {
+            Alert('输入的页数不存在！！！');
+            return false;
+        }
+        if (index == "" || index == null) {
+            Alert('请输入跳转页！！！');
+            return false;
+        } else {
+            location.href = "/Prepare/UserList/Index?PageIndex=" + UrlEncode(index) + "&where=@ViewData["where"]";
+        }
+    });
+
+    $(document).ready(function () {     //页面加载事件
+        var index = "@ViewData["pageIndex"]", count = "@ViewData["recordCount"]", pagecount = "@ViewData["pageCount"]";
+        if (index == "1") {
+            $("#HomePage").css("color", "#BEBEBE").removeAttr("href");
+            $("#OnPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+        if (parseInt(count) < 10 || index == pagecount) {
+            $("#NextPage").css("color", "#BEBEBE").removeAttr("href");
+            $("#LastPage").css("color", "#BEBEBE").removeAttr("href");
+        }
+     })
+
+    function doAddUser() {      //弹出新增用户窗口
+        $('#blk_at_new_user_add').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+    }
+
+    function onUserId(id, pass) {    //弹出修改密码窗口
+        $('#blk_at_new_user_editpass').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        $("#EditPassWordID").val(id);
+        $("#EditToPass").val(pass);
+    }
+
+    function doEditUser(id) {     //弹出修改用户信息窗口
+        $('#blk_at_new_user_edit').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        $.ajax({     //绑定用户信息
+            url: '@Url.Action("GetModel")',
+             type: 'get',
+             data: { id:id },
+             cache: false,
+             async: false,
+             dataType: 'text',
+             timeout: 30000,
+             success: function (data) {
+                 var src = data.split(':');
+                 var list = src[1].split('||');
+                 $("#EditUserId").val(list[0]);
+                 $("#EditUserName").val(list[1]);
+                 $("#EditNickName").val(list[2]);
+                 if (src[2] != null && src[2] != "" && src[2] != "0") {
+                     $("#EUserGroup").val(parseInt(src[2]));
+                 }
+                 if (list[3] == "2") {
+                     $("input[name='Edita1']").eq(0).attr("checked", "checked");
+                 } else {
+                     $("input[name='Edita1']").eq(1).attr("checked", "checked");
+                 }
+                 $("#EditEmail").val(list[4]);
+                 
+             },
+             error: function (xmlHttpRequest, errorMessage, exception) {
+                 alert(errorMessage);
+             }
+         });
+    }
+
+    function doEditUserXJ(id) {     //弹出修改用户信息窗口
+        $('#blk_at_new_user_edit').modal({
+            keyboard: false,
+            backdrop: 'static'
+        });
+        $.ajax({     //绑定用户信息
+            url: '@Url.Action("GetModelXJ")',
+            type: 'get',
+            data: { id: id },
+            cache: false,
+            async: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                var list = src[1].split('||');
+                $("#EditUserId").val(list[0]);
+                $("#EditUserName").val(list[1]);
+                $("#EditNickName").val(list[2]);
+                if (list[3] == "2") {
+                    $("input[name='Edita1']").eq(0).attr("checked", "checked");
+                } else {
+                    $("input[name='Edita1']").eq(1).attr("checked", "checked");
+                }
+                $("#EditEmail").val(list[4]);
+
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    }
+
+    
+    function doUserSubmit() {            //新增用户信息提交按钮事件
+        $("#Message").text("");
+
+        var username = $("#UserName").val();
+        var password = $("#PassWord").val();
+        var confirmpass = $("#ConfirmPass").val();
+        var nickname = $("#NickName").val();
+        var email = $("#Email").val();
+        var status = $("input[name='a1']:checked").val();
+        var UserGroup = $("#UserGroup").val();
+        if (Trim(username) == "" || Trim(username) == null)
+        {
+            $("#Message").text("请输入用户名");
+            return false;
+        } else if (Trim(password) == "" || Trim(password) == null)
+        {
+            $("#Message").text("请输入用户密码");
+            return false;
+        } else if (Trim(confirmpass) == "" || Trim(confirmpass) == null)
+        {
+            $("#Message").text("请再次输入用户密码");
+            return false;
+        }
+        else if (Trim(nickname) == "" || Trim(nickname) == null)
+        {
+            $("#Message").text("请输入用户昵称");
+            return false;
+        } else if (Trim(email) == "" || Trim(email) == null)
+        {
+            $("#Message").text("请输入用户邮箱");
+            return false;
+        } else if (UserGroup == null || UserGroup == "" || UserGroup == "请选择")
+        {
+            $("#Message").text("请选择用户角色");
+            return false;
+        }
+        else if (password != confirmpass) {
+            $("#Message").text("两次输入密码不一致");
+            $("#PassWord").val("");
+            $("#ConfirmPass").val("");
+            return false;
+        }
+        var pattern = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+        if (!pattern.test(email)) {
+            $("#Message").text("请输入正确的邮箱格式");
+            return false;
+        }
+
+        $.ajax({            //保存新增用户信息
+            url: '@Url.Action("UserAdd")',
+            type: 'get',
+            data: { UserName: username, PassWord: password, ConfirmPass: confirmpass, NickName: nickname, Email: email, Status: status,UserGroup:UserGroup },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                if (src[0] == "yes") {
+                    alert(src[1]);
+                    location.href = "/Prepare/UserList/Index";
+                } else {
+                    Alert(src[1]);
+                    return false;
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+
+        $('#blk_at_new_user_add').modal('hide');
+    }
+
+
+    function doUserSubmitXJ() {            //新增用户信息提交按钮事件
+        $("#Message").text("");
+
+        var username = $("#UserName").val();
+        var password = $("#PassWord").val();
+        var confirmpass = $("#ConfirmPass").val();
+        var nickname = $("#NickName").val();
+        var email = $("#Email").val();
+        var status = $("input[name='a1']:checked").val();
+        if (Trim(username) == "" || Trim(username) == null) {
+            $("#Message").text("请输入用户名");
+            return false;
+        } else if (Trim(password) == "" || Trim(password) == null) {
+            $("#Message").text("请输入用户密码");
+            return false;
+        } else if (Trim(confirmpass) == "" || Trim(confirmpass) == null) {
+            $("#Message").text("请再次输入用户密码");
+            return false;
+        }
+        else if (Trim(nickname) == "" || Trim(nickname) == null) {
+            $("#Message").text("请输入用户昵称");
+            return false;
+        } else if (Trim(email) == "" || Trim(email) == null) {
+            $("#Message").text("请输入用户邮箱");
+            return false;
+        } 
+        else if (password != confirmpass) {
+            $("#Message").text("两次输入密码不一致");
+            $("#PassWord").val("");
+            $("#ConfirmPass").val("");
+            return false;
+        }
+        var pattern = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+        if (!pattern.test(email)) {
+            $("#Message").text("请输入正确的邮箱格式");
+            return false;
+        }
+
+        $.ajax({            //保存新增用户信息
+            url: '@Url.Action("UserAddXJ")',
+            type: 'get',
+            data: { UserName: username, PassWord: password, ConfirmPass: confirmpass, NickName: nickname, Email: email, Status: status },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                if (src[0] == "yes") {
+                    alert(src[1]);
+                    location.href = "/Prepare/UserList/Index";
+                } else {
+                    Alert(src[1]);
+                    return false;
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+
+        $('#blk_at_new_user_add').modal('hide');
+    }
+
+
+    function EditdoUserSubmit() {      //修改用户信息点击保存按钮事件
+        
+        $("#EMessage").text("");
+
+        var userid = $("#EditUserId").val();
+        var username = $("#EditUserName").val();
+        var nickname = $("#EditNickName").val();
+        var email = $("#EditEmail").val();
+        var status = $("input[name='Edita1']:checked").val();
+        var UserGroup = $("#EUserGroup").val();
+        if (Trim(username) == "" || Trim(username) == null) {
+            $("#EMessage").text("请输入用户名");
+            return false;
+        } else if (Trim(nickname) == "" || Trim(nickname) == null) {
+            $("#EMessage").text("请输入用户昵称");
+            return false;
+        } else if (Trim(email) == "" || Trim(email) == null) {
+            $("#EMessage").text("请输入用户邮箱");
+            return false;
+        } else if (UserGroup == null || UserGroup == "" || UserGroup == "请选择")
+        {
+            $("#EMessage").text("请选择用户角色");
+            return false;
+        }
+        var pattern = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+        if (!pattern.test(email)) {
+            $("#EMessage").text("请输入正确的邮箱格式");
+            return false;
+        }
+
+        $.ajax({    //修改用户信息
+            url: '@Url.Action("UserEdit")',
+             type: 'get',
+             data: { id: userid, UserName: username, NickName: nickname, Email: email, Status: status, UserGroup: UserGroup },
+             cache: false,
+             dataType: 'text',
+             timeout: 30000,
+             success: function (data) {
+                 var src = data.split(':');
+                 if (src[0] == "yes") {
+                     alert(src[1]);
+                     location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where=@ViewData["where"] ';
+                 } else {
+                     Alert(src[1]);
+                     return false;
+                 }
+             },
+             error: function (xmlHttpRequest, errorMessage, exception) {
+                 Alert(errorMessage);
+             }
+         });
+        $('#blk_at_new_user_edit').modal('hide');
+    }
+
+
+    function EditdoUserSubmitXJ() {      //修改用户信息点击保存按钮事件
+
+        $("#EMessage").text("");
+
+        var userid = $("#EditUserId").val();
+        var username = $("#EditUserName").val();
+        var nickname = $("#EditNickName").val();
+        var email = $("#EditEmail").val();
+        var status = $("input[name='Edita1']:checked").val();
+        if (Trim(username) == "" || Trim(username) == null) {
+            $("#EMessage").text("请输入用户名");
+            return false;
+        } else if (Trim(nickname) == "" || Trim(nickname) == null) {
+            $("#EMessage").text("请输入用户昵称");
+            return false;
+        } else if (Trim(email) == "" || Trim(email) == null) {
+            $("#EMessage").text("请输入用户邮箱");
+            return false;
+        } 
+        var pattern = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+        if (!pattern.test(email)) {
+            $("#EMessage").text("请输入正确的邮箱格式");
+            return false;
+        }
+
+        $.ajax({    //修改用户信息
+            url: '@Url.Action("UserEditXJ")',
+            type: 'get',
+            data: { id: userid, UserName: username, NickName: nickname, Email: email, Status: status },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                if (src[0] == "yes") {
+                    alert(src[1]);
+                    location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                 } else {
+                     Alert(src[1]);
+                     return false;
+                 }
+             },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+         $('#blk_at_new_user_edit').modal('hide');
+     }
+
+
+    $('#blk_at_new_user_add').on('shown.bs.modal', function (e) {
+
+    });
+    $('#blk_at_new_user_add').on('hidden.bs.modal', function (e) {
+
+    });
+
+
+    $('#blk_at_new_user_edit').on('shown.bs.modal', function (e) {
+
+    });
+    $('#blk_at_new_user_edit').on('hidden.bs.modal', function (e) {
+
+    });
+
+    $('#blk_at_new_user_editpass').on('shown.bs.modal', function (e) {
+
+    });
+    $('#blk_at_new_user_editpass').on('hidden.bs.modal', function (e) {
+
+    });
+
+
+    $("#SearchBtn").click(function () {      //搜索按钮点击事件
+        var text = $("#SearchText").val();
+        location.href = "/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where=" + text + "";
+    })
+
+
+    function CloseUser(id) {    //禁用用户
+        $.ajax({    //修改用户信息
+            url: '@Url.Action("CloseUser")',
+            type: 'get',
+            data: { id: id },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                if (src[0] == "yes") {
+                    location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                } else {
+                    location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                }
+             },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    }
+
+    function OpenUser(id) {      //启用用户
+        $.ajax({    //修改用户信息
+            url: '@Url.Action("OpenUser")',
+            type: 'get',
+            data: { id: id },
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var src = data.split(':');
+                if (src[0] == "yes") {
+                    location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                } else {
+                    location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                 }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                alert(errorMessage);
+            }
+        });
+    }
+
+
+    function DelUser(id) {     //删除用户
+        if (confirm('确认删除吗？')) {
+            $.ajax({
+                url: '@Url.Action("DelUser")',
+                type: 'get',
+                data: { id: id },
+                cache: false,
+                dataType: 'text',
+                timeout: 30000,
+                success: function (data) {
+                    var src = data.split(':');
+                    if (src[0] == "yes") {
+                        alert(src[1]);
+                        location.href = '/Prepare/UserList/Index?pageIndex=@QueryString.UrlEncrypt(ViewData["pageIndex"])&where = @ViewData["where"] ';
+                    } else {
+                        Alert(src[1]);
+                        return false;
+                    }
+                },
+                error: function (xmlHttpRequest, errorMessage, exception) {
+                    Alert(errorMessage);
+                }
+            });
+        }
+        return false;
+    }
+
+
+    function Trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+    function UrlEncode(code) {
+        var EnCode = "";
+        var obj = JSON.stringify({ Code: code });
+        $.ajax({
+            cache: false,
+            async: false,
+            type: 'post',
+            contentType: 'application/json',
+            url: '/Course/CourseCreate/EnCode',
+            data: obj,
+            dataType: 'json',
+            success: function (data) {
+                if (!data || !data.Data || data.Data.length == 0) {
+                    return;
+                }
+
+                EnCode = data.Data;
+            },
+            error: function () {
+            }
+        });
+
+        return EnCode;
+    }
+</script>

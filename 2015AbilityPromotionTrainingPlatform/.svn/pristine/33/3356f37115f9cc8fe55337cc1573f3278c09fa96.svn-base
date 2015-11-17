@@ -1,0 +1,147 @@
+<h4 class="text-center">添加学习活动 - 结业考试 - 试题（云服务在课堂教学中的应用）</h4>
+<div class="row d-ques">
+  <div class="col-xs-5">
+    <div class="h">
+      题目列表 (共5题)
+      <div class="action">
+        <div class="dropdown">
+          <button type="button" data-toggle="dropdown" class="btn btn-primary">
+            新增题目 <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dLabel">
+            <li><a href="javascript:;" onclick="$('#d_ques').show()">单选题</a></li>
+            <li><a href="javascript:;" onclick="$('#d_ques').show()">多选题</a></li>
+            <li><a href="javascript:;" onclick="$('#d_ques').show()">判断题</a></li>
+            <li><a href="javascript:;" onclick="$('#d_ques').show()">问答题</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="queslist">
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机CPU(单选)</div>
+      </div>
+      <div class="i active" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机中央处理器(单选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">图灵计算正确描述有图灵计算正确描述有图灵计算正确描述有图灵计算正确描述有(多选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">鼠标是存储设备吗(判断)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机CPU(单选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机中央处理器(单选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">图灵计算正确描述有图灵计算正确描述有图灵计算正确描述有图灵计算正确描述有(多选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">鼠标是存储设备吗(判断)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机CPU(单选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机中央处理器(单选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">图灵计算正确描述有图灵计算正确描述有图灵计算正确描述有图灵计算正确描述有(多选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">鼠标是存储设备吗(判断)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">什么是计算机CPU(单选)</div>
+      </div>
+      <div class="i" onclick="$('#d_ques').show()">
+        <div class="title">图灵计算正确描述有图灵计算正确描述有图灵计算正确描(多选)</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-7">
+		<div class="ques">
+      <div id="d_ques" class="quesedit" style="display:none;">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label class="control-label">题型</label>
+              <select class="form-control" name="" style="width:150px;">
+                <option>单选题</option>
+                <option>多选题</option>
+                <option>判断题</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-xs-10">
+            <div class="form-group">
+              <label class="control-label">题目</label>
+              <input type="text" class="form-control" maxlength="30">
+            </div>
+          </div>
+          <div class="col-xs-2">
+            <div class="form-group">
+              <label class="control-label">分值</label>
+              <input type="text" class="form-control" maxlength="30">
+            </div>
+          </div>
+          <div class="col-xs-12">
+        		<div id="d_quesoptions" class="form-group">
+        			<label class="control-label">选项</label>
+              <div class="option">
+                <label class="chk" style="width:70px;">
+          				<input type="checkbox" name="a1" value="1" checked> 正确
+          			</label>
+                <input type="text" class="form-control" value="" style="display:inline-block;width:450px;">
+                <span class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></span>
+              </div>
+              <div class="option">
+                <label class="chk" style="width:70px;">
+                  <input type="checkbox" name="a1" value="1"> 正确
+                </label>
+                <input type="text" class="form-control" value="" style="display:inline-block;width:450px;">
+                <span class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></span>
+              </div>
+              <div class="option">
+                <label class="chk" style="width:70px;">
+          				<input type="checkbox" name="a1" value="1"> 正确
+          			</label>
+                <input type="text" class="form-control" value="" style="display:inline-block;width:450px;">
+                <span class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></span>
+              </div>
+              <div class="option">
+                <label class="chk" style="width:70px;">
+                  <input type="checkbox" name="a1" value="1"> 正确
+                </label>
+                <input type="text" class="form-control" value="" style="display:inline-block;width:450px;">
+                <span class="glyphicon glyphicon-trash" onclick="$(this).parent().remove();"></span>
+              </div>
+        		</div>
+            <div class="action">
+              <a href="javascript:;" onclick="doAddOptions()">增加选项</a>
+            </div>
+        	</div>
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label class="control-label">参考答案(问答题)</label>
+              <textarea class="form-control" style="height:200px;"></textarea>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <a href="course-activity-quiz-ques.html" class="btn btn-danger" style="width:100px;">保存</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;<a href="#">删除</a>
+          </div>
+        </div>
+
+      </div>
+		</div>
+	</div>
+	<div class="col-xs-12">
+		<hr>
+		<a href="#" class="btn btn-success" style="width:150px;">完成</a>
+		&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">取消</a>
+	</div>
+</div>

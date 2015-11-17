@@ -1,0 +1,119 @@
+$(function () {
+    $proto.init(function () {
+        /* 页面加载后立即执行的代码写在这里 */
+
+        //初始化搜索下拉框控件
+        $("#drpRegin").val(RegionId);
+        GetOrgan(RegionId);
+        $("#drpOrgan").val(OrganId);
+        $("#IsTest").val(IsTest);
+
+        //若当前登录人属于区级，初始化当前登录人所述区下所有机构
+        if (GroupId == ManagerAreaGroupId) {
+            if (OrganId != null && OrganId != "") {
+                $("#drpOrgan").html("<option value='-1'>--请选择机构--</option>");
+                $.ajax({
+                    url: '/Statistics/Statistics/GetRegion',
+                    type: 'get',
+                    data: { id: OrganId },
+                    cache: false,
+                    async: false,
+                    dataType: 'text',
+                    timeout: 30000,
+                    success: function (data) {
+                        var json = JSON.parse(data);
+                        for (var i = 0; i < json.length; i++) {
+                            $("#drpOrgan").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                        }
+                    },
+                    error: function (xmlHttpRequest, errorMessage, exception) {
+                        Alert(errorMessage);
+                    }
+                });
+            }
+        }
+
+        //获取机构
+        $("#drpRegin").change(function () {
+            GetOrgan($(this).val());
+        })
+    });
+});
+
+//搜索按钮单击事件
+function verifySearch() {
+    var RegionId = $("#drpRegin").val();
+    var OrganId = $("#drpOrgan").val();
+    var IsTest = $("#IsTest").val();
+    var SearchTxt = $("#searchTitle").val();
+
+    var locHref = "?RegionId=" + UrlEncode(RegionId) + "&OrganId=" + UrlEncode(OrganId) + "&IsTest=" + UrlEncode(IsTest);
+    if (SearchTxt != "") {
+        locHref += "&SearchTxt=" + UrlEncode(SearchTxt);
+    }
+    window.location.href = locHref;
+}
+
+//搜索校验
+function checkts(search) {
+    if (search.length > 0) {
+        var reg = new RegExp('^[^\/\\#$%&\^\*\<\>]+$');
+        if (!reg.test(search)) {
+            Alert('搜索的内容不能输入特殊字符 ^ / \ # $ % & * < >');
+            return false;
+        }
+    }
+    return true;
+}
+
+function GetOrgan(id)
+{
+    $("#drpOrgan").html("<option value = '-1'>--请选择机构--</option>");
+
+    var id = id;
+    if (id != null && id != "" && id != "-1") {
+        $.ajax({
+            url: '/Statistics/Statistics/GetRegion',
+            type: 'get',
+            data: { id: id },
+            async: false,
+            cache: false,
+            dataType: 'text',
+            timeout: 30000,
+            success: function (data) {
+                var json = JSON.parse(data);
+                for (var i = 0; i < json.length; i++) {
+                    $("#drpOrgan").append("<option value=" + json[i].Value + ">" + json[i].Text + "</option>")
+                }
+            },
+            error: function (xmlHttpRequest, errorMessage, exception) {
+                Alert(errorMessage);
+            }
+        });
+    }
+}
+
+function UrlEncode(code) {
+    var EnCode = "";
+    var obj = JSON.stringify({ Code: code });
+    $.ajax({
+        cache: false,
+        async: false,
+        type: 'post',
+        contentType: 'application/json',
+        url: '/Statistics/Statistics/EnCode',
+        data: obj,
+        dataType: 'json',
+        success: function (data) {
+            if (!data || !data.Data || data.Data.length == 0) {
+                return;
+            }
+
+            EnCode = data.Data;
+        },
+        error: function () {
+        }
+    });
+
+    return EnCode;
+}

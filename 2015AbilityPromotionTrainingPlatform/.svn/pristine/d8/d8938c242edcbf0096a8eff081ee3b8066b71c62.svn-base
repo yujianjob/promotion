@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E86C34D1-3382-4252-948B-E882CF515E72}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dianda.AP.Model</RootNamespace>
+    <AssemblyName>Dianda.AP.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccountEditModel.cs" />
+    <Compile Include="Certificate.cs" />
+    <Compile Include="Class_AddressList.cs" />
+    <Compile Include="Class_ApplyApplication.cs" />
+    <Compile Include="Class_Detail.cs" />
+    <Compile Include="Class_Group.cs" />
+    <Compile Include="Class_GroupMember.cs" />
+    <Compile Include="Class_HomeWork.cs" />
+    <Compile Include="Class_HomeWorkMission.cs" />
+    <Compile Include="Class_Notice.cs" />
+    <Compile Include="Class_StudySection.cs" />
+    <Compile Include="Class_TeachGrade.cs" />
+    <Compile Include="Class_TeachSubject.cs" />
+    <Compile Include="Class_TraningCommentAnswer.cs" />
+    <Compile Include="Class_TraningCommentQuestion.cs" />
+    <Compile Include="Class_TraningCommentResult.cs" />
+    <Compile Include="Course.ClassDomain\Member_Account.cs" />
+    <Compile Include="Course.ClassDomain\Member_BaseInfo.cs" />
+    <Compile Include="Course.CourseCreate\Course_SubjectInfo.cs" />
+    <Compile Include="Course.CourseCreate\Course_CourseInfo.cs" />
+    <Compile Include="Course.CourseCreate\Course_ActivityInfo.cs" />
+    <Compile Include="Course.CourseCreate\Course_TestRate.cs" />
+    <Compile Include="Course.CourseCreate\Course_UnitTest.cs" />
+    <Compile Include="Course.CourseCreate\Course_UnitQuestion.cs" />
+    <Compile Include="Course.CourseCreate\Course_ActivityLearn.cs" />
+    <Compile Include="Course_Detail.cs" />
+    <Compile Include="Course_UnitAnswer.cs" />
+    <Compile Include="Course_UnitAnswerResult.cs" />
+    <Compile Include="Course_UnitContent.cs" />
+    <Compile Include="Course.CourseCreate\Course_ChapterSectionInfo.cs" />
+    <Compile Include="Course_UnitDetail.cs" />
+    <Compile Include="Course_UnitHomeWork.cs" />
+    <Compile Include="Course_UnitQuestion.cs" />
+    <Compile Include="Course_UnitReplyDetail.cs" />
+    <Compile Include="Course_UnitReplyGroup.cs" />
+    <Compile Include="Course_UnitReplyGroupMember.cs" />
+    <Compile Include="Course_UnitTest.cs" />
+    <Compile Include="Course_UnitTestAnswer.cs" />
+    <Compile Include="Course_UnitTestAnswerResult.cs" />
+    <Compile Include="Entrance.Home\PlatformMenu.cs" />
+    <Compile Include="Entrance.Home\PlatformRoles.cs" />
+    <Compile Include="Entrance.Login\LoginInfo.cs" />
+    <Compile Include="Entrance.Home\PlatformGroups.cs" />
+    <Compile Include="Learn.MyLearn\MyCourseInfo.cs" />
+    <Compile Include="Learn.MyLearn\MyLearnInfo.cs" />
+    <Compile Include="Learn.MyLearn\MyPracticeInfo.cs" />
+    <Compile Include="Learn.MyLearn\LearnNoteInfo.cs" />
+    <Compile Include="Learn.MyLearn\OutCourseInfo.cs" />
+    <Compile Include="Member_Account.cs" />
+    <Compile Include="Member_BaseInfo.cs" />
+    <Compile Include="Member_ClassComment.cs" />
+    <Compile Include="Member_ClassContentNote.cs" />
+    <Compile Include="Member_ClassOverall.cs" />
+    <Compile Include="Member_ClassRegister.cs" />
+    <Compile Include="Member_ClassRegisterApplication.cs" />
+    <Compile Include="Member_ContentAnswerResult.cs" />
+    <Compile Include="Member_CourseContentAnswer.cs" />
+    <Compile Include="Member_CourseContentTestAnswer.cs" />
+    <Compile Include="Member_CourseContentTestAnswerResult.cs" />
+    <Compile Include="Member_Course_UnitContentTestAnswerResult.cs" />
+    <Compile Include="Member_ClassUnitContentSchedule.cs" />
+    <Compile Include="Member_InfoFK.cs" />
+    <Compile Include="Member_InOut.cs" />
+    <Compile Include="Member_InOutApplication.cs" />
+    <Compile Include="Member_PlanExemption.cs" />
+    <Compile Include="Member_PlanOverall.cs" />
+    <Compile Include="Member_PracticalCourse.cs" />
+    <Compile Include="Member_PracticalCourseApplication.cs" />
+    <Compile Include="Member_TrainingRedit.cs" />
+    <Compile Include="News_Detail.cs" />
+    <Compile Include="Organ_Detail.cs" />
+    <Compile Include="Organ_Type.cs" />
+    <Compile Include="Partition_Detail.cs" />
+    <Compile Include="PeriodModel.cs" />
+    <Compile Include="PlanExemption.cs" />
+    <Compile Include="PlatformManager_Detail.cs" />
+    <Compile Include="PlatformManager_Groups.cs" />
+    <Compile Include="PlatformManager_Role.cs" />
+    <Compile Include="PracticalCourse_Attachment.cs" />
+    <Compile Include="PracticalCourse_Detail.cs" />
+    <Compile Include="PracticalCourse_Role.cs" />
+    <Compile Include="PracticalCourse_RoleCredits.cs" />
+    <Compile Include="Prepare.ClassAddressList\ClassAddressList.cs" />
+    <Compile Include="Prepare.TrainingApply\SubjectInfo.cs" />
+    <Compile Include="Prepare.TrainingApply\TrainingInfo.cs" />
+    <Compile Include="Prepare.TrainingCheck\TrainingInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemManager_Detail.cs" />
+    <Compile Include="SystemManager_Groups.cs" />
+    <Compile Include="SystemManager_Role.cs" />
+    <Compile Include="Sys_Message.cs" />
+    <Compile Include="Sys_Parameters.cs" />
+    <Compile Include="Training_Credits.cs" />
+    <Compile Include="Training_Plan.cs" />
+    <Compile Include="Traning_ApplyApplication.cs" />
+    <Compile Include="Traning_Attachment.cs" />
+    <Compile Include="Traning_Category.cs" />
+    <Compile Include="Traning_Detail.cs" />
+    <Compile Include="Traning_Field.cs" />
+    <Compile Include="Traning_InfoFk.cs" />
+    <Compile Include="Traning_OutCourseType.cs" />
+    <Compile Include="Traning_Teacher.cs" />
+    <Compile Include="Traning_Topic.cs" />
+    <Compile Include="UserModel.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

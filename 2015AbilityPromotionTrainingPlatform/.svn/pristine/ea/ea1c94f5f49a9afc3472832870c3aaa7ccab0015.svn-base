@@ -1,0 +1,206 @@
+﻿@using XXW.SiteUtils
+@using Webdiyer.WebControls.Mvc
+@using Dianda.AP.Model
+@using Dianda.AP.BLL
+
+@model List<ClassRegisterManage>
+
+@{
+    Layout = "~/Views/Shared/LinkLayout.cshtml";
+    int groupid = (int)ViewData["groupId"];
+    string searchTitle = ViewData["searchTitle"].ToString();
+    int planId = (int)ViewData["planId"];
+    int status = (int)ViewData["status"];
+    int trainingId = (int)ViewData["trainingId"];
+    int myclassId = (int)ViewData["myclassId"];
+}
+
+<div class="d-h">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="d-page-title">教师报名管理</div>
+                <hr>
+                <div id="blk_as_teacher_apply_list" class="blk_as_teacher_apply_list" data-km-htm="blk_as_teacher_apply_list.html">
+                    <div class="d-search">
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <select class="form-control" id="planId">
+                                    <option value="-1">全部计划</option>
+                                    @foreach (Training_Plan t in ViewBag.PlanList)
+                                    {
+                                        <option value="@t.Id">@t.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="status">
+                                    <option value="-1">全部状态</option>
+                                    @if (groupid == 4)
+                                    { 
+                                        <option value="1">等待学校审核</option>
+                                        <option value="2">学校审核通过</option>
+                                        <option value="3">学校审核不通过</option>
+                                    }
+                                    else if (groupid == 3)
+                                    {
+                                        <option value="3">等待学校审核</option>
+                                        <option value="4">开班机构审核通过</option>
+                                        <option value="5">开班机构审核不通过</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="trainingId">
+                                    <option value="-1">全部课程</option>
+                                    @foreach (Traning_Detail t in ViewBag.TraningList)
+                                    {
+                                        <option value="@t.Id">@t.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="myclassId">
+                                    <option value="-1">全部班级</option>
+                             @*       @foreach (Class_Detail t in ViewBag.ClassList)
+                                    {
+                                        <option value="@t.Id">@t.Title</option>
+                                    }*@
+                                </select>
+                            </div>
+                        </form>
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input id="searchTitle" type="text" class="form-control" placeholder="姓名、师训编号、身份证、课程名称搜索" style="width: 300px;">
+                            </div>
+                            <button type="button" class="btn btn-default" onclick="verifySearch()"><span class="glyphicon glyphicon-search"></span>搜索</button>
+                        </form>
+
+                        <div class="action">
+                            <a href="#" class="btn btn-success" id="allpass" onclick="saveallVerify(@ViewBag.Yes)">批量审核通过</a>
+                            <a href="#" class="btn btn-success" id="allno" onclick="saveallVerify(@ViewBag.No)">批量不通过</a>
+                        </div>
+                    </div>
+
+                    <div class="d-datatable">
+
+                        <table class="table table-bordered table-hover" style="font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="chkItemAll" id="chkItemAll" onclick="chooseall()"></th>
+                                    <th>姓名</th>
+                                    <th>师训编号</th>
+                                    <th>课程名称</th>
+                                    <th>班级名称</th>
+                                    <th>上课日期</th>
+                                    <th>选课日期</th>
+                                    <th>审核状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (ClassRegisterManage m in Model)
+                                {
+                                    
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" value="@m.Id" name="chkItem"></th>
+                                        @{string name = m.RealName != null ? m.RealName : (m.Nickname != null ? m.Nickname : m.UserName);}
+                                        <td>@name</td>
+                                        <td>@m.TeacherNo</td>
+                                        <td>@m.TTitle</td>
+                                        <td class="ctitle">@m.CTitle</td>
+                                        <td>@m.OpenClassFrom.ToString("yyyy-MM-dd") 至 @m.OpenClassTo.ToString("yyyy-MM-dd")</td>
+                                        <td>@m.SignUpStartTime.ToString("yyyy-MM-dd") 至 @m.SignUpEndTime.ToString("yyyy-MM-dd")</td>
+
+                                        <td>
+                                            @{
+                                          string style = "";
+                                          string sstatus = "";
+                                          switch (m.Status)
+                                          {
+                                              case 1:
+                                                  style = "text-warning";
+                                                  sstatus = "等待学校审核";
+                                                  break;
+                                              case 2:
+                                                  style = "text-info";
+                                                  sstatus = "学校审核通过";
+                                                  break;
+                                              case 3:
+                                                  style = "text-warning";
+                                                  sstatus = "学校审核不通过";
+                                                  break;
+                                              case 4:
+                                                  style = "text-info";
+                                                  sstatus = "开班机构审核通过";
+                                                  break;
+                                              case 5:
+                                                  style = "text-warning";
+                                                  sstatus = "开班机构审核不通过";
+                                                  break;
+                                          }
+                                                <span class='@style'>@sstatus</span>
+                                            }
+                                        </td>
+                                        <td style="display: none;">
+                                            <input class="cid" value="@m.CId" /></td>
+                                        <td style="display: none;">
+                                            @{int maxp = m.LimitPeopleCnt - m.People;}
+                                            <input class="maxpeople"  value="@maxp" /></td>
+                                        <td>
+                                            <a href="/Market/Coursemarket/DetailInformation?Id=@m.Id" target="_blank">查看</a>
+                                            @Html.Raw((m.Status == 1||m.Status == 2) ? "<span style='color:#F00;cursor:pointer' onclick='marketverify(" + @m.Id + ")'>审核</span>&nbsp;&nbsp;" :
+                          "<span style='color:#009DD9;cursor:pointer' onclick='marketverify(" + @m.Id + ")'>重新审核</span>")
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @RenderPage(@Url.Content("~/Views/Shared/PageingPartial.cshtml"), new { pageindex = @ViewBag.pageIndex, basecount = 10, pagecount = @ViewBag.totalPage })
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="verify">
+    <div class="modal-dialog" style="width: 700px; height: 500px;">
+
+        <div class="modal-content d-form" style="padding: 5px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">教师报名审核</h4>
+            </div>
+            <iframe id="iframe-teacherlsit" name="showlist" src="" width="100%" height="100%" frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling="no"></iframe>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="@(myclassId>0?myclassId:-1)" id="hidclassid" />
+<input id="url" type="hidden" value="/Market/Coursemarket/CoursemarketVerify?" />
+<script src="/Resources/Scripts/Coursemarket/coursemarketVerify.js"></script>
+<script>
+    $(document).ready(function(){
+    $('#planId').val(@planId);
+        $('#status').val(@status);
+        $('#trainingId').val(@trainingId);
+        $('#searchTitle').val(@searchTitle);
+        initVerifyPage();
+    });
+
+
+ 
+</script>
+<script>
+    $(function () {
+        $proto.init(function () {
+            /* 页面加载后立即执行的代码写在这里 */
+        });
+    });
+</script>

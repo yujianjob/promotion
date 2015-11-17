@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Dianda.AP.Model;
+using Dianda.AP.BLL;
+using Dianda.Common;
+
+namespace Web.Areas.Prepare.Controllers
+{
+    public class SemesterController : Controller
+    {
+        //
+        // GET: /Prepare/Semester/
+        Training_PlanBLL bll = new Training_PlanBLL();
+        XXW.SiteUtils.SessionHelper session = XXW.SiteUtils.SessionHelper.Instance;
+        public ActionResult Index()
+        {
+            int pageIndex = 1, pageSize = 10, pageCount, recordCount;
+            if (!String.IsNullOrEmpty(Request["PageIndex"]))
+                int.TryParse(QueryString.Decrypt(Request["PageIndex"]), out pageIndex);
+            List<Training_Plan> list = new List<Training_Plan>();
+            list = bll.GetList(pageSize, pageIndex, " and PartitionId = " + Code.SiteCache.Instance.LoginInfo.PartitionId + " ", "Sort desc", out recordCount);
+            ViewBag.GetList = list;
+            pageCount = (int)Math.Ceiling((double)recordCount / pageSize);
+            ViewData["pageSize"] = pageSize;
+            ViewData["pageIndex"] = pageIndex;
+            ViewData["pageCount"] = pageCount;
+            ViewData["recordCount"] = recordCount;
+            return View();
+        }
+
+
+        public ActionResult SemesterAdd(string Title,DateTime SignDate,DateTime StartDate,DateTime SignEndDate,DateTime EndDate)
+        {
+            Training_Plan model = new Training_Plan();
+            model.Title = Title;
+            model.PartitionId = Code.SiteCache.Instance.LoginInfo.PartitionId;
+            model.Sort = int.Parse(DateTime.Now.ToString("HHmmssfff"));
+            model.IsOpen = false;
+            model.Display = true;
+            model.Delflag = false;
+            model.CreateDate = DateTime.Now;
+            model.SignUpStartTime = SignDate;
+            model.SignUpEndTime = SignEndDate;
+            model.OpenClassFrom = StartDate;
+            model.OpenClassTo = EndDate;
+            if (bll.YzPlanName(model.Title,0))
+            {
+                return Content("no:学期名重复！！！");
+            }
+            int i = bll.Add(model);
+            if (i > 0)
+            {
+                return Content("yes:添加成功！！！");
+            }
+            else
+            {
+                return Content("no:添加失败！！！");
+            }
+            
+        }
+
+
+        public ActionResult SemesterGetModel(int id)
+        {
+            Training_Plan model = bll.GetModel(id);
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public ActionResult SemesterEdit(int id,string Title, DateTime SignDate, DateTime StartDate, DateTime SignEndDate, DateTime EndDate)
+        {
+            Training_Plan model = new Training_Plan();
+            model.Id = id;
+            model.Title = Title;
+            model.Display = true;
+            model.SignUpStartTime = SignDate;
+            model.SignUpEndTime = SignEndDate;
+            model.OpenClassFrom = StartDate;
+            model.OpenClassTo = EndDate;
+            if (bll.YzPlanName(model.Title,model.Id))
+            {
+                return Content("no:学期名重复！！！");
+            }
+            if (bll.SemesterUpd(model))
+            {
+                return Content("yes:修改成功！！！");
+            }
+            else
+            {
+                return Content("no:修改失败！！！");
+            }
+        }
+
+        public ActionResult SemesterDisable(int id, int type, int PartitionId)
+        {
+            if (bll.Disable(id, type, PartitionId))
+            {
+                session.SetSession("PlanId", null);
+                return Content("yes:禁用成功！！！");
+            }
+            else
+            {
+                return Content("no:禁用失败！！！");
+            }
+        }
+
+
+        public ActionResult SemesterDel(int id)
+        {
+            if (bll.SemesterDel(id))
+            {
+                return Content("yes:删除成功！！！");
+            }
+            else
+            {
+                return Content("no:删除失败！！！");
+            }
+        }
+    }
+}

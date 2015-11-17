@@ -1,0 +1,51 @@
+<div class="d-practice">
+	<div class="i">
+		<a href="#" class="title">云服务在课堂教育中的应用</a>
+		<div class="metadata">
+	  	<span class="date">2015-09-02</span> 由 <span class="owner">冯伟</span>  <span class="role">(学校管理员)</span> 上传
+		</div>
+		<div class="action">
+			<span class="status bg-success">学校方&nbsp;<span class="glyphicon glyphicon-ok"></span></span>
+		</div>
+		<span class="sign bg-sign green">活动<span class="hour">10课时</span></span>
+	</div>
+	<div class="i">
+		<a href="#" class="title">新技术下的化学课程教学应用</a>
+		<div class="metadata">
+	  	<span class="date">2015-07-15</span> 由 <span class="owner">郑焕新</span> 上传
+		</div>
+		<div class="action">
+			<span class="status bg-success">学校方&nbsp;<span class="glyphicon glyphicon-ok"></span></span>
+		</div>
+		<span class="sign bg-sign green">活动<span class="hour">12课时</span></span>
+	</div>
+	<div class="i">
+		<a href="#" class="title">初中化学</a>
+		<div class="metadata">
+	  	<span class="date">2015-05-10</span> 由 <span class="owner">郑焕新</span> 上传
+		</div>
+		<div class="action">
+			<span class="status bg-info">学校方&nbsp;<span class="glyphicon glyphicon-time"></span></span>
+		</div>
+		<span class="sign bg-sign green">晒课<span class="hour">15课时</span></span>
+	</div>
+</div>
+
+<hr>
+<div class="d-pagination clearfix">
+	<div class="pull-left">
+		当前页<span>5</span>
+		总页数<span>12</span>
+		总记录<span>120</span>
+		每页显示条数<span>10</span>
+	</div>
+	<div class="pull-right text-right">
+		<a href="#">首页</a>
+		<a href="#">上一页</a>
+		<a href="#">下一页</a>
+		<a href="#">尾页</a>
+		跳转到第<input type="text" class="form-control input-sm">页
+		<button class="btn btn-sm"> » </button>
+
+	</div>
+</div>
